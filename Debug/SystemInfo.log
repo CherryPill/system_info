@@ -1,0 +1,25 @@
+﻿  sysinfo.cpp
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(224): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(309): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(296): warning C4101: 'capacityStrBuff': unreferenced local variable
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(295): warning C4101: 'capacityDouble': unreferenced local variable
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(294): warning C4101: 'capacity': unreferenced local variable
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(480): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(481): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(2254): note: see declaration of 'sscanf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(490): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(475): warning C4101: 'capacity': unreferenced local variable
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(559): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(621): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(740): warning C4244: '=': conversion from 'double' to 'UINT64', possible loss of data
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(727): warning C4101: 'capacity': unreferenced local variable
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(879): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(859): warning C4101: 'vtProp': unreferenced local variable
+  SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\Debug\SystemInfo.exe
