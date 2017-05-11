@@ -1,81 +1,81 @@
 #include "SystemInfo.h"
-string SystemInfo::getCPU()
+wstring SystemInfo::getCPU()
 {
 	return (*this).CPU;
 }
-string SystemInfo::getRAM()
+wstring SystemInfo::getRAM()
 {
 	return (*this).RAM;
 }
-void SystemInfo::setMB(string MB)
+void SystemInfo::setMB(wstring MB)
 {
 	(*this).MB = MB;
 }
-string SystemInfo::getMB()
+wstring SystemInfo::getMB()
 {
 	return (*this).MB = MB;
 }
-vector<string> SystemInfo::getGPUDevices()
+vector<wstring> SystemInfo::getGPUDevices()
 {
 	return (*this).GPUDevices;
 }
-vector<string> SystemInfo::getStorageMediums()
+vector<wstring> SystemInfo::getStorageMediums()
 {
 	return (*this).storageMediums;
 }
-vector<string> SystemInfo::getDisplayDevices()
+vector<wstring> SystemInfo::getDisplayDevices()
 {
 	return (*this).displayDevices;
 }
-void SystemInfo::addDisplayDevice(string device)
+void SystemInfo::addDisplayDevice(wstring device)
 {
 	(*this).displayDevices.push_back(device);
 }
-void SystemInfo::addStorageMedium(string medium)
+void SystemInfo::addStorageMedium(wstring medium)
 {
 	(*this).storageMediums.push_back(medium);
 }
-void SystemInfo::addGPUDevice(string device)
+void SystemInfo::addGPUDevice(wstring device)
 {
 	(*this).GPUDevices.push_back(device);
 }
-string SystemInfo::getOS()
+wstring SystemInfo::getOS()
 {
 	return (*this).OS;
 }
-void SystemInfo::setCPU(string CPU)
+void SystemInfo::setCPU(wstring CPU)
 {	
 	(*this).CPU = CPU;
 }
-void SystemInfo::setRAM(string RAM)
+void SystemInfo::setRAM(wstring RAM)
 {
 	(*this).RAM = RAM;
 }
-void SystemInfo::setOS(string OS)
+void SystemInfo::setOS(wstring OS)
 {
 	(*this).OS = OS;
 }
-vector<string> SystemInfo::getCDROMDevices(void)
+vector<wstring> SystemInfo::getCDROMDevices(void)
 {
 	return (*this).CDROMDevices;
 }
-void SystemInfo::addCDROMDevice(string CDROM)
+void SystemInfo::addCDROMDevice(wstring CDROM)
 {
 	(*this).CDROMDevices.push_back(CDROM);
 }
-void SystemInfo::setAudio(string audio)
+void SystemInfo::setAudio(wstring audio)
 {
 	(*this).audio = audio;
 }
-string SystemInfo::getAudio(void)
+wstring SystemInfo::getAudio(void)
 {
 	return (*this).audio;
 }
-string SystemInfo::getUptime(void)
+wstring SystemInfo::getUptime(void)
 {
 	return (*this).uptime;
 }
-void SystemInfo::setUptime(string uptime)
+void SystemInfo::setUptime(wstring uptime)
 {
 	(*this).uptime = uptime;
 }

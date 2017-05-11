@@ -4,17 +4,21 @@
 #include "globalVars.h"
 #include "utility.h"
 #include "mainWindowProcedure.h"
+//todo -add new line for xml files
+//-add html save
+//-add comment to files
+//-add bin and txt files
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
-	setlocale(LC_ALL,"");
+	
 	MSG message;
 	WNDCLASSEX wc = { 0 }; //nullifying the struct
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
-	wc.lpszClassName = "sysinfo";
+	wc.lpszClassName = L"sysinfo";
 	wc.hInstance = hInstance;
 	wc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
 	wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
@@ -24,7 +28,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 32, 32, NULL);
 	if (!RegisterClassEx(&wc))
 	{
-		MessageBox(NULL, "Window class registration failed", "Error", MB_ICONERROR);
+		MessageBox(NULL, L"Window class registration failed", L"Error", MB_ICONERROR);
 		return FALSE;
 	}
 	ghInstance = hInstance;
@@ -34,7 +38,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		(
 			0,
 			wc.lpszClassName,
-			"Speccy",
+			L"SystemInfo",
 			WS_SYSMENU|WS_MINIMIZEBOX|WS_VSCROLL,
 			upperLeftCorner.x,
 			upperLeftCorner.y,

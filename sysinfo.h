@@ -16,7 +16,7 @@ void getMonitor(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*
 void getStorage(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
 void getCDROM(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
 void getUptime(SystemInfo *localMachine);
-string getActualPhysicalMemory(HRESULT, IWbemServices*, IWbemLocator*);
+wstring getActualPhysicalMemory(HRESULT, IWbemServices*, IWbemLocator*);
 void getDimensionsAndFrequency(HRESULT, IWbemServices*, IWbemLocator*, UINT*);
 void getAudio(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
 #endif

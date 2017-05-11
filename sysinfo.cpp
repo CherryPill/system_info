@@ -192,24 +192,24 @@ void getCPU(SystemInfo *localMachine,
 
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-		string fullCPUString; //name + @clock
-		string maxClock;
+		wstring fullCPUString; //name + @clock
+		wstring maxClock;
 		double maxClockInGhZ;
 		uint32_t maxClockInMhZ;
-		char maxClockBuff[10];
-		string processor;
-
-		BstrToStdString(vtProp.bstrVal, processor);
+		TCHAR maxClockBuff[10];
+		wstring processor;
+		processor = vtProp.bstrVal;
+		//BstrToStdString(vtProp.bstrVal, processor);
 		trimNullTerminator(processor);
 		trimWhiteSpace(processor);
-		if (processor.find("@",0) == string::npos)
+		if (processor.find(L"@",0) == string::npos)
 		{
 			hr = pclsObj->Get(L"MaxClockSpeed", 0, &vtProp, 0, 0);
 			maxClockInMhZ = vtProp.uintVal;
 			maxClockInGhZ = (double)maxClockInMhZ / 1000;
-			sprintf(maxClockBuff, "%.1lf", maxClockInGhZ);
-			maxClock = string(maxClockBuff);
-			fullCPUString = processor + " @ " + maxClock + " Ghz";
+			_stprintf(maxClockBuff, _T("%.1lf"), maxClockInGhZ);
+			maxClock = wstring(maxClockBuff);
+			fullCPUString = processor + L" @ " + maxClock + L" Ghz";
 		}
 		else
 		{
@@ -265,22 +265,23 @@ void getRAM(SystemInfo *localMachine,
 		//format
 		//manufacturer + gb channel ddr @ mhz (x-x-x-x)
 		hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
-		string manufacturer;
-		string clockStr;
+		wstring manufacturer;
+		wstring clockStr;
 		UINT32 clock;
 		UINT16 formFactor;
-		string name;
-		string capacityStr;
-		string formFactorStr;
-		string memoryTypeStr;
+		wstring name;
+		wstring capacityStr;
+		wstring formFactorStr;
+		wstring memoryTypeStr;
 		UINT16 memoryType;
-		BstrToStdString(vtProp.bstrVal, manufacturer);
+		manufacturer = vtProp.bstrVal;
+		//BstrToStdString(vtProp.bstrVal, manufacturer);
 		trimNullTerminator(manufacturer);
 		trimWhiteSpace(manufacturer);
 		uint64_t capacity;
 		double capacityDouble;
-		char capacityStrBuff[10];
-		char clockStrBuff[10];
+		TCHAR capacityStrBuff[10];
+		TCHAR clockStrBuff[10];
 		capacityStr = getActualPhysicalMemory(hres, pSvc,pLoc);
 		
 		hr = pclsObj->Get(L"FormFactor", 0, &vtProp, 0, 0);
@@ -292,10 +293,10 @@ void getRAM(SystemInfo *localMachine,
 		memoryTypeStr = RAMMemoryTypes[memoryType];
 		hr = pclsObj->Get(L"Speed", 0, &vtProp, 0, 0);	
 		clock = vtProp.uintVal;
-		sprintf(clockStrBuff,"%d",clock);
-		clockStr = string(clockStrBuff);
-		localMachine->setRAM(manufacturer + " " + capacityStr +
-		" GiB " + formFactorStr + " "+memoryTypeStr+" "+clockStr+"Mhz");
+		_stprintf(clockStrBuff, _T("%d"), clock);
+		clockStr = wstring(clockStrBuff);
+		localMachine->setRAM(manufacturer + L" " + capacityStr +
+		L" GiB " + formFactorStr + L" "+memoryTypeStr+L" "+clockStr+L"Mhz");
 
 		VariantClear(&vtProp);
 
@@ -342,18 +343,20 @@ void getOS(SystemInfo *localMachine,
 		VARIANT vtProp;
 
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-		string fullOSstring;
+		wstring fullOSstring;
 		string OSName;
 		string OSArchitecture;
+		wstring OSNameWide;
 
-		BstrToStdString(vtProp.bstrVal, OSName);
+		OSNameWide = vtProp.bstrVal;
+		//BStrToWStdString(vtProp.bstrVal, OSNameWide);
 		hr = pclsObj->Get(L"OSArchitecture", 0, &vtProp, 0, 0);
 		BstrToStdString(vtProp.bstrVal, OSArchitecture);
-		int garbageIndex = OSName.find("|");
-		OSName = OSName.erase(garbageIndex, OSName.length() - garbageIndex);
-		fullOSstring = OSName;
+		int garbageIndex = OSNameWide.find(L"|");
+		OSNameWide = OSNameWide.erase(garbageIndex, OSNameWide.length() - garbageIndex);
+		fullOSstring = OSNameWide;
 
-		fullOSstring.append(" " + OSArchitecture);
+		//fullOSstring.append(" " + OSArchitecture);
 		localMachine->setOS(fullOSstring);
 
 		VariantClear(&vtProp);
@@ -403,13 +406,15 @@ void getMB(SystemInfo *localMachine,
 		hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
 
 		//product - m5a97 r2.0
-		string manufacturer;
-		string product;
-		BstrToStdString(vtProp.bstrVal, manufacturer);
+		wstring manufacturer;
+		wstring product;
+		manufacturer = vtProp.bstrVal;
+		//BstrToStdString(vtProp.bstrVal, manufacturer);
 		manufacturer.erase(manufacturer.length() - 1);
 		hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
-		BstrToStdString(vtProp.bstrVal, product);
-		localMachine->setMB(manufacturer + " " + product);
+		product = vtProp.bstrVal;
+		//BstrToStdString(vtProp.bstrVal, product);
+		localMachine->setMB(manufacturer + L" " + product);
 
 		VariantClear(&vtProp);
 
@@ -417,11 +422,11 @@ void getMB(SystemInfo *localMachine,
 	}
 	pEnumerator->Release();
 }
-string getActualPhysicalMemory(HRESULT hres, 
+wstring getActualPhysicalMemory(HRESULT hres, 
 	IWbemServices *pSvc,
 	IWbemLocator *pLoc)
 {
-	string ram;
+	wstring ram;
 	IEnumWbemClassObject *pEnumerator = NULL;
 	hres = pSvc->ExecQuery(
 		bstr_t("WQL"),
@@ -458,21 +463,22 @@ string getActualPhysicalMemory(HRESULT hres,
 		double cap;
 		double capacity;
 		
-		string temp;
-		char tempChar[100];
-		BstrToStdString(vtProp.bstrVal, temp);
-		strcpy(tempChar,temp.c_str());
-		sscanf(tempChar,"%lf",&cap);
+		wstring temp;
+		TCHAR tempChar[100];
+		temp = vtProp.bstrVal;
+		//BstrToStdString(vtProp.bstrVal, temp);
+		_tcscpy(tempChar, temp.c_str());
+		swscanf(tempChar, L"%lf", &cap);
+		
 		cap/= (pow(1024, 3));
 		accumulatedRAM+=cap;
 		VariantClear(&vtProp);
 
 		pclsObj->Release();
 	}
-	char capacityStrBuff[100];
-
-	sprintf(capacityStrBuff, "%.1lf", accumulatedRAM);
-	ram = string(capacityStrBuff);
+	TCHAR capacityStrBuff[100];
+	_stprintf(capacityStrBuff, _T("%.1lf"), accumulatedRAM);
+	ram = wstring(capacityStrBuff);
 	pEnumerator->Release();
 	return ram;
 }
@@ -517,21 +523,22 @@ void getGPU(SystemInfo *localMachine,
 		//memory - AdapterRAM
 		//vendor - 
 		hr = pclsObj->Get(L"AdapterRAM", 0, &vtProp, 0, 0);
-		string finalAdapterString;
-		string name;
+		wstring finalAdapterString;
+		wstring name;
 		UINT32 vramBytes;
-		string vrammegabytesStr;
-		char vRamCharBuff[50];
+		wstring vrammegabytesStr;
+		TCHAR vRamCharBuff[50];
 		double vRAMmegaBytes;
 		
 		vramBytes = vtProp.uintVal;
 		vRAMmegaBytes = (double) vramBytes/pow(1024,2);
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-		BstrToStdString(vtProp.bstrVal, name);
+		name = vtProp.bstrVal;
+		//BstrToStdString(vtProp.bstrVal, name);
 		trimNullTerminator(name);
-		sprintf(vRamCharBuff,"%.0lf MB",vRAMmegaBytes);
-		vrammegabytesStr = string(vRamCharBuff);
-		finalAdapterString = name+" "+vrammegabytesStr;
+		_stprintf(vRamCharBuff,_T("%.0lf MB"),vRAMmegaBytes);
+		vrammegabytesStr = wstring(vRamCharBuff);
+		finalAdapterString = name+L" "+vrammegabytesStr;
 
 		localMachine->addGPUDevice(finalAdapterString);
 
@@ -580,21 +587,20 @@ void getMonitor(SystemInfo *localMachine,
 		//MonitorManufacturer
 		//Name
 		//DELL P2014H(DP) (1600x900@60Hz)
-		string finalMonitorString;
-		string monitorName;
-		string resAndFreqStr;
-		char resAndFreqBuff[50];
+		wstring finalMonitorString;
+		wstring monitorName;
+		wstring resAndFreqStr;
+		TCHAR resAndFreqBuff[50];
 		UINT32 dimensionsAndFrequency[3];
 		getDimensionsAndFrequency(hres, pSvc, pLoc,dimensionsAndFrequency);
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-		BstrToStdString(vtProp.bstrVal, monitorName);
-
+		//BstrToStdString(vtProp.bstrVal, monitorName);
+		monitorName = vtProp.bstrVal;
 		trimNullTerminator(monitorName);
-	
-		sprintf(resAndFreqBuff,"(%dx%d@%dHz)",dimensionsAndFrequency[0], 
-										dimensionsAndFrequency[1],
-										dimensionsAndFrequency[2]);
-		resAndFreqStr = string(resAndFreqBuff);
+		_stprintf(resAndFreqBuff, L"(%dx%d@%dHz)", dimensionsAndFrequency[0],
+			dimensionsAndFrequency[1],
+			dimensionsAndFrequency[2]);
+		resAndFreqStr = wstring(resAndFreqBuff);
 		finalMonitorString = monitorName + resAndFreqStr;
 		localMachine->addDisplayDevice(finalMonitorString);
 
@@ -689,30 +695,32 @@ void getStorage(SystemInfo *localMachine,
 		}
 
 		VARIANT vtProp;
-		string storageFullString;
-		string manufacturerName;
-		string modelName;
-		string capacityStr;
+		wstring storageFullString;
+		wstring manufacturerName;
+		wstring modelName;
+		wstring capacityStr;
 		UINT64 capacityBytes;
-		string capacityGiBStr;
+		wstring capacityGiBStr;
 		UINT64 capacityGiBDbl;
-		char capacity[256];
+		TCHAR capacity[256];
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
 
 		//product - m5a97 r2.0
-		BstrToStdString(vtProp.bstrVal, modelName);
+		//BstrToStdString(vtProp.bstrVal, modelName);
+		modelName = vtProp.bstrVal;
 		manufacturerName = parseDiskStorageName(modelName);
 		trimNullTerminator(modelName);
 
 		hr = pclsObj->Get(L"Size", 0, &vtProp, 0, 0);
 		
-		BstrToStdString(vtProp.bstrVal, capacityStr);
+		//BstrToStdString(vtProp.bstrVal, capacityStr);
+		capacityStr = vtProp.bstrVal;
 		capacityBytes = stoull(capacityStr);
 		capacityGiBDbl = capacityBytes/pow(1024,3);
 		capacityGiBStr = convertUIntToString(capacityGiBDbl);
 
-		storageFullString = manufacturerName +" "+ modelName + " ("+capacityGiBStr+" GB)";
+		storageFullString = manufacturerName +L" "+ modelName + L" ("+capacityGiBStr+L" GB)";
 
 		localMachine->addStorageMedium(storageFullString);
 
@@ -760,11 +768,12 @@ void getCDROM(SystemInfo *localMachine,
 		}
 
 		VARIANT vtProp;
-		string cdRomCaption;
+		wstring cdRomCaption;
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
 
-		BstrToStdString(vtProp.bstrVal, cdRomCaption);
+		//BstrToStdString(vtProp.bstrVal, cdRomCaption);
+		cdRomCaption = vtProp.bstrVal;
 		trimNullTerminator(cdRomCaption);
 		localMachine->addCDROMDevice(cdRomCaption);
 
@@ -811,11 +820,12 @@ void getAudio(SystemInfo *localMachine,
 		}
 
 		VARIANT vtProp;
-		string soundCaption;
+		wstring soundCaption;
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
 
-		BstrToStdString(vtProp.bstrVal, soundCaption);
+		//BstrToStdString(vtProp.bstrVal, soundCaption);
+		soundCaption = vtProp.bstrVal;
 		trimNullTerminator(soundCaption);
 		localMachine->setAudio(soundCaption);
 
@@ -825,44 +835,50 @@ void getAudio(SystemInfo *localMachine,
 	}
 	pEnumerator->Release();
 }
-void getUptime(SystemInfo *localMachine)
-{
-
+void getUptime(SystemInfo *localMachine) {
 		VARIANT vtProp;
-		string soundCaption;
-		string uptimeStr;
+		wstring soundCaption;
+		wstring uptimeStr;
 		UINT64 uptimeMilliseconds = GetTickCount64();
-		UINT64 uptimeHours;
-		UINT64 uptimeDays;
-		char *format;
-		char formattedTimeString[256];
-		uptimeMilliseconds/=1000;
-		uptimeHours = uptimeMilliseconds/3600;
-		if (uptimeHours > 0)
-		{
-			if (uptimeHours > 24)
-			{
+		UINT64 uptimeSeconds = 0;
+		UINT64 uptimeHours = 0;
+		UINT64 uptimeDays = 0;
+		TCHAR *format = NULL;
+		TCHAR formattedTimeString[256] = {0};
+		uptimeSeconds = uptimeMilliseconds/1000;
+		uptimeHours = uptimeSeconds/3600;
+		if (uptimeHours > 0) {
+			if (uptimeHours > 24) {
 				uptimeDays = uptimeHours / 24;
 				uptimeHours -= uptimeDays * 24;
-				if (!uptimeHours%24)
-				{
-					format = "%llu days";
+			}
+		}
+			if (uptimeDays != 0) {
+				if (uptimeHours != 0) {
+					if (uptimeHours > 1) {
+						_stprintf(formattedTimeString, uptimeDays>1?L"%llu days and %llu hours": L"%llu day and %llu hours", uptimeDays, uptimeHours);
+					}
+					else{
+						_stprintf(formattedTimeString, uptimeDays>1?L"%llu days and %llu hour":L"%llu day and %llu hour", uptimeDays, uptimeHours);
+
+					}
+					_stprintf(formattedTimeString, L"%llu days and %llu hours", uptimeDays, uptimeHours);
 				}
-				else
-				{
-					format = "%llu days and %llu hours";
+				else {
+					_stprintf(formattedTimeString, uptimeDays>1?L"%llu days":L"%llu day", uptimeDays, uptimeHours);
 				}
 			}
-			else
-			{
-				format = "%u hours";
+			else {
+				if (uptimeHours < 1) {
+					_stprintf(formattedTimeString, L"%s",L"Less than an hour");
+				}
+				else if (uptimeHours == 1) {
+					_stprintf(formattedTimeString, L"%llu hour", uptimeHours);
+				}
+				else {
+					_stprintf(formattedTimeString, L"%llu hours", uptimeHours);
+				}
 			}
-			sprintf(formattedTimeString, format, uptimeDays, uptimeHours);
-			uptimeStr = string(formattedTimeString);
-		}
-		else
-		{
-			uptimeStr = "Less than an hour";
-		}
-		localMachine->setUptime(uptimeStr);
+			uptimeStr = wstring(formattedTimeString);
+			localMachine->setUptime(uptimeStr);
 }

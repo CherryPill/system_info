@@ -10,7 +10,7 @@ void centerWindow(POINT *upperLeftCorner)
 	(*upperLeftCorner).x = GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2;
 	(*upperLeftCorner).y = GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2;
 }
-void trimNullTerminator(string &strToTrim)
+void trimNullTerminator(wstring &strToTrim)
 {
 	strToTrim = strToTrim.erase(strToTrim.length()-1);
 }
@@ -60,26 +60,26 @@ std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
 	}
 	return dst;
 }
-string parseDiskStorageName(string modelName)
+wstring parseDiskStorageName(wstring modelName)
 {
-	string finalString = "";
-	if (modelName.find("WDC",0,3) != string::npos)
+	wstring finalString = L"";
+	if (modelName.find(L"WDC",0,3) != wstring::npos)
 	{
 		return storageMediumManufacturers[0];
 	}
-	else if (modelName.find("MHS",0,3) != string::npos)
+	else if (modelName.find(L"MHS",0,3) != wstring::npos)
 	{
 		return storageMediumManufacturers[2];
 	}
-	else if (modelName.find("HTS",0,3) != string::npos)
+	else if (modelName.find(L"HTS",0,3) != wstring::npos)
 	{
 		return storageMediumManufacturers[3];
 	}
-	else if (modelName.find("DTL") != string::npos)
+	else if (modelName.find(L"DTL") != wstring::npos)
 	{
 		return storageMediumManufacturers[5];
 	}
-	else if (modelName.find("ST",0,2) != string::npos || modelName.find("SC",0,2) != string::npos)
+	else if (modelName.find(L"ST",0,2) != wstring::npos || modelName.find(L"SC",0,2) != wstring::npos)
 	{
 		return storageMediumManufacturers[1];
 	}
@@ -88,18 +88,18 @@ string parseDiskStorageName(string modelName)
 		return finalString;
 	}
 }
-string convertUIntToString(UINT64 num)
+wstring convertUIntToString(UINT64 num)
 {
-	string str;
-	char *buff = new char[256];
-	sprintf(buff,"%u",num);
-	str = string(buff);
+	wstring str;
+	TCHAR *buff = new TCHAR[256];
+	_stprintf(buff,L"%u",num);
+	str = wstring(buff);
 	delete buff;
 	return str;
 }
-void trimWhiteSpace(string &str)
+void trimWhiteSpace(wstring &str)
 {
-	int whiteSpaceStart = str.find_last_not_of(" \t");
+	int whiteSpaceStart = str.find_last_not_of(L" \t");
 	str.erase(whiteSpaceStart+1);
 }
 //Generates string in the following format: "sysinfo capture @ YYYY-MM-DD-HH:MM.required_extension"
@@ -176,33 +176,28 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 }
 //this function forms a single string to display within the program window
 //make HARDWARE_TYPE instead of harware_vector_type to process strings and vectors
-string formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
+wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
 {
-	string finalString;
-	vector<string> values;
-	string emptyValue;
-	switch (type)
-	{
-	case HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY:
-	{
+	wstring finalString;
+	vector<wstring> values;
+	wstring emptyValue;
+	switch (type) {
+	case HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY: {
 		values = currentMachine->getDisplayDevices();
 		emptyValue = itemStrings[5];
 		break;
 	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE:
-	{
+	case HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE: {
 		values = currentMachine->getStorageMediums();
 		emptyValue = itemStrings[6];
 		break;
 	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER:
-	{
+	case HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER: {
 		values = currentMachine->getGPUDevices();
 		emptyValue = itemStrings[4];
 		break;
 	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_CDROM:
-	{
+	case HARDWARE_VECTOR_TYPE::HARDWARE_CDROM: {
 		values = currentMachine->getCDROMDevices();
 		emptyValue = itemStrings[7];
 		break;
@@ -210,7 +205,7 @@ string formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
 	}
 	if (values.empty())
 	{
-		return emptyValue + " not detected";
+		return emptyValue + L" not detected";
 	}
 	else
 	{
@@ -219,7 +214,7 @@ string formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
 			iterator++)
 		{
 			finalString.append((*iterator));
-			finalString.append("\n");
+			finalString.append(L"\n");
 		}
 		return finalString;
 	}

@@ -27,18 +27,18 @@ static WORD ICON_IDS[10]
 	AUDIO_ICON,
 	UPTIME_ICON
 };
-static string itemStrings[10] =
+static wstring itemStrings[10] =
 {
-	"Operating System",
-	"CPU",
-	"Motherboard",
-	"RAM",
-	"GPU",
-	"Display",
-	"Storage",
-	"Optical drives",
-	"Sound",
-	"Uptime"
+	L"Operating System",
+	L"CPU",
+	L"Motherboard",
+	L"RAM",
+	L"GPU",
+	L"Display",
+	L"Storage",
+	L"Optical drives",
+	L"Sound",
+	L"Uptime"
 };
 static TCHAR *savefileExtensions[5] =
 {
@@ -56,58 +56,58 @@ static TCHAR *savefileExtensionsLong[5] =
 	_T(".sysinfo files (*.sysinfo)\0*.sysinfo\0All Files (*.*)\0*.*\0"),
 	_T(".png images (*.png)\0*.png\0All Files (*.*)\0*.*\0")
 };
-static string RAMFormFactors[24]
+static wstring RAMFormFactors[24]
 {
-	"Unknown form factor",
-	"",
-	"SIP",
-	"DIP",
-	"ZIP",
-	"SOJ",
-	"Proprietary",
-	"SIMM",
-	"DIMM",
-	"TSOP",
-	"PGA",
-	"RIMM",
-	"SODIMM",
-	"SRIMM",
-	"SMD",
-	"SSMP",
-	"QFP",
-	"TQFP",
-	"SOIC",
-	"LCC",
-	"PLCC",
-	"BGA",
-	"FPBGA",
-	"LGA"
+	L"Unknown form factor",
+	L"",
+	L"SIP",
+	L"DIP",
+	L"ZIP",
+	L"SOJ",
+	L"Proprietary",
+	L"SIMM",
+	L"DIMM",
+	L"TSOP",
+	L"PGA",
+	L"RIMM",
+	L"SODIMM",
+	L"SRIMM",
+	L"SMD",
+	L"SSMP",
+	L"QFP",
+	L"TQFP",
+	L"SOIC",
+	L"LCC",
+	L"PLCC",
+	L"BGA",
+	L"FPBGA",
+	L"LGA"
 };
-static string RAMMemoryTypes[26]
+static wstring RAMMemoryTypes[26]
 {
-	"DDR3",
-	"",
-	"SDRAM",
-	"Cache DRAM",
-	"EDO",
-	"EDRAM",
-	"VRAM",
-	"SRAM",
-	"RAM",
-	"ROM",
-	"Flash",
-	"EEPROM",
-	"FEPROM",
-	"CDRAM",
-	"3DRAM",
-	"SDRAM",
-	"SGRAM",
-	"RDRAM",
-	"DDR",
-	"DDR2",
-	"DDR2 FB-DIMM",
-	"DDR2",
-	"DDR3",
-	"FBD2"
+	L"DDR3",
+	L"",
+	L"SDRAM",
+	L"Cache DRAM",
+	L"EDO",
+	L"EDRAM",
+	L"VRAM",
+	L"SRAM",
+	L"RAM",
+	L"ROM",
+	L"Flash",
+	L"EEPROM",
+	L"FEPROM",
+	L"CDRAM",
+	L"3DRAM",
+	L"SDRAM",
+	L"SGRAM",
+	L"RDRAM",
+	L"DDR",
+	L"DDR2",
+	L"DDR2 FB-DIMM",
+	L"DDR2",
+	L"DDR3",
+	L"FBD2"
 };
 #endif

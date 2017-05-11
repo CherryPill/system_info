@@ -10,52 +10,46 @@ private:
 
 	SystemInfo()
 	{
-			this->OS = "OS not detected";
-			this->RAM = "Motherboard not detected";
-			this->audio = "Sound card not detected";
-			this->uptime = "Uptime not set";
-
-			//_tcscpy(this->OS, "OS not detected");
-			//_tcscpy(this->RAM, "RAM not detected");
-			//_tcscpy(this->MB, "Motherboard not detected");
-			//_tcscpy(this->audio, "Sound card not detected");
-			//_tcscpy(this->uptime, "Uptime not set");
+			this->OS = L"OS not detected";
+			this->RAM = L"Motherboard not detected";
+			this->audio = L"Sound card not detected";
+			this->uptime = L"Uptime not set";
 	}
-	string OS;
-	string CPU;
-	string MB;
-	string RAM;
-	vector<string> GPUDevices;
-	vector<string> storageMediums;
-	vector<string> displayDevices;
-	vector<string> CDROMDevices;
-	string audio;
-	string uptime;
+	wstring OS;
+	wstring CPU;
+	wstring MB;
+	wstring RAM;
+	vector<wstring> GPUDevices;
+	vector<wstring> storageMediums;
+	vector<wstring> displayDevices;
+	vector<wstring> CDROMDevices;
+	wstring audio;
+	wstring uptime;
 public:
 	static SystemInfo *getCurrentInstance()
 	{
 		static SystemInfo *currentInstance = new SystemInfo();
 		return currentInstance;
 	}
-	vector<string> getCDROMDevices(void);
-	string  getUptime(void);
-	string  getCPU(void);
-	string  getRAM(void);
-	string  getMB(void);
-	string  getAudio(void);
-	vector<string> getGPUDevices(void);
-	vector<string> getStorageMediums(void);
-	vector<string> getDisplayDevices(void);
-	string getOS(void);
-	void setUptime(string uptime);
-	void setCPU(string CPU);
-	void setRAM(string RAM);
-	void setMB(string MB);
-	void addDisplayDevice(string device);
-	void addStorageMedium(string medium);
-	void addGPUDevice(string device);
-	void setOS(string OS);
-	void setAudio(string audio);
-	void addCDROMDevice(string CDROM);
+	vector<wstring> getCDROMDevices(void);
+	wstring  getUptime(void);
+	wstring  getCPU(void);
+	wstring  getRAM(void);
+	wstring  getMB(void);
+	wstring  getAudio(void);
+	vector<wstring> getGPUDevices(void);
+	vector<wstring> getStorageMediums(void);
+	vector<wstring> getDisplayDevices(void);
+	wstring getOS(void);
+	void setUptime(wstring uptime);
+	void setCPU(wstring CPU);
+	void setRAM(wstring RAM);
+	void setMB(wstring MB);
+	void addDisplayDevice(wstring device);
+	void addStorageMedium(wstring medium);
+	void addGPUDevice(wstring device);
+	void setOS(wstring OS);
+	void setAudio(wstring audio);
+	void addCDROMDevice(wstring CDROM);
 };
 

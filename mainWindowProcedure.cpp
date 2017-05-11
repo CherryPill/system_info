@@ -40,25 +40,17 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				case ID_FILE_TAKESCREENSHOT:
 				{
 					takeScreenshot(hwnd);
-					MessageBox(NULL, 
-					"Screenshot was saved on your desktop", 
-					"Success", MB_ICONINFORMATION);
+					
 					break;
 				}
 				case ID_FILE_SAVEASXML:
 				{
 					saveSpecs::saveAsXML(localMachine->getCurrentInstance());
-					MessageBox(NULL,
-						"Specs.xml was saved on your desktop",
-						"Success", MB_ICONINFORMATION);
 					break;
 				}
 				case ID_FILE_SAVEASTXT:
 				{
-					saveSpecs::saveAsText(localMachine->getCurrentInstance());
-					MessageBox(NULL,
-						"Specs.txt was saved on your desktop",
-						"Success", MB_ICONINFORMATION);
+					//saveSpecs::saveAsText(localMachine->getCurrentInstance());
 					break;
 				}
 				case ID_FILE_EXIT:
@@ -84,8 +76,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		case WM_VSCROLL:
-		{
-			
+		{			
 			break;
 		}
 		case WM_DESTROY:
@@ -126,7 +117,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info)
 		CreateWindowEx
 			(
 				0,
-				"Static",
+				L"Static",
 				NULL,
 				WS_VISIBLE |
 				WS_CHILD |
@@ -149,7 +140,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info)
 		CreateWindowEx
 			(
 				0,
-				"Static",
+				L"Static",
 				(LPCTSTR)itemStrings[x-1].c_str(),
 				WS_VISIBLE |
 				WS_CHILD |
@@ -166,8 +157,8 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info)
 		//info
 		CreateWindowEx(
 			0,
-			"Static",
-			("Detecting..."+itemStrings[x-1]).c_str(),
+			L"Static",
+			(L"Detecting..."+itemStrings[x-1]).c_str(),
 			WS_VISIBLE | WS_CHILD |SS_LEFT | DS_SETFONT,
 			xStartOffSetInformation,
 			yStartOffSet+16,
@@ -195,7 +186,7 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
 {
 
 		SetWindowText(GetDlgItem(mainWindowHwnd, OS_INFO),
-			(LPCTSTR)currentMachineInfo->getOS().c_str());
+			currentMachineInfo->getOS().c_str());
 		SetWindowText(GetDlgItem(mainWindowHwnd, CPU_INFO),
 			currentMachineInfo->getCPU().c_str());
 		SetWindowText(GetDlgItem(mainWindowHwnd, MB_INFO),
