@@ -144,7 +144,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Convert.cpp" />
     <ClCompile Include="globalVars.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainMenu.cpp" />
@@ -157,7 +156,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="appconst.h" />
-    <ClInclude Include="Convert.h" />
     <ClInclude Include="globalVars.h" />
     <ClInclude Include="iconLabelIDs.h" />
     <ClInclude Include="itemIDs.h" />
@@ -185,6 +183,17 @@
     <Image Include="C:\Users\Theta1\Desktop\speccy]\sound.ico" />
     <Image Include="C:\Users\Theta1\Desktop\speccy]\storage.ico" />
     <Image Include="C:\Users\Theta1\Desktop\speccy]\uptime.ico" />
+    <Image Include="Icons\cpu.ico" />
+    <Image Include="Icons\GPU.ico" />
+    <Image Include="Icons\mainIcon.ico" />
+    <Image Include="Icons\mb.ico" />
+    <Image Include="Icons\monitor.ico" />
+    <Image Include="Icons\optical.ico" />
+    <Image Include="Icons\os.ico" />
+    <Image Include="Icons\RAM.ico" />
+    <Image Include="Icons\sound.ico" />
+    <Image Include="Icons\storage.ico" />
+    <Image Include="Icons\uptime.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

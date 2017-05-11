@@ -33,9 +33,6 @@
     <ClCompile Include="SystemInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Convert.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mainMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,9 +63,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SystemInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Convert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -124,6 +118,39 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="C:\Users\Theta1\Desktop\speccy]\uptime.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\mainIcon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\os.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\cpu.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\mb.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\RAM.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\GPU.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\monitor.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\storage.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\optical.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\sound.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\uptime.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

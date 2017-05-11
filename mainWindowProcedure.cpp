@@ -18,6 +18,7 @@
 #include <tchar.h>
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	switch (msg)
 	{
@@ -40,17 +41,20 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				case ID_FILE_TAKESCREENSHOT:
 				{
 					takeScreenshot(hwnd);
-					
 					break;
 				}
 				case ID_FILE_SAVEASXML:
 				{
-					saveSpecs::saveAsXML(localMachine->getCurrentInstance());
+					saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
 				case ID_FILE_SAVEASTXT:
 				{
 					//saveSpecs::saveAsText(localMachine->getCurrentInstance());
+					break;
+				}
+				case ID_FILE_SAVEASHTML: {
+					saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
 				case ID_FILE_EXIT:

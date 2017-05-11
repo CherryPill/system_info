@@ -4,7 +4,6 @@
 #include <comdef.h>
 #include <Wbemidl.h>
 #include "globalVars.h"
-#include "Convert.h"
 #include "sysinfo.h"
 #include "SystemInfo.h"
 #include "utility.h"
