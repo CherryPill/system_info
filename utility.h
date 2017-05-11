@@ -1,6 +1,7 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 #include <string>
+#include <fstream>
 #include <tchar.h>
 #include "SystemInfo.h"
 enum class HARDWARE_VECTOR_TYPE {
@@ -38,4 +39,5 @@ UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
 std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE);
 void openFileDiag(HWND,FILE_EXTENSION,TCHAR*);
+void writeToFile(wofstream&, SystemInfo*, int);
 #endif

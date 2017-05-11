@@ -50,7 +50,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 				case ID_FILE_SAVEASTXT:
 				{
-					//saveSpecs::saveAsText(localMachine->getCurrentInstance());
+					saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
 				case ID_FILE_SAVEASHTML: {

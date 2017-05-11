@@ -251,8 +251,37 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 	{
 		//failure
 	}
-			
-
-
-
+}
+void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
+	if (counter >= 4 && counter <= 7) {
+		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 4)).c_str();
+	}
+	else {
+		switch (counter) {
+		case 0: {
+			fileStream << info->getOS().c_str();
+			break;
+		}
+		case 1: {
+			fileStream << info->getCPU().c_str();
+			break;
+		}
+		case 2: {
+			fileStream << info->getMB().c_str();
+			break;
+		}
+		case 3: {
+			fileStream << info->getRAM().c_str();
+			break;
+		}
+		case 8: {
+			fileStream << info->getAudio().c_str();
+			break;
+		}
+		case 9: {
+			fileStream << info->getUptime().c_str();
+			break;
+		}
+		}
+	}
 }

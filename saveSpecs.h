@@ -11,8 +11,8 @@ private:
 public:
 	static bool saveAsXML(HWND, SystemInfo*);
 	static bool saveAsHTML(HWND, SystemInfo*);
-	static bool saveAsBin(SystemInfo*);
-	static bool saveAsText(SystemInfo*);
+	static bool saveAsBin(HWND, SystemInfo*);
+	static bool saveAsText(HWND, SystemInfo*);
 	saveSpecs();
 	~saveSpecs();
 };

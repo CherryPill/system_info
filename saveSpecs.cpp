@@ -37,39 +37,7 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info)
 		htmlOutFile << itemStrings[x].c_str();
 		htmlOutFile << _T("\t\t</div>\n");
 		htmlOutFile << _T("\t\t<div class=\"info\">");
-
-		//wrap this part
-		if (x >= 4 && x <= 7) {
-			htmlOutFile << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(x % 4)).c_str();
-		}
-		else {
-			switch (x) {
-			case 0: {
-				htmlOutFile << info->getOS().c_str();
-				break;
-			}
-			case 1: {
-				htmlOutFile << info->getCPU().c_str();
-				break;
-			}
-			case 2: {
-				htmlOutFile << info->getMB().c_str();
-				break;
-			}
-			case 3: {
-				htmlOutFile << info->getRAM().c_str();
-				break;
-			}
-			case 8: {
-				htmlOutFile << info->getAudio().c_str();
-				break;
-			}
-			case 9: {
-				htmlOutFile << info->getUptime().c_str();
-				break;
-			}
-			}
-		}
+		writeToFile(htmlOutFile, info, x);
 		htmlOutFile << L"\t</div>\n</div>\n";
 	}
 	htmlOutFile << L"</div>\n</body>\n</html>\n";
@@ -95,47 +63,36 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info) {
 		xmlOutFile << itemStrings[x].c_str();
 		xmlOutFile << _T("\">\n\t\t");
 		//wrap this part
-		if (x>=4 && x<=7) {
-			xmlOutFile << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(x%4)).c_str();
-		}
-		else {
-			switch (x) {
-				case 0: {
-					xmlOutFile << info->getOS().c_str();
-					break;
-				}
-				case 1: {
-					xmlOutFile << info->getCPU().c_str();
-					break;
-				}
-				case 2: {
-					xmlOutFile << info->getMB().c_str();
-					break;
-				}
-				case 3: {
-					xmlOutFile << info->getRAM().c_str();
-					break;
-				}
-				case 8: {
-					xmlOutFile << info->getAudio().c_str();
-					break;
-				}
-				case 9: {
-					xmlOutFile << info->getUptime().c_str();
-					break;
-				}
-			}
-		}
+		writeToFile(xmlOutFile, info, x);
 		xmlOutFile << L"\t</item>\n";
 	}
 	xmlOutFile<<L"</hardwareinfo>\n";
 	xmlOutFile.close();
 	return true;
 }
-bool saveSpecs::saveAsBin(SystemInfo *info) {
+bool saveSpecs::saveAsBin(HWND hwnd,SystemInfo *info) {
 	return true;
 }
-bool saveSpecs::saveAsText(SystemInfo *info) {
+bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
+	TCHAR fullSavePath[256];
+
+	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
+
+	openFileDiag(hwnd, FILE_EXTENSION::TXT, fullSavePath);
+
+	std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
+	wofstream txtOutFile;
+	txtOutFile.open(fullSavePath, wofstream::out);
+	txtOutFile.imbue(loc);
+	txtOutFile << saveSpecs::xmlHeaderComment;
+	txtOutFile << saveSpecs::xmlDTD;
+	for (int x = 0; x < 10; x++) {
+		txtOutFile << itemStrings[x].c_str();
+		txtOutFile << _T(":\n");
+		writeToFile(txtOutFile, info, x);
+		txtOutFile<<endl;
+	}
+	txtOutFile.close();
 	return true;
 }
 saveSpecs::~saveSpecs()
