@@ -1,4 +1,5 @@
 #include "aboutDialog.h"
+#include "utility.h"
 BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
@@ -24,7 +25,7 @@ BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM l
 
 		break;
 	}
-	case WM_QUIT: {
+	case WM_CLOSE: {
 		EndDialog(dlgHandle, 0);
 		return true;
 	}
