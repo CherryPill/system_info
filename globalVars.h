@@ -13,6 +13,7 @@ extern HWND mainWindowHwnd;
 extern int mainWindowWidth;
 extern int mainWindowHeight;
 extern HBRUSH grayBrush;
+extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
 
 static WORD ICON_IDS[10] {

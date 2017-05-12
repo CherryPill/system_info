@@ -5,8 +5,7 @@
 #include "utility.h"
 #include "itemIDs.h"
 #include "SystemInfo.h"
-void centerWindow(POINT *upperLeftCorner)
-{
+void centerWindow(POINT *upperLeftCorner) {
 	(*upperLeftCorner).x = GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2;
 	(*upperLeftCorner).y = GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2;
 }
