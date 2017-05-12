@@ -4,14 +4,8 @@
 #include "globalVars.h"
 #include "utility.h"
 #include "mainWindowProcedure.h"
-//todo -add new line for xml files
-//-add html save
-//-add comment to files
-//-add bin and txt files
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-	LPSTR lpCmdLine, int nCmdShow)
-{
-	
+	LPSTR lpCmdLine, int nCmdShow) {
 	MSG message;
 	WNDCLASSEX wc = { 0 }; //nullifying the struct
 	wc.cbSize = sizeof(wc);
@@ -26,8 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hIconSm = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1),IMAGE_ICON,0,0,NULL);
 	wc.hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 32, 32, NULL);
-	if (!RegisterClassEx(&wc))
-	{
+	if (!RegisterClassEx(&wc)) {
 		MessageBox(NULL, L"Window class registration failed", L"Error", MB_ICONERROR);
 		return FALSE;
 	}
@@ -58,8 +51,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	SetClassLongPtr(mainWindowHwnd, GCLP_HBRBACKGROUND, (LONG)grayBrush);
 	ShowWindow(mainWindowHwnd, nCmdShow);
 	UpdateWindow(mainWindowHwnd);
-	while (GetMessage(&message, NULL, 0, 0))
-	{
+	while (GetMessage(&message, NULL, 0, 0)) {
 		TranslateMessage(&message);
 		DispatchMessage(&message);
 	}

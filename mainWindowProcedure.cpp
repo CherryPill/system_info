@@ -57,6 +57,9 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
+				case ID_ABOUT: {
+					break;
+				}
 				case ID_FILE_EXIT:
 				{
 					PostQuitMessage(WM_QUIT);
