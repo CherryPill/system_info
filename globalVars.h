@@ -4,8 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <tchar.h>
+#include "SoftwareInfo.h"
 #include "resource.h"
 using namespace std;
+extern SoftwareInfo *shippedSoftWare;
 extern HINSTANCE ghInstance;
 extern HWND mainWindowHwnd;
 extern int mainWindowWidth;

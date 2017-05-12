@@ -1,52 +1,34 @@
 #include "SoftwareInfo.h"
-
-
-
-SoftwareInfo::SoftwareInfo()
-{
+SoftwareInfo *shippedSoftWare;
+SoftwareInfo::SoftwareInfo() {
+	this->setSoftwareName(_T("SystemInfo"));
+	this->setSoftwareDesc(_T("Hardware information tool for windows"));
+	this->setSoftwareRepo(_T("https://github.com/CherryPill/system_info"));
+	this->setSoftwareVer(_T("0.7b"));
 }
-
-
-SoftwareInfo::~SoftwareInfo()
-{
+SoftwareInfo::~SoftwareInfo() {
 }
-
-
-string SoftwareInfo::getSoftwareName() {
+TCHAR* SoftwareInfo::getSoftwareName() {
 	return this->softwareName;
 }
-
-
-string SoftwareInfo::getSoftwareDesc() {
+TCHAR* SoftwareInfo::getSoftwareDesc() {
 	return this->softwareDescription;
 }
-
-
-string SoftwareInfo::getSoftwareVer() {
+TCHAR* SoftwareInfo::getSoftwareVer() {
 	return this->softwareVersion;
 }
-
-
-string SoftwareInfo::getSoftwareRepo() {
+TCHAR* SoftwareInfo::getSoftwareRepo() {
 	return this->softwareRepo;
 }
-
-
-void SoftwareInfo::setSoftwareDesc(string desc) {
-	this->softwareDescription = desc;
+void SoftwareInfo::setSoftwareDesc(TCHAR* desc) {
+	_tcscpy(this->softwareDescription, desc);
 }
-
-
-void SoftwareInfo::setSoftwareVer(string ver) {
-	this->softwareVersion = ver;
+void SoftwareInfo::setSoftwareVer(TCHAR* ver) {
+	_tcscpy(this->softwareVersion, ver);
 }
-
-
-void SoftwareInfo::setSoftwareRepo(string repo) {
-	this->softwareRepo = repo;
+void SoftwareInfo::setSoftwareRepo(TCHAR* repo) {
+	_tcscpy(this->softwareRepo, repo);
 }
-
-
-void SoftwareInfo::setSoftwareName(string name) {
-	this->softwareName = name;
+void SoftwareInfo::setSoftwareName(TCHAR* name) {
+	_tcscpy(this->softwareName, name);
 }

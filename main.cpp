@@ -6,8 +6,9 @@
 #include "mainWindowProcedure.h"
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow) {
+	shippedSoftWare = new SoftwareInfo();
 	MSG message;
-	WNDCLASSEX wc = { 0 }; //nullifying the struct
+	WNDCLASSEX wc = {0}; //nullifying the struct
 	wc.cbSize = sizeof(wc);
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.cbClsExtra = 0;

@@ -1,25 +1,115 @@
-﻿  sysinfo.cpp
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(224): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(309): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(296): warning C4101: 'capacityStrBuff': unreferenced local variable
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(295): warning C4101: 'capacityDouble': unreferenced local variable
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(294): warning C4101: 'capacity': unreferenced local variable
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(480): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+﻿  utility.cpp
+v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(95): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t [3]' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(95): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(96): error C2440: '<function-style-cast>': cannot convert from 'TCHAR *' to 'std::wstring'
+  v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(96): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(111): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(481): warning C4996: 'sscanf': This function or variable may be unsafe. Consider using sscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(2254): note: see declaration of 'sscanf'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(490): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(112): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(90): note: see declaration of 'strcat'
+v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(113): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(90): note: see declaration of 'strcat'
+v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(119): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(475): warning C4101: 'capacity': unreferenced local variable
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(559): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+v:\projects\systeminfo\systeminfo\systeminfo\utility.cpp(247): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+  SystemInfo.cpp
+  sysinfo.cpp
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(210): error C2440: '<function-style-cast>': cannot convert from 'TCHAR [10]' to 'std::wstring'
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(210): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(209): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(621): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(296): error C2440: '<function-style-cast>': cannot convert from 'TCHAR [10]' to 'std::wstring'
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(296): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(295): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(740): warning C4244: '=': conversion from 'double' to 'UINT64', possible loss of data
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(727): warning C4101: 'capacity': unreferenced local variable
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(879): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(469): error C2664: 'char *strcpy(char *,const char *)': cannot convert argument 2 from 'const wchar_t *' to 'const char *'
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(469): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(470): error C2664: 'int swscanf(const wchar_t *const ,const wchar_t *const ,...)': cannot convert argument 1 from 'TCHAR [100]' to 'const wchar_t *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(470): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(480): error C2440: '<function-style-cast>': cannot convert from 'TCHAR [100]' to 'std::wstring'
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(480): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(479): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(859): warning C4101: 'vtProp': unreferenced local variable
-  SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\Debug\SystemInfo.exe
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(539): error C2440: '<function-style-cast>': cannot convert from 'TCHAR [50]' to 'std::wstring'
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(539): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(538): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(601): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t [13]' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(601): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(602): error C2440: '<function-style-cast>': cannot convert from 'TCHAR [50]' to 'std::wstring'
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(602): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(719): warning C4244: '=': conversion from 'double' to 'UINT64', possible loss of data
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(858): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t *' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(858): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(861): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t *' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(861): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(864): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t [25]' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(864): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(867): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t *' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(867): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(872): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t [3]' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(872): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(875): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t [10]' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(875): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(878): error C2664: 'int sprintf(char *const ,const char *const ,...)': cannot convert argument 2 from 'const wchar_t [11]' to 'const char *const '
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(878): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(881): error C2440: '<function-style-cast>': cannot convert from 'TCHAR [256]' to 'std::wstring'
+  v:\projects\systeminfo\systeminfo\systeminfo\sysinfo.cpp(881): note: No constructor could take the source type, or constructor overload resolution was ambiguous
+  SoftwareInfo.cpp
+v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(24): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(27): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(30): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(33): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
+  screenCapture.cpp
+  saveSpecs.cpp
+  mainWindowProcedure.cpp
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(142): error C2664: 'HWND CreateWindowExA(DWORD,LPCSTR,LPCSTR,DWORD,int,int,int,int,HWND,HMENU,HINSTANCE,LPVOID)': cannot convert argument 2 from 'const wchar_t [7]' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(142): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(165): error C2664: 'HWND CreateWindowExA(DWORD,LPCSTR,LPCSTR,DWORD,int,int,int,int,HWND,HMENU,HINSTANCE,LPVOID)': cannot convert argument 2 from 'const wchar_t [7]' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(165): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(180): error C2664: 'HWND CreateWindowExA(DWORD,LPCSTR,LPCSTR,DWORD,int,int,int,int,HWND,HMENU,HINSTANCE,LPVOID)': cannot convert argument 2 from 'const wchar_t [7]' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(180): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(198): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(198): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(200): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(200): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(202): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(202): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(204): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(204): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(210): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(210): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(213): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(213): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(216): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(216): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(219): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(219): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(221): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(221): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(223): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'const wchar_t *' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\mainwindowprocedure.cpp(223): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+  mainMenu.cpp
+  main.cpp
+v:\projects\systeminfo\systeminfo\systeminfo\main.cpp(16): error C2440: '=': cannot convert from 'const wchar_t [8]' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\main.cpp(16): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\main.cpp(25): error C2664: 'int MessageBoxA(HWND,LPCSTR,LPCSTR,UINT)': cannot convert argument 2 from 'const wchar_t [33]' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\main.cpp(25): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\main.cpp(45): error C2664: 'HWND IsolationAwareCreateWindowExA(DWORD,LPCSTR,LPCSTR,DWORD,int,int,int,int,HWND,HMENU,HINSTANCE,LPVOID)': cannot convert argument 3 from 'const wchar_t [11]' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\main.cpp(45): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+  globalVars.cpp
+  aboutDialog.cpp
+v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(9): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'LPCWSTR' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(9): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(10): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'LPCWSTR' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(10): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(11): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'LPCWSTR' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(11): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(12): error C2664: 'BOOL SetWindowTextA(HWND,LPCSTR)': cannot convert argument 2 from 'LPCWSTR' to 'LPCSTR'
+  v:\projects\systeminfo\systeminfo\systeminfo\aboutdialog.cpp(12): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+  Generating Code...

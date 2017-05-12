@@ -144,17 +144,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aboutDialog.cpp" />
     <ClCompile Include="globalVars.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainMenu.cpp" />
     <ClCompile Include="mainWindowProcedure.cpp" />
     <ClCompile Include="saveSpecs.cpp" />
     <ClCompile Include="screenCapture.cpp" />
+    <ClCompile Include="SoftwareInfo.cpp" />
     <ClCompile Include="sysinfo.cpp" />
     <ClCompile Include="SystemInfo.cpp" />
     <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aboutDialog.h" />
     <ClInclude Include="appconst.h" />
     <ClInclude Include="globalVars.h" />
     <ClInclude Include="iconLabelIDs.h" />
@@ -164,6 +167,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="saveSpecs.h" />
     <ClInclude Include="screenCapture.h" />
+    <ClInclude Include="SoftwareInfo.h" />
     <ClInclude Include="sysinfo.h" />
     <ClInclude Include="SystemInfo.h" />
     <ClInclude Include="utility.h" />
@@ -194,6 +198,9 @@
     <Image Include="Icons\sound.ico" />
     <Image Include="Icons\storage.ico" />
     <Image Include="Icons\uptime.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="SystemInfo.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

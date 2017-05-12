@@ -2,24 +2,26 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
+#include <tchar.h>
+#include "appconst.h"
 using namespace std;
 class SoftwareInfo
 {
 private:
-	string softwareName;
-	string softwareDescription;
-	string softwareVersion;
-	string softwareRepo;
+	TCHAR softwareName[STR_MAX];
+	TCHAR softwareDescription[STR_MAX];
+	TCHAR softwareVersion[STR_MAX];
+	TCHAR softwareRepo[STR_MAX];
 public:
 	SoftwareInfo();
 	~SoftwareInfo();
-	string getSoftwareName();
-	string getSoftwareDesc();
-	string getSoftwareVer();
-	string getSoftwareRepo();
-	void setSoftwareDesc(string);
-	void setSoftwareVer(string);
-	void setSoftwareRepo(string);
-	void setSoftwareName(string);
+	TCHAR* getSoftwareName();
+	TCHAR* getSoftwareDesc();
+	TCHAR* getSoftwareVer();
+	TCHAR* getSoftwareRepo();
+	void setSoftwareDesc(TCHAR*);
+	void setSoftwareVer(TCHAR*);
+	void setSoftwareRepo(TCHAR*);
+	void setSoftwareName(TCHAR*);
 };
 
