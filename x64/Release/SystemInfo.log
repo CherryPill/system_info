@@ -1,0 +1,91 @@
+﻿  aboutDialog.cpp
+  globalVars.cpp
+  main.cpp
+main.cpp(52): warning C4311: 'type cast': pointer truncation from 'HBRUSH' to 'LONG'
+main.cpp(52): warning C4302: 'type cast': truncation from 'HBRUSH' to 'LONG'
+  mainMenu.cpp
+  mainWindowProcedure.cpp
+mainWindowProcedure.cpp(84): warning C4311: 'type cast': pointer truncation from 'HBRUSH' to 'LONG'
+mainWindowProcedure.cpp(84): warning C4302: 'type cast': truncation from 'HBRUSH' to 'LONG'
+mainWindowProcedure.cpp(139): warning C4312: 'type cast': conversion from 'int' to 'HMENU' of greater size
+mainWindowProcedure.cpp(162): warning C4312: 'type cast': conversion from 'int' to 'HMENU' of greater size
+mainWindowProcedure.cpp(177): warning C4312: 'type cast': conversion from 'int' to 'HMENU' of greater size
+  saveSpecs.cpp
+  screenCapture.cpp
+  SoftwareInfo.cpp
+SoftwareInfo.cpp(24): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+SoftwareInfo.cpp(27): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+SoftwareInfo.cpp(30): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+SoftwareInfo.cpp(33): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+  sysinfo.cpp
+sysinfo.cpp(209): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(295): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(282): warning C4101: 'capacityStrBuff': unreferenced local variable
+sysinfo.cpp(281): warning C4101: 'capacityDouble': unreferenced local variable
+sysinfo.cpp(280): warning C4101: 'capacity': unreferenced local variable
+sysinfo.cpp(354): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+sysinfo.cpp(469): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+sysinfo.cpp(470): warning C4996: 'swscanf': This function or variable may be unsafe. Consider using swscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(2037): note: see declaration of 'swscanf'
+sysinfo.cpp(479): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(463): warning C4101: 'capacity': unreferenced local variable
+sysinfo.cpp(538): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(599): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(719): warning C4244: '=': conversion from 'double' to 'UINT64', possible loss of data
+sysinfo.cpp(704): warning C4101: 'capacity': unreferenced local variable
+sysinfo.cpp(858): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(861): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(864): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(867): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(872): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(875): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(878): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+sysinfo.cpp(838): warning C4101: 'vtProp': unreferenced local variable
+  SystemInfo.cpp
+  utility.cpp
+utility.cpp(94): warning C4477: '_swprintf' : format string '%u' requires an argument of type 'unsigned int', but variadic argument 1 has type 'UINT64'
+  utility.cpp(94): note: consider using '%llu' in the format string
+  utility.cpp(94): note: consider using '%Iu' in the format string
+  utility.cpp(94): note: consider using '%I64u' in the format string
+utility.cpp(94): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+utility.cpp(101): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+utility.cpp(110): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+utility.cpp(111): warning C4996: 'wcscat': This function or variable may be unsafe. Consider using wcscat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(101): note: see declaration of 'wcscat'
+utility.cpp(112): warning C4996: 'wcscat': This function or variable may be unsafe. Consider using wcscat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(101): note: see declaration of 'wcscat'
+utility.cpp(118): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
+utility.cpp(150): warning C4267: '=': conversion from 'size_t' to 'UINT32', possible loss of data
+utility.cpp(155): warning C4267: '=': conversion from 'size_t' to 'UINT32', possible loss of data
+utility.cpp(160): warning C4267: '=': conversion from 'size_t' to 'UINT32', possible loss of data
+utility.cpp(165): warning C4267: '=': conversion from 'size_t' to 'UINT32', possible loss of data
+utility.cpp(170): warning C4267: '=': conversion from 'size_t' to 'UINT32', possible loss of data
+utility.cpp(246): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
+utility.cpp(224): warning C4101: 'szFile': unreferenced local variable
+  Generating code
+  274 of 874 functions (31.4%) were compiled, the rest were copied from previous compilation.
+    3 functions were new in current compilation
+    15 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\x64\Release\SystemInfo.exe
