@@ -12,7 +12,7 @@ void centerWindow(POINT *upperLeftCorner)
 }
 void trimNullTerminator(wstring &strToTrim)
 {
-	strToTrim = strToTrim.erase(strToTrim.length()-1);
+	strToTrim = strToTrim.erase(strToTrim.length());
 }
 std::wstring& BStrToWStdString(const BSTR bstr, std::wstring& dst, int cp)
 {

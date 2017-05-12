@@ -4,8 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <tchar.h>
+#include "SoftwareInfo.h"
 #include "resource.h"
 using namespace std;
+extern SoftwareInfo *shippedSoftWare;
 extern HINSTANCE ghInstance;
 extern HWND mainWindowHwnd;
 extern int mainWindowWidth;
@@ -13,9 +15,7 @@ extern int mainWindowHeight;
 extern HBRUSH grayBrush;
 static vector<HICON> iconArr;
 
-static WORD ICON_IDS[10]
-{
-
+static WORD ICON_IDS[10] {
 	OS_ICON,
 	CPU_ICON,
 	MB_ICON,
@@ -27,8 +27,7 @@ static WORD ICON_IDS[10]
 	AUDIO_ICON,
 	UPTIME_ICON
 };
-static wstring itemStrings[10] =
-{
+static wstring itemStrings[10] = {
 	L"Operating System",
 	L"CPU",
 	L"Motherboard",
@@ -40,24 +39,21 @@ static wstring itemStrings[10] =
 	L"Sound",
 	L"Uptime"
 };
-static TCHAR *savefileExtensions[5] =
-{
+static TCHAR *savefileExtensions[5] = {
 	_T(".txt"),
 	_T(".xml"),
 	_T(".html"),
 	_T(".sysinfo"),
 	_T(".png")
 };
-static TCHAR *savefileExtensionsLong[5] = 
-{
+static TCHAR *savefileExtensionsLong[5] = {
 	_T(".txt files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0"),
 	_T(".xml files (*.xml)\0*.xml\0All Files (*.*)\0*.*\0"),
 	_T(".html files (*.html)\0*.html\0All Files (*.*)\0*.*\0"),
 	_T(".sysinfo files (*.sysinfo)\0*.sysinfo\0All Files (*.*)\0*.*\0"),
 	_T(".png images (*.png)\0*.png\0All Files (*.*)\0*.*\0")
 };
-static wstring RAMFormFactors[24]
-{
+static wstring RAMFormFactors[24] {
 	L"Unknown form factor",
 	L"",
 	L"SIP",
@@ -83,8 +79,7 @@ static wstring RAMFormFactors[24]
 	L"FPBGA",
 	L"LGA"
 };
-static wstring RAMMemoryTypes[26]
-{
+static wstring RAMMemoryTypes[26] {
 	L"DDR3",
 	L"",
 	L"SDRAM",

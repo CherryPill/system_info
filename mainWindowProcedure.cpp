@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <tchar.h>
 #include "resource.h"
 #include "SystemInfo.h"
 #include "sysinfo.h"
@@ -15,7 +16,7 @@
 #include "screenCapture.h"
 #include "utility.h"
 #include "saveSpecs.h"
-#include <tchar.h>
+#include "aboutDialog.h"
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 
@@ -55,6 +56,10 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 				case ID_FILE_SAVEASHTML: {
 					saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance());
+					break;
+				}
+				case ID_ABOUT: {
+					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)aboutDlgProc);
 					break;
 				}
 				case ID_FILE_EXIT:

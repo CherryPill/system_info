@@ -42,6 +42,12 @@
     <ClCompile Include="saveSpecs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="aboutDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftwareInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globalVars.h">
@@ -78,6 +84,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="saveSpecs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aboutDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftwareInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -153,5 +165,8 @@
     <Image Include="Icons\uptime.ico">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="SystemInfo.manifest" />
   </ItemGroup>
 </Project>
