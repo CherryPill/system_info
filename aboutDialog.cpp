@@ -10,7 +10,7 @@ BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM l
 		SetWindowText(GetDlgItem(dlgHandle, IDC_PROGRAM_VER), (LPCWSTR)shippedSoftWare->getSoftwareVer());
 		SetWindowText(GetDlgItem(dlgHandle, IDC_PROGRAM_DESC), (LPCWSTR)shippedSoftWare->getSoftwareDesc());
 		SetWindowText(GetDlgItem(dlgHandle, IDC_GITHUB), (LPCWSTR)shippedSoftWare->getSoftwareRepo());
-
+		SendMessage(GetDlgItem(dlgHandle, IDC_PROGRAM_NAME), WM_SETFONT, (WPARAM)appNameFontLarge, MAKELPARAM(true, 0));
 		ZeroMemory(inputBuff, sizeof(inputBuff));
 		return true;
 	}
@@ -23,6 +23,10 @@ BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM l
 	}
 
 		break;
+	}
+	case WM_QUIT: {
+		EndDialog(dlgHandle, 0);
+		return true;
 	}
 }
 	return false;
