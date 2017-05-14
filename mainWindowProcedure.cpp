@@ -12,7 +12,6 @@
 #include "itemIDs.h"
 #include "iconLabelIDs.h"
 #include "mainWindowProcedure.h"
-#include "mainMenu.h"
 #include "screenCapture.h"
 #include "utility.h"
 #include "saveSpecs.h"

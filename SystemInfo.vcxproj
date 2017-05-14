@@ -147,7 +147,6 @@
     <ClCompile Include="aboutDialog.cpp" />
     <ClCompile Include="globalVars.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mainMenu.cpp" />
     <ClCompile Include="mainWindowProcedure.cpp" />
     <ClCompile Include="saveSpecs.cpp" />
     <ClCompile Include="screenCapture.cpp" />
@@ -162,7 +161,6 @@
     <ClInclude Include="globalVars.h" />
     <ClInclude Include="iconLabelIDs.h" />
     <ClInclude Include="itemIDs.h" />
-    <ClInclude Include="mainMenu.h" />
     <ClInclude Include="mainWindowProcedure.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="saveSpecs.h" />
