@@ -9,32 +9,8 @@ void centerWindow(POINT *upperLeftCorner) {
 	(*upperLeftCorner).x = GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2;
 	(*upperLeftCorner).y = GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2;
 }
-void trimNullTerminator(wstring &strToTrim)
-{
+void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
-}
-std::wstring& BStrToWStdString(const BSTR bstr, std::wstring& dst, int cp)
-{
-	if (!bstr)
-	{
-		// define NULL functionality. I just clear the target.
-		dst.clear();
-		return dst;
-	}
-	// request content length in single-chars through a terminating
-	//  nullchar in the BSTR. note: BSTR's support imbedded nullchars,
-	//  so this will only convert through the first nullchar.
-	int res = WideCharToMultiByte(cp, 0, bstr, -1, NULL, 0, NULL, NULL);
-	if (res > 0)
-	{
-		dst.resize(res);
-		WideCharToMultiByte(cp, 0, bstr, -1, (LPSTR)&dst[0], res, NULL, NULL);
-	}
-	else
-	{    // no content. clear target
-		dst.clear();
-	}
-	return dst;
 }
 std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
 {
@@ -62,28 +38,22 @@ std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
 wstring parseDiskStorageName(wstring modelName)
 {
 	wstring finalString = L"";
-	if (modelName.find(L"WDC",0,3) != wstring::npos)
-	{
+	if (modelName.find(L"WDC",0,3) != wstring::npos) {
 		return storageMediumManufacturers[0];
 	}
-	else if (modelName.find(L"MHS",0,3) != wstring::npos)
-	{
+	else if (modelName.find(L"MHS",0,3) != wstring::npos) {
 		return storageMediumManufacturers[2];
 	}
-	else if (modelName.find(L"HTS",0,3) != wstring::npos)
-	{
+	else if (modelName.find(L"HTS",0,3) != wstring::npos) {
 		return storageMediumManufacturers[3];
 	}
-	else if (modelName.find(L"DTL") != wstring::npos)
-	{
+	else if (modelName.find(L"DTL") != wstring::npos) {
 		return storageMediumManufacturers[5];
 	}
-	else if (modelName.find(L"ST",0,2) != wstring::npos || modelName.find(L"SC",0,2) != wstring::npos)
-	{
+	else if (modelName.find(L"ST",0,2) != wstring::npos || modelName.find(L"SC",0,2) != wstring::npos) {
 		return storageMediumManufacturers[1];
 	}
-	else
-	{
+	else {
 		return finalString;
 	}
 }
