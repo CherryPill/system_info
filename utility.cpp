@@ -102,36 +102,26 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	UINT32 adjustedItemHeight;
 	UINT32 adjustedYAxisOffset;
 	adjustedItemHeight = innerItemsCount * 15;
-	
-	//SetWindowPos(itemHandle,NULL,itemHandleDimensions.left, 
-		//itemHandleDimensions.top,
-			//			itemHandleDimensions.right,
-				//		adjustedItemHeight,NULL);
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + 10;
 	return adjustedYAxisOffset;
 }
 UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 {
 	UINT32 hardwareListSize = 0;
-	switch (ITEM_ID)
-	{
-		case GPU_INFO:
-		{
+	switch (ITEM_ID) {
+		case GPU_INFO: {
 			hardwareListSize = info->getGPUDevices().size();
 			break;
 		}
-		case MONITOR_INFO:
-		{
+		case MONITOR_INFO: {
 			hardwareListSize = info->getDisplayDevices().size();
 			break;
 		}
-		case STORAGE_INFO:
-		{
+		case STORAGE_INFO: {
 			hardwareListSize = info->getStorageMediums().size();
 			break;
 		}
-		case OPTICAL_INFO:
-		{
+		case OPTICAL_INFO: {
 			hardwareListSize = info->getCDROMDevices().size();
 			break;
 		}
@@ -145,8 +135,7 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 }
 //this function forms a single string to display within the program window
 //make HARDWARE_TYPE instead of harware_vector_type to process strings and vectors
-wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
-{
+wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type) {
 	wstring finalString;
 	vector<wstring> values;
 	wstring emptyValue;
@@ -172,12 +161,10 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
 		break;
 	}
 	}
-	if (values.empty())
-	{
+	if (values.empty()) {
 		return emptyValue + L" not detected";
 	}
-	else
-	{
+	else {
 		for (auto iterator = values.begin();
 		iterator != values.end();
 			iterator++)
@@ -188,8 +175,7 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
 		return finalString;
 	}
 }
-void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath) 
-{
+void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath)  {
 	OPENFILENAME fileName;
 	TCHAR szFile[MAX_PATH];
 	ZeroMemory(&fileName, sizeof(fileName));
@@ -211,13 +197,11 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 	generateFileName(buffer,extension);
 	fileName.lpstrFileTitle = buffer;
 	fileName.lpstrFile = buffer;
-	if (GetSaveFileName(&fileName))
-	{
+	if (GetSaveFileName(&fileName)) {
 		_tcscpy(fullSavePath, fileName.lpstrFile);
 		//success
 	}
-	else
-	{
+	else{
 		//failure
 	}
 }
