@@ -32,7 +32,6 @@ static std::wstring storageMediumManufacturers[20]
 };
 void centerWindow(POINT*);
 std::string& BstrToStdString(const BSTR, std::string&, int cp = CP_UTF8);
-std::wstring& BStrToWStdString(const BSTR, std::wstring&t, int cp=CP_UTF8);
 void trimNullTerminator(std::wstring&);
 std::wstring parseDiskStorageName(std::wstring);
 std::wstring convertUIntToString(UINT64);

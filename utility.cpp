@@ -9,32 +9,8 @@ void centerWindow(POINT *upperLeftCorner) {
 	(*upperLeftCorner).x = GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2;
 	(*upperLeftCorner).y = GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2;
 }
-void trimNullTerminator(wstring &strToTrim)
-{
+void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
-}
-std::wstring& BStrToWStdString(const BSTR bstr, std::wstring& dst, int cp)
-{
-	if (!bstr)
-	{
-		// define NULL functionality. I just clear the target.
-		dst.clear();
-		return dst;
-	}
-	// request content length in single-chars through a terminating
-	//  nullchar in the BSTR. note: BSTR's support imbedded nullchars,
-	//  so this will only convert through the first nullchar.
-	int res = WideCharToMultiByte(cp, 0, bstr, -1, NULL, 0, NULL, NULL);
-	if (res > 0)
-	{
-		dst.resize(res);
-		WideCharToMultiByte(cp, 0, bstr, -1, (LPSTR)&dst[0], res, NULL, NULL);
-	}
-	else
-	{    // no content. clear target
-		dst.clear();
-	}
-	return dst;
 }
 std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
 {
