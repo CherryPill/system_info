@@ -12,45 +12,47 @@
 #include "itemIDs.h"
 #include "iconLabelIDs.h"
 #include "mainWindowProcedure.h"
-#include "mainMenu.h"
 #include "screenCapture.h"
 #include "utility.h"
 #include "saveSpecs.h"
 #include "aboutDialog.h"
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
-	switch (msg)
-	{
-		case WM_CREATE:
-		{
-			createMainMenu(hwnd);
+	switch (msg) {
+		case WM_CREATE:{
 			loadImages();
 		    getSystemInformation(localMachine->getCurrentInstance());
 			createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
 			populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
+			
 			EnumChildWindows(hwnd, 
 			(WNDENUMPROC)SetFont, 
 			(LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
-			break;
+			RECT rc = { 0 };
+			GetClientRect(hwnd, &rc);
+			SCROLLINFO si = { 0 };
+			si.cbSize = sizeof(SCROLLINFO);
+			si.fMask = SIF_ALL;
+			si.nMin = 5;
+			si.nMax = scrollFullPageHeight;
+			si.nPage = (rc.bottom - rc.top);
+			si.nPos = 0;
+			si.nTrackPos = 0;
+			SetScrollInfo(hwnd, SB_VERT, &si, true);
+			return 0;
 		}
-		case WM_COMMAND:
-		{
-			switch (LOWORD(wParam))
-			{
-				case ID_FILE_TAKESCREENSHOT:
-				{
+		case WM_COMMAND: {
+			switch (LOWORD(wParam)) {
+				case ID_FILE_TAKESCREENSHOT: {
 					takeScreenshot(hwnd);
 					break;
 				}
-				case ID_FILE_SAVEASXML:
-				{
+				case ID_FILE_SAVEASXML: {
 					saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
-				case ID_FILE_SAVEASTXT:
-				{
+				case ID_FILE_SAVEASTXT: {
 					saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
@@ -62,30 +64,57 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)aboutDlgProc);
 					break;
 				}
-				case ID_FILE_EXIT:
-				{
+				case ID_FILE_EXIT: {
 					PostQuitMessage(WM_QUIT);
 					break;
 				}
 			}
 		}
-		case WM_CTLCOLORSTATIC:
-		{
+		case WM_CTLCOLORSTATIC: {
 			HDC hdcStatic = (HDC)wParam;
-			if ( GetDlgCtrlID((HWND)lParam) <= END_LABEL)
-			{
+			if ( GetDlgCtrlID((HWND)lParam) <= END_LABEL) {
 				SetTextColor(hdcStatic, RGB(125, 207, 246));
 			}
-			else
-			{
+			else {
 				SetTextColor(hdcStatic, RGB(255, 255, 255));
 			}
 			SetBkColor(hdcStatic, RGB(81, 81, 81));
 			return (LONG)grayBrush;
 			break;
 		}
-		case WM_VSCROLL:
-		{			
+		case WM_VSCROLL: {		
+			auto action = LOWORD(wParam);
+			HWND hScroll = (HWND)lParam;
+			int pos = -1;
+			if (action == SB_THUMBPOSITION || action == SB_THUMBTRACK) {
+				pos = HIWORD(wParam);
+			}
+			else if (action == SB_LINEDOWN) {
+				pos = scrollY + 30;
+			}
+			else if (action == SB_LINEUP) {
+				pos = scrollY - 30;
+			}
+			if (pos == -1)
+				break;
+			WCHAR buf[20];
+			SCROLLINFO si = { 0 };
+			si.cbSize = sizeof(SCROLLINFO);
+			si.fMask = SIF_POS;
+			si.nPos = pos;
+			si.nTrackPos = 0;
+			SetScrollInfo(hwnd, SB_VERT, &si, true);
+			GetScrollInfo(hwnd, SB_VERT, &si);
+			pos = si.nPos;
+			POINT pt;
+			pt.x = 0;
+			pt.y = pos - scrollY;
+			auto hdc = GetDC(hwnd);
+			LPtoDP(hdc, &pt, 1);
+			ReleaseDC(hwnd, hdc);
+			ScrollWindow(hwnd, 0, -pt.y, NULL, NULL);
+			scrollY = pos;
+			return 0;
 			break;
 		}
 		case WM_DESTROY:
@@ -190,6 +219,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info)
 		}
 		yStartOffSet += (ITEM_HEIGHT + 10);
 	}
+	scrollFullPageHeight = yStartOffSet;
 }
 void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
 {
