@@ -9,8 +9,8 @@ private:
 	static const TCHAR *uniformComment;
 	static const TCHAR *htmlCommentStart;
 	static const TCHAR *htmlCommentEnd;
-	static const TCHAR *xmlCommentStart;
-	static const TCHAR *xmlCommentEnd;
+	static const TCHAR *CSSCommentStart;
+	static const TCHAR *CSSCommentEnd;
 public:
 	static bool saveAsXML(HWND, SystemInfo*);
 	static bool saveAsHTML(HWND, SystemInfo*);
