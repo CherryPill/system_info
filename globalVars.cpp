@@ -7,6 +7,8 @@ HINSTANCE ghInstance = NULL;
 HWND mainWindowHwnd = NULL;
 int mainWindowWidth = 600;
 int mainWindowHeight = 600;
+int scrollY = 0;
+int scrollFullPageHeight = 0;
 HBRUSH grayBrush = CreateSolidBrush(RGB(81, 81, 81));
 TCHAR *fontFamilies[] =
 {

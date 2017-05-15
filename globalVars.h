@@ -12,6 +12,8 @@ extern HINSTANCE ghInstance;
 extern HWND mainWindowHwnd;
 extern int mainWindowWidth;
 extern int mainWindowHeight;
+extern int scrollY;
+extern int scrollFullPageHeight;
 extern HBRUSH grayBrush;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
