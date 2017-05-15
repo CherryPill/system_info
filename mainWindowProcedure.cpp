@@ -16,8 +16,7 @@
 #include "utility.h"
 #include "saveSpecs.h"
 #include "aboutDialog.h"
-LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
+LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	switch (msg) {
 		case WM_CREATE:{
@@ -126,13 +125,11 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
-BOOL CALLBACK SetFont(HWND child, LPARAM font)
-{
+BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 	SendMessage(child, WM_SETFONT, (LPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
 	return TRUE;
 }
-void loadImages(void)
-{
+void loadImages(void) {
 	for (int x = 0;x<10;x++)
 	{
 		HICON newIcon = (HICON)LoadImage(ghInstance, 
@@ -141,17 +138,13 @@ void loadImages(void)
 	}
 }
 
-void createHardwareInfoHolders(HWND parent, SystemInfo *info)
-{
-	
+void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	UINT32 yStartOffSet = 20;
 	int xStartOffSetLabel = 80;
 	int xStartOffSetInformation = xStartOffSetLabel + 25 ;
 	//labels + information as a table
-	for (int x = 1, y = OS_INFO,z=OS_ICON_LABEL;x<END_LABEL;x++,y++,z++)
-	{
+	for (int x = 1, y = OS_INFO,z=OS_ICON_LABEL;x<END_LABEL;x++,y++,z++) {
 		//icon
-		
 		CreateWindowEx
 			(
 				0,

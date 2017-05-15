@@ -108,4 +108,7 @@ static wstring RAMMemoryTypes[26] {
 	L"DDR3",
 	L"FBD2"
 };
+//time functions
+extern TCHAR *timeVerboseMonths[];
+extern TCHAR *timeVerboseDaysOfWeek[];
 #endif

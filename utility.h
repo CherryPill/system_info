@@ -40,6 +40,7 @@ void generateFileName(TCHAR*, FILE_EXTENSION);
 UINT32 isAdjustRequired(UINT32,SystemInfo*);
 UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
+void getCurrentDateTimeVerbose(TCHAR *);
 std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE);
 void openFileDiag(HWND,FILE_EXTENSION,TCHAR*);
 void writeToFile(wofstream&, SystemInfo*, int);
