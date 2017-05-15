@@ -16,3 +16,28 @@ TCHAR *fontFamilies[] =
 	_T("Courier New")
 };
 HFONT appNameFontLarge = CreateFont(-28, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
+
+TCHAR *timeVerboseMonths[] = {
+	_T("Dummy"),
+	_T("January"),
+	_T("February"),
+	_T("March"),
+	_T("April"),
+	_T("May"),
+	_T("June"),
+	_T("July"),
+	_T("August"),
+	_T("September"),
+	_T("October"),
+	_T("November"),
+	_T("December")
+};
+TCHAR *timeVerboseDaysOfWeek[] = {
+	_T("Sunday"),
+	_T("Monday"),
+	_T("Tuesday"),
+	_T("Wednesday"),
+	_T("Thursday"),
+	_T("Friday"),
+	_T("Saturday")
+};

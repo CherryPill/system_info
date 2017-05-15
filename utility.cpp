@@ -66,14 +66,12 @@ wstring convertUIntToString(UINT64 num)
 	delete buff;
 	return str;
 }
-void trimWhiteSpace(wstring &str)
-{
+void trimWhiteSpace(wstring &str) {
 	int whiteSpaceStart = str.find_last_not_of(L" \t");
 	str.erase(whiteSpaceStart+1);
 }
 //Generates string in the following format: "sysinfo capture @ YYYY-MM-DD-HH:MM.required_extension"
-void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension)
-{
+void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension) {
 	ZeroMemory(completeFileName, sizeof(completeFileName));
 	TCHAR timeDateFileName[256];
 	getCurrentDateTime(timeDateFileName);
@@ -81,14 +79,26 @@ void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension)
 	_tcscat(completeFileName, timeDateFileName);
 	_tcscat(completeFileName, savefileExtensions[(int)requiredExtension]);
 }
-void getCurrentDateTime(TCHAR *buffer)
-{
+void getCurrentDateTime(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
-	GetSystemTime(&currentTime);
-	_stprintf(buffer, _T("%d-%d-%d %d %d"),
+	GetLocalTime(&currentTime);
+	_stprintf(buffer, _T("%d-%d-%d @ %d %d"),
 		currentTime.wYear,
 		currentTime.wMonth,
 		currentTime.wDay,
+		currentTime.wHour,
+		currentTime.wMinute);
+		int sentinel = 0xf;
+}
+//format: Friday, January 21, 2017 @ 0 00
+void getCurrentDateTimeVerbose(TCHAR *buffer) {
+	SYSTEMTIME currentTime;
+	GetLocalTime(&currentTime);
+	_stprintf(buffer, _T("%s, %s %d, %d @ %d:%d"),
+		timeVerboseDaysOfWeek[currentTime.wDayOfWeek],
+		timeVerboseMonths[currentTime.wMonth],
+		currentTime.wDay,
+		currentTime.wYear,
 		currentTime.wHour,
 		currentTime.wMinute);
 }
