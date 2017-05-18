@@ -230,16 +230,16 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
 
 	SetWindowText(GetDlgItem(mainWindowHwnd, GPU_INFO),
 		formListString(currentMachineInfo,
-						HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER).c_str());
+						HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, MONITOR_INFO),
 		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY).c_str());
+			HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, STORAGE_INFO),
 		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE).c_str());
+			HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, OPTICAL_INFO),
 		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_CDROM).c_str());
+			HARDWARE_VECTOR_TYPE::HARDWARE_CDROM, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
 		currentMachineInfo->getAudio().c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
