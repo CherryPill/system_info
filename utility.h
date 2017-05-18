@@ -4,6 +4,10 @@
 #include <fstream>
 #include <tchar.h>
 #include "SystemInfo.h"
+enum class WRITE_OUT_TYPE {
+	APP_WINDOW,
+	FILE
+};
 enum class HARDWARE_VECTOR_TYPE {
 	HARDWARE_DISPLAY,
 	HARDWARE_STORAGE,
@@ -41,7 +45,7 @@ UINT32 isAdjustRequired(UINT32,SystemInfo*);
 UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
 void getCurrentDateTimeVerbose(TCHAR *);
-std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE);
+std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
 void openFileDiag(HWND,FILE_EXTENSION,TCHAR*);
 void writeToFile(wofstream&, SystemInfo*, int);
 #endif

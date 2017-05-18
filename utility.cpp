@@ -145,7 +145,7 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 }
 //this function forms a single string to display within the program window
 //make HARDWARE_TYPE instead of harware_vector_type to process strings and vectors
-wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type) {
+wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WRITE_OUT_TYPE wType) {
 	wstring finalString;
 	vector<wstring> values;
 	wstring emptyValue;
@@ -180,6 +180,10 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type) {
 			iterator++)
 		{
 			finalString.append((*iterator));
+			wType == WRITE_OUT_TYPE::FILE
+				?
+			finalString.append(L"<br />")
+				:
 			finalString.append(L"\n");
 		}
 		return finalString;
@@ -217,7 +221,7 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 }
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
 	if (counter >= 4 && counter <= 7) {
-		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 4)).c_str();
+		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 4), WRITE_OUT_TYPE::FILE).c_str();
 	}
 	else {
 		switch (counter) {
