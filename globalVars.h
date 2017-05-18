@@ -18,7 +18,8 @@ extern HBRUSH grayBrush;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
 
-static WORD ICON_IDS[10] {
+static WORD ICON_IDS[11] {
+	BIOS_ICON,
 	OS_ICON,
 	CPU_ICON,
 	MB_ICON,
@@ -30,7 +31,8 @@ static WORD ICON_IDS[10] {
 	AUDIO_ICON,
 	UPTIME_ICON
 };
-static wstring itemStrings[10] = {
+static wstring itemStrings[11] = {
+	L"BIOS/UEFI",
 	L"Operating System",
 	L"CPU",
 	L"Motherboard",

@@ -59,3 +59,9 @@ wstring SystemInfo::getUptime(void) {
 void SystemInfo::setUptime(wstring uptime) {
 	(*this).uptime = uptime;
 }
+wstring SystemInfo::getBIOS(void) {
+	return (*this).BIOS;
+}
+void SystemInfo::setBIOS(wstring bios) {
+	(*this).BIOS = bios;
+}

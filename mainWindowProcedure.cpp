@@ -71,7 +71,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		}
 		case WM_CTLCOLORSTATIC: {
 			HDC hdcStatic = (HDC)wParam;
-			if ( GetDlgCtrlID((HWND)lParam) <= END_LABEL) {
+			if ( GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
 				SetTextColor(hdcStatic, RGB(125, 207, 246));
 			}
 			else {
@@ -130,7 +130,7 @@ BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 	return TRUE;
 }
 void loadImages(void) {
-	for (int x = 0;x<10;x++)
+	for (int x = 0;x<11;x++)
 	{
 		HICON newIcon = (HICON)LoadImage(ghInstance, 
 		MAKEINTRESOURCE(ICON_IDS[x]), IMAGE_ICON, 16, 16, NULL);
@@ -143,7 +143,8 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	int xStartOffSetLabel = 80;
 	int xStartOffSetInformation = xStartOffSetLabel + 25 ;
 	//labels + information as a table
-	for (int x = 1, y = OS_INFO,z=OS_ICON_LABEL;x<END_LABEL;x++,y++,z++) {
+	for (int x = 0, y = BIOS_INFO,z=BIOS_ICON_LABEL;x<BIOS_INFO;x++,y++,z++) {
+		int sentinel = 0xf;
 		//icon
 		CreateWindowEx
 			(
@@ -164,7 +165,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 				);
 		SendDlgItemMessage(parent, z, 
 		STM_SETICON, 
-		(WPARAM)iconArr.at(x-1), 
+		(WPARAM)iconArr.at(x), 
 		NULL);
 		
 		//text
@@ -172,7 +173,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 			(
 				0,
 				L"Static",
-				(LPCTSTR)itemStrings[x-1].c_str(),
+				(LPCTSTR)itemStrings[x].c_str(),
 				WS_VISIBLE |
 				WS_CHILD |
 				DS_SETFONT | SS_LEFT,
@@ -189,7 +190,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 		CreateWindowEx(
 			0,
 			L"Static",
-			(L"Detecting..."+itemStrings[x-1]).c_str(),
+			(L"Detecting..."+itemStrings[x]).c_str(),
 			WS_VISIBLE | WS_CHILD |SS_LEFT | DS_SETFONT,
 			xStartOffSetInformation,
 			yStartOffSet+16,
@@ -216,7 +217,8 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 }
 void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
 {
-
+		SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
+		currentMachineInfo->getBIOS().c_str());
 		SetWindowText(GetDlgItem(mainWindowHwnd, OS_INFO),
 			currentMachineInfo->getOS().c_str());
 		SetWindowText(GetDlgItem(mainWindowHwnd, CPU_INFO),
