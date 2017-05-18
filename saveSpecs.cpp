@@ -36,7 +36,7 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info)
 	htmlOutFile << saveSpecs::htmlCommentEnd;
 	htmlOutFile << saveSpecs::htmlStartPoint;
 	htmlOutFile << L"<div id=\"hardwareinfo\">\n";
-	for (int x = 0; x < 10; x++) {
+	for (int x = 0; x < 11; x++) {
 		htmlOutFile << _T("\t<div class=\"item\">\n");
 		htmlOutFile << _T("\t\t<div class=\"header\">");
 
@@ -70,7 +70,7 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info) {
 	xmlOutFile << saveSpecs::htmlCommentEnd;
 	
 	xmlOutFile<<L"<hardwareinfo>\n";
-	for (int x = 0; x < 10; x++) {
+	for (int x = 0; x < 11; x++) {
 		xmlOutFile << _T("\t<item type=\"");
 		xmlOutFile << itemStrings[x].c_str();
 		xmlOutFile << _T("\">\n\t\t");
@@ -100,7 +100,7 @@ bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
 	txtOutFile << saveSpecs::uniformComment;
 	txtOutFile << commentBuff;
 	txtOutFile << saveSpecs::xmlDTD;
-	for (int x = 0; x < 10; x++) {
+	for (int x = 0; x < 11; x++) {
 		txtOutFile << itemStrings[x].c_str();
 		txtOutFile << _T(":\n");
 		writeToFile(txtOutFile, info, x);
