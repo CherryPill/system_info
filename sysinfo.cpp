@@ -127,6 +127,7 @@ int getSystemInformation(SystemInfo *localMachine)
 	// Use the IWbemServices pointer to make requests of WMI ----
 
 	// For example, get the name of the operating system
+	getBIOS(localMachine);
 	getOS(localMachine, hres, pSvc, pLoc);
 	getCPU(localMachine, hres, pSvc, pLoc);
 	getMB(localMachine, hres, pSvc, pLoc);
@@ -880,4 +881,7 @@ void getUptime(SystemInfo *localMachine) {
 			}
 			uptimeStr = wstring(formattedTimeString);
 			localMachine->setUptime(uptimeStr);
+}
+void getBIOS(SystemInfo *localMachine) {
+	localMachine->setBIOS(L"American Megatrends INC");
 }

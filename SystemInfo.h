@@ -10,11 +10,15 @@ private:
 
 	SystemInfo()
 	{
+			//doesn't make sense but whatever
+			this->BIOS = L"BIOS not detected";
 			this->OS = L"OS not detected";
 			this->RAM = L"Motherboard not detected";
+			//makes sense
 			this->audio = L"Sound card not detected";
 			this->uptime = L"Uptime not set";
 	}
+	wstring BIOS;
 	wstring OS;
 	wstring CPU;
 	wstring MB;
@@ -32,6 +36,7 @@ public:
 		return currentInstance;
 	}
 	vector<wstring> getCDROMDevices(void);
+	wstring getBIOS(void);
 	wstring  getUptime(void);
 	wstring  getCPU(void);
 	wstring  getRAM(void);
@@ -41,6 +46,7 @@ public:
 	vector<wstring> getStorageMediums(void);
 	vector<wstring> getDisplayDevices(void);
 	wstring getOS(void);
+	void setBIOS(wstring bios);
 	void setUptime(wstring uptime);
 	void setCPU(wstring CPU);
 	void setRAM(wstring RAM);

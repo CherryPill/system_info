@@ -185,8 +185,10 @@
     <Image Include="C:\Users\Theta1\Desktop\speccy]\sound.ico" />
     <Image Include="C:\Users\Theta1\Desktop\speccy]\storage.ico" />
     <Image Include="C:\Users\Theta1\Desktop\speccy]\uptime.ico" />
+    <Image Include="Icons\bios.ico" />
     <Image Include="Icons\cpu.ico" />
     <Image Include="Icons\GPU.ico" />
+    <Image Include="icons\icon2.ico" />
     <Image Include="Icons\mainIcon.ico" />
     <Image Include="Icons\mb.ico" />
     <Image Include="Icons\monitor.ico" />

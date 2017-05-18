@@ -159,6 +159,12 @@
     <Image Include="Icons\uptime.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="icons\icon2.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\bios.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="SystemInfo.manifest" />
