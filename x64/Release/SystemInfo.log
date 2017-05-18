@@ -1,5 +1,4 @@
 ﻿  aboutDialog.cpp
-  globalVars.cpp
   main.cpp
 main.cpp(52): warning C4311: 'type cast': pointer truncation from 'HBRUSH' to 'LONG'
 main.cpp(52): warning C4302: 'type cast': truncation from 'HBRUSH' to 'LONG'
@@ -11,6 +10,7 @@ mainWindowProcedure.cpp(162): warning C4312: 'type cast': conversion from 'int' 
 mainWindowProcedure.cpp(185): warning C4312: 'type cast': conversion from 'int' to 'HMENU' of greater size
 mainWindowProcedure.cpp(200): warning C4312: 'type cast': conversion from 'int' to 'HMENU' of greater size
   saveSpecs.cpp
+  screenCapture.cpp
   sysinfo.cpp
 sysinfo.cpp(211): warning C4996: '_swprintf': This function or variable may be unsafe. Consider using _swprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstdio.h(1444): note: see declaration of '_swprintf'
@@ -75,8 +75,8 @@ utility.cpp(216): warning C4996: 'wcscpy': This function or variable may be unsa
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
 utility.cpp(195): warning C4101: 'szFile': unreferenced local variable
   Generating code
-  4 of 874 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+  8 of 874 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    5 functions had inline decision re-evaluated but remain unchanged
+    9 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\x64\Release\SystemInfo.exe
