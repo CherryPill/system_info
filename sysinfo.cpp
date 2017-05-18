@@ -7,6 +7,7 @@
 #include "sysinfo.h"
 #include "SystemInfo.h"
 #include "utility.h"
+#include "SMBIOS.h"
 #pragma comment(lib, "wbemuuid.lib")
 //the actual function that does all the work
 int getSystemInformation(SystemInfo *localMachine)
@@ -883,5 +884,18 @@ void getUptime(SystemInfo *localMachine) {
 			localMachine->setUptime(uptimeStr);
 }
 void getBIOS(SystemInfo *localMachine) {
-	localMachine->setBIOS(L"American Megatrends INC");
+	DWORD needBufferSize = 0;
+	TCHAR biosData[256];
+	SecureZeroMemory(&biosData, sizeof(biosData));
+	const BYTE byteSignature[] = { 'B', 'M', 'S', 'R' };
+	const DWORD Signature = *((DWORD*)byteSignature);
+	LPBYTE pBuff = NULL;
+	needBufferSize = GetSystemFirmwareTable(Signature, 0, NULL, 0);
+	pBuff = (LPBYTE)malloc(needBufferSize);
+	if (pBuff) {
+		GetSystemFirmwareTable(Signature, 0, pBuff, needBufferSize);
+		const PRawSMBIOSData pDMIData = (PRawSMBIOSData)pBuff;
+		DumpSMBIOSStruct(&(pDMIData->SMBIOSTableData), pDMIData->Length, biosData);
+	}
+	localMachine->setBIOS(biosData);
 }

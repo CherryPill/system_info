@@ -150,6 +150,7 @@
     <ClCompile Include="mainWindowProcedure.cpp" />
     <ClCompile Include="saveSpecs.cpp" />
     <ClCompile Include="screenCapture.cpp" />
+    <ClCompile Include="SMBIOS.cpp" />
     <ClCompile Include="SoftwareInfo.cpp" />
     <ClCompile Include="sysinfo.cpp" />
     <ClCompile Include="SystemInfo.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="saveSpecs.h" />
     <ClInclude Include="screenCapture.h" />
+    <ClInclude Include="SMBIOS.h" />
     <ClInclude Include="SoftwareInfo.h" />
     <ClInclude Include="sysinfo.h" />
     <ClInclude Include="SystemInfo.h" />
