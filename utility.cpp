@@ -149,28 +149,21 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 	wstring finalString;
 	vector<wstring> values;
 	wstring emptyValue;
-	switch (type) {
-	case HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER: {
+	if (type == HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER) {
 		values = currentMachine->getGPUDevices();
 		emptyValue = itemStrings[5];
-		break;
 	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY: {
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY) {
 		values = currentMachine->getDisplayDevices();
 		emptyValue = itemStrings[6];
-		break;
 	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE: {
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE) {
 		values = currentMachine->getStorageMediums();
 		emptyValue = itemStrings[7];
-		break;
 	}
-	
-	case HARDWARE_VECTOR_TYPE::HARDWARE_CDROM: {
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_CDROM) {
 		values = currentMachine->getCDROMDevices();
 		emptyValue = itemStrings[8];
-		break;
-	}
 	}
 	if (values.empty()) {
 		return emptyValue + L" not detected";
