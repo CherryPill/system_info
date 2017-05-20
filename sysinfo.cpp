@@ -126,8 +126,7 @@ int getSystemInformation(SystemInfo *localMachine)
 
 	// Step 6: --------------------------------------------------
 	// Use the IWbemServices pointer to make requests of WMI ----
-
-	// For example, get the name of the operating system
+	
 	getBIOS(localMachine);
 	getOS(localMachine, hres, pSvc, pLoc);
 	getCPU(localMachine, hres, pSvc, pLoc);
@@ -200,7 +199,6 @@ void getCPU(SystemInfo *localMachine,
 		TCHAR maxClockBuff[10];
 		wstring processor;
 		processor = vtProp.bstrVal;
-		//BstrToStdString(vtProp.bstrVal, processor);
 		trimNullTerminator(processor);
 		trimWhiteSpace(processor);
 		if (processor.find(L"@",0) == string::npos)
@@ -264,7 +262,7 @@ void getRAM(SystemInfo *localMachine,
 
 		// Get the value of the Name property
 		//format
-		//manufacturer + gb channel ddr @ mhz (x-x-x-x)
+		//manufacturer + gb channel ddr @ mhz (no timings yet)
 		hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
 		wstring manufacturer;
 		wstring clockStr;
@@ -276,7 +274,6 @@ void getRAM(SystemInfo *localMachine,
 		wstring memoryTypeStr;
 		UINT16 memoryType;
 		manufacturer = vtProp.bstrVal;
-		//BstrToStdString(vtProp.bstrVal, manufacturer);
 		trimNullTerminator(manufacturer);
 		trimWhiteSpace(manufacturer);
 		uint64_t capacity;
@@ -350,14 +347,12 @@ void getOS(SystemInfo *localMachine,
 		wstring OSNameWide;
 
 		OSNameWide = vtProp.bstrVal;
-		//BStrToWStdString(vtProp.bstrVal, OSNameWide);
 		hr = pclsObj->Get(L"OSArchitecture", 0, &vtProp, 0, 0);
 		BstrToStdString(vtProp.bstrVal, OSArchitecture);
 		int garbageIndex = OSNameWide.find(L"|");
 		OSNameWide = OSNameWide.erase(garbageIndex, OSNameWide.length() - garbageIndex);
 		fullOSstring = OSNameWide;
 
-		//fullOSstring.append(" " + OSArchitecture);
 		localMachine->setOS(fullOSstring);
 
 		VariantClear(&vtProp);
@@ -406,19 +401,14 @@ void getMB(SystemInfo *localMachine,
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
 
-		//product - m5a97 r2.0
 		wstring manufacturer;
 		wstring product;
 		manufacturer = vtProp.bstrVal;
-		//BstrToStdString(vtProp.bstrVal, manufacturer);
-		manufacturer.erase(manufacturer.length() - 1);
+		manufacturer.erase(manufacturer.length());
 		hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
 		product = vtProp.bstrVal;
-		//BstrToStdString(vtProp.bstrVal, product);
 		localMachine->setMB(manufacturer + L" " + product);
-
 		VariantClear(&vtProp);
-
 		pclsObj->Release();
 	}
 	pEnumerator->Release();
@@ -467,7 +457,6 @@ wstring getActualPhysicalMemory(HRESULT hres,
 		wstring temp;
 		TCHAR tempChar[100];
 		temp = vtProp.bstrVal;
-		//BstrToStdString(vtProp.bstrVal, temp);
 		_tcscpy(tempChar, temp.c_str());
 		swscanf(tempChar, L"%lf", &cap);
 		
@@ -520,9 +509,6 @@ void getGPU(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 
-		//name - name
-		//memory - AdapterRAM
-		//vendor - 
 		hr = pclsObj->Get(L"AdapterRAM", 0, &vtProp, 0, 0);
 		wstring finalAdapterString;
 		wstring name;
@@ -535,7 +521,7 @@ void getGPU(SystemInfo *localMachine,
 		vRAMmegaBytes = (double) vramBytes/pow(1024,2);
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
 		name = vtProp.bstrVal;
-		//BstrToStdString(vtProp.bstrVal, name);
+		name.erase(name.length());
 		trimNullTerminator(name);
 		_stprintf(vRamCharBuff,_T("%.0lf MB"),vRAMmegaBytes);
 		vrammegabytesStr = wstring(vRamCharBuff);
@@ -585,8 +571,6 @@ void getMonitor(SystemInfo *localMachine,
 		}
 
 		VARIANT vtProp;
-		//MonitorManufacturer
-		//Name
 		//DELL P2014H(DP) (1600x900@60Hz)
 		wstring finalMonitorString;
 		wstring monitorName;
@@ -595,7 +579,6 @@ void getMonitor(SystemInfo *localMachine,
 		UINT32 dimensionsAndFrequency[3];
 		getDimensionsAndFrequency(hres, pSvc, pLoc,dimensionsAndFrequency);
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
-		//BstrToStdString(vtProp.bstrVal, monitorName);
 		monitorName = vtProp.bstrVal;
 		trimNullTerminator(monitorName);
 		_stprintf(resAndFreqBuff, L"(%dx%d@%dHz)", dimensionsAndFrequency[0],
@@ -708,14 +691,12 @@ void getStorage(SystemInfo *localMachine,
 		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
 
 		//product - m5a97 r2.0
-		//BstrToStdString(vtProp.bstrVal, modelName);
 		modelName = vtProp.bstrVal;
 		manufacturerName = parseDiskStorageName(modelName);
 		trimNullTerminator(modelName);
 
 		hr = pclsObj->Get(L"Size", 0, &vtProp, 0, 0);
-		
-		//BstrToStdString(vtProp.bstrVal, capacityStr);
+
 		capacityStr = vtProp.bstrVal;
 		capacityBytes = stoull(capacityStr);
 		capacityGiBDbl = capacityBytes/pow(1024,3);
@@ -773,7 +754,6 @@ void getCDROM(SystemInfo *localMachine,
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
 
-		//BstrToStdString(vtProp.bstrVal, cdRomCaption);
 		cdRomCaption = vtProp.bstrVal;
 		trimNullTerminator(cdRomCaption);
 		localMachine->addCDROMDevice(cdRomCaption);
@@ -825,7 +805,6 @@ void getAudio(SystemInfo *localMachine,
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
 
-		//BstrToStdString(vtProp.bstrVal, soundCaption);
 		soundCaption = vtProp.bstrVal;
 		trimNullTerminator(soundCaption);
 		localMachine->setAudio(soundCaption);
