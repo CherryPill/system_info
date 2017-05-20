@@ -1,5 +1,6 @@
 #ifndef ITEMIDS_H
 #define ITEMIDS_H
+#define BIOS_LABEL 0
 #define OS_LABEL 1
 #define CPU_LABEL 2
 #define MB_LABEL 3
@@ -10,7 +11,7 @@
 #define OPTICAL_LABEL 8
 #define AUDIO_LABEL 9
 #define UPTIME_LABEL 10
-#define END_LABEL 11
+#define BIOS_INFO 11
 #define OS_INFO 12
 #define CPU_INFO 13
 #define MB_INFO 14

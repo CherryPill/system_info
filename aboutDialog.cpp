@@ -3,6 +3,20 @@
 BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message) {
+	case WM_NOTIFY: {
+		switch (((LPNMHDR)lParam)->code) {
+			case NM_CLICK:
+			case NM_RETURN: {
+				PNMLINK pNMLink = (PNMLINK)lParam;
+				LITEM   item = pNMLink->item;
+				if ((((LPNMHDR)lParam)->hwndFrom == GetDlgItem(dlgHandle, IDC_GITHUB)) && (item.iLink == 0)) {
+					ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
+				}
+				break;
+			}
+		}
+		break;
+	}
 	case WM_INITDIALOG: {
 		DWORD buffSize = 256;
 		TCHAR inputBuff[256];

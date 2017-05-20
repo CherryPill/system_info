@@ -1,5 +1,6 @@
 #ifndef ICONLABELIDS_H
 #define ICONLABELIDS_H
+#define BIOS_ICON_LABEL 60
 #define OS_ICON_LABEL 61
 #define CPU_ICON_LABEL 62
 #define RAM_ICON_LABEL 63

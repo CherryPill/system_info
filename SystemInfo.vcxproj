@@ -29,7 +29,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -88,6 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,10 +148,10 @@
     <ClCompile Include="aboutDialog.cpp" />
     <ClCompile Include="globalVars.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mainMenu.cpp" />
     <ClCompile Include="mainWindowProcedure.cpp" />
     <ClCompile Include="saveSpecs.cpp" />
     <ClCompile Include="screenCapture.cpp" />
+    <ClCompile Include="SMBIOS.cpp" />
     <ClCompile Include="SoftwareInfo.cpp" />
     <ClCompile Include="sysinfo.cpp" />
     <ClCompile Include="SystemInfo.cpp" />
@@ -162,11 +163,11 @@
     <ClInclude Include="globalVars.h" />
     <ClInclude Include="iconLabelIDs.h" />
     <ClInclude Include="itemIDs.h" />
-    <ClInclude Include="mainMenu.h" />
     <ClInclude Include="mainWindowProcedure.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="saveSpecs.h" />
     <ClInclude Include="screenCapture.h" />
+    <ClInclude Include="SMBIOS.h" />
     <ClInclude Include="SoftwareInfo.h" />
     <ClInclude Include="sysinfo.h" />
     <ClInclude Include="SystemInfo.h" />
@@ -187,8 +188,10 @@
     <Image Include="C:\Users\Theta1\Desktop\speccy]\sound.ico" />
     <Image Include="C:\Users\Theta1\Desktop\speccy]\storage.ico" />
     <Image Include="C:\Users\Theta1\Desktop\speccy]\uptime.ico" />
+    <Image Include="Icons\bios.ico" />
     <Image Include="Icons\cpu.ico" />
     <Image Include="Icons\GPU.ico" />
+    <Image Include="icons\icon2.ico" />
     <Image Include="Icons\mainIcon.ico" />
     <Image Include="Icons\mb.ico" />
     <Image Include="Icons\monitor.ico" />

@@ -9,32 +9,8 @@ void centerWindow(POINT *upperLeftCorner) {
 	(*upperLeftCorner).x = GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2;
 	(*upperLeftCorner).y = GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2;
 }
-void trimNullTerminator(wstring &strToTrim)
-{
+void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
-}
-std::wstring& BStrToWStdString(const BSTR bstr, std::wstring& dst, int cp)
-{
-	if (!bstr)
-	{
-		// define NULL functionality. I just clear the target.
-		dst.clear();
-		return dst;
-	}
-	// request content length in single-chars through a terminating
-	//  nullchar in the BSTR. note: BSTR's support imbedded nullchars,
-	//  so this will only convert through the first nullchar.
-	int res = WideCharToMultiByte(cp, 0, bstr, -1, NULL, 0, NULL, NULL);
-	if (res > 0)
-	{
-		dst.resize(res);
-		WideCharToMultiByte(cp, 0, bstr, -1, (LPSTR)&dst[0], res, NULL, NULL);
-	}
-	else
-	{    // no content. clear target
-		dst.clear();
-	}
-	return dst;
 }
 std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
 {
@@ -62,28 +38,22 @@ std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
 wstring parseDiskStorageName(wstring modelName)
 {
 	wstring finalString = L"";
-	if (modelName.find(L"WDC",0,3) != wstring::npos)
-	{
+	if (modelName.find(L"WDC",0,3) != wstring::npos) {
 		return storageMediumManufacturers[0];
 	}
-	else if (modelName.find(L"MHS",0,3) != wstring::npos)
-	{
+	else if (modelName.find(L"MHS",0,3) != wstring::npos) {
 		return storageMediumManufacturers[2];
 	}
-	else if (modelName.find(L"HTS",0,3) != wstring::npos)
-	{
+	else if (modelName.find(L"HTS",0,3) != wstring::npos) {
 		return storageMediumManufacturers[3];
 	}
-	else if (modelName.find(L"DTL") != wstring::npos)
-	{
+	else if (modelName.find(L"DTL") != wstring::npos) {
 		return storageMediumManufacturers[5];
 	}
-	else if (modelName.find(L"ST",0,2) != wstring::npos || modelName.find(L"SC",0,2) != wstring::npos)
-	{
+	else if (modelName.find(L"ST",0,2) != wstring::npos || modelName.find(L"SC",0,2) != wstring::npos) {
 		return storageMediumManufacturers[1];
 	}
-	else
-	{
+	else {
 		return finalString;
 	}
 }
@@ -96,14 +66,12 @@ wstring convertUIntToString(UINT64 num)
 	delete buff;
 	return str;
 }
-void trimWhiteSpace(wstring &str)
-{
+void trimWhiteSpace(wstring &str) {
 	int whiteSpaceStart = str.find_last_not_of(L" \t");
 	str.erase(whiteSpaceStart+1);
 }
 //Generates string in the following format: "sysinfo capture @ YYYY-MM-DD-HH:MM.required_extension"
-void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension)
-{
+void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension) {
 	ZeroMemory(completeFileName, sizeof(completeFileName));
 	TCHAR timeDateFileName[256];
 	getCurrentDateTime(timeDateFileName);
@@ -111,14 +79,26 @@ void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension)
 	_tcscat(completeFileName, timeDateFileName);
 	_tcscat(completeFileName, savefileExtensions[(int)requiredExtension]);
 }
-void getCurrentDateTime(TCHAR *buffer)
-{
+void getCurrentDateTime(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
-	GetSystemTime(&currentTime);
-	_stprintf(buffer, _T("%d-%d-%d %d %d"),
+	GetLocalTime(&currentTime);
+	_stprintf(buffer, _T("%d-%d-%d @ %d %d"),
 		currentTime.wYear,
 		currentTime.wMonth,
 		currentTime.wDay,
+		currentTime.wHour,
+		currentTime.wMinute);
+		int sentinel = 0xf;
+}
+//format: Friday, January 21, 2017 @ 0 00
+void getCurrentDateTimeVerbose(TCHAR *buffer) {
+	SYSTEMTIME currentTime;
+	GetLocalTime(&currentTime);
+	_stprintf(buffer, _T("%s, %s %d, %d @ %d:%d"),
+		timeVerboseDaysOfWeek[currentTime.wDayOfWeek],
+		timeVerboseMonths[currentTime.wMonth],
+		currentTime.wDay,
+		currentTime.wYear,
 		currentTime.wHour,
 		currentTime.wMinute);
 }
@@ -132,36 +112,26 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	UINT32 adjustedItemHeight;
 	UINT32 adjustedYAxisOffset;
 	adjustedItemHeight = innerItemsCount * 15;
-	
-	//SetWindowPos(itemHandle,NULL,itemHandleDimensions.left, 
-		//itemHandleDimensions.top,
-			//			itemHandleDimensions.right,
-				//		adjustedItemHeight,NULL);
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + 10;
 	return adjustedYAxisOffset;
 }
 UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 {
 	UINT32 hardwareListSize = 0;
-	switch (ITEM_ID)
-	{
-		case GPU_INFO:
-		{
+	switch (ITEM_ID) {
+		case GPU_INFO: {
 			hardwareListSize = info->getGPUDevices().size();
 			break;
 		}
-		case MONITOR_INFO:
-		{
+		case MONITOR_INFO: {
 			hardwareListSize = info->getDisplayDevices().size();
 			break;
 		}
-		case STORAGE_INFO:
-		{
+		case STORAGE_INFO: {
 			hardwareListSize = info->getStorageMediums().size();
 			break;
 		}
-		case OPTICAL_INFO:
-		{
+		case OPTICAL_INFO: {
 			hardwareListSize = info->getCDROMDevices().size();
 			break;
 		}
@@ -175,51 +145,45 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 }
 //this function forms a single string to display within the program window
 //make HARDWARE_TYPE instead of harware_vector_type to process strings and vectors
-wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type)
-{
+wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WRITE_OUT_TYPE wType) {
 	wstring finalString;
 	vector<wstring> values;
 	wstring emptyValue;
-	switch (type) {
-	case HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY: {
-		values = currentMachine->getDisplayDevices();
-		emptyValue = itemStrings[5];
-		break;
-	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE: {
-		values = currentMachine->getStorageMediums();
-		emptyValue = itemStrings[6];
-		break;
-	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER: {
+	if (type == HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER) {
 		values = currentMachine->getGPUDevices();
-		emptyValue = itemStrings[4];
-		break;
+		emptyValue = itemStrings[5];
 	}
-	case HARDWARE_VECTOR_TYPE::HARDWARE_CDROM: {
-		values = currentMachine->getCDROMDevices();
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY) {
+		values = currentMachine->getDisplayDevices();
+		emptyValue = itemStrings[6];
+	}
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE) {
+		values = currentMachine->getStorageMediums();
 		emptyValue = itemStrings[7];
-		break;
 	}
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_CDROM) {
+		values = currentMachine->getCDROMDevices();
+		emptyValue = itemStrings[8];
 	}
-	if (values.empty())
-	{
+	if (values.empty()) {
 		return emptyValue + L" not detected";
 	}
-	else
-	{
+	else {
 		for (auto iterator = values.begin();
 		iterator != values.end();
 			iterator++)
 		{
 			finalString.append((*iterator));
+			wType == WRITE_OUT_TYPE::FILE
+				?
+			finalString.append(L"<br />")
+				:
 			finalString.append(L"\n");
 		}
 		return finalString;
 	}
 }
-void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath) 
-{
+void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath)  {
 	OPENFILENAME fileName;
 	TCHAR szFile[MAX_PATH];
 	ZeroMemory(&fileName, sizeof(fileName));
@@ -241,43 +205,45 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 	generateFileName(buffer,extension);
 	fileName.lpstrFileTitle = buffer;
 	fileName.lpstrFile = buffer;
-	if (GetSaveFileName(&fileName))
-	{
+	if (GetSaveFileName(&fileName)) {
 		_tcscpy(fullSavePath, fileName.lpstrFile);
 		//success
 	}
-	else
-	{
+	else{
 		//failure
 	}
 }
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
-	if (counter >= 4 && counter <= 7) {
-		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 4)).c_str();
+	if (counter >= 5 && counter <= 8) {
+		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), WRITE_OUT_TYPE::FILE).c_str();
 	}
 	else {
 		switch (counter) {
 		case 0: {
-			fileStream << info->getOS().c_str();
+			fileStream << info->getBIOS().c_str();
 			break;
 		}
 		case 1: {
-			fileStream << info->getCPU().c_str();
+			fileStream << info->getOS().c_str();
 			break;
 		}
 		case 2: {
-			fileStream << info->getMB().c_str();
+			fileStream << info->getCPU().c_str();
 			break;
 		}
 		case 3: {
+			fileStream << info->getMB().c_str();
+			break;
+		}
+		case 4: {
 			fileStream << info->getRAM().c_str();
 			break;
 		}
-		case 8: {
+		case 9: {
 			fileStream << info->getAudio().c_str();
 			break;
 		}
-		case 9: {
+		case 10: {
 			fileStream << info->getUptime().c_str();
 			break;
 		}

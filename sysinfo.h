@@ -6,6 +6,7 @@
 #include "SystemInfo.h"
 using namespace std;
 int getSystemInformation(SystemInfo *localMachine);
+void getBIOS(SystemInfo *localMachine);
 void getCPUInfo(void);
 void getCPU(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
 void getRAM(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
