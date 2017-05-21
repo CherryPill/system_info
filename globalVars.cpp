@@ -10,8 +10,7 @@ int mainWindowHeight = 660;
 int scrollY = 0;
 int scrollFullPageHeight = 0;
 HBRUSH grayBrush = CreateSolidBrush(RGB(81, 81, 81));
-TCHAR *fontFamilies[] =
-{
+TCHAR *fontFamilies[] = {
 	_T("Arial"),
 	_T("Courier New")
 };

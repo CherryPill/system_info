@@ -16,8 +16,7 @@ const TCHAR *saveSpecs::CSSCommentEnd = _T("*/\n");
 saveSpecs::saveSpecs() {
 	
 }
-bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info)
-{
+bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info) {
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
@@ -109,8 +108,7 @@ bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
 	txtOutFile.close();
 	return true;
 }
-saveSpecs::~saveSpecs()
-{
+saveSpecs::~saveSpecs() {
 }
 const TCHAR *saveSpecs::htmlStartPoint = _T("\
 	<!DOCTYPE html>\n\

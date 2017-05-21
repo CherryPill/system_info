@@ -4,8 +4,7 @@
 #include "atlimage.h"
 #include "screenCapture.h"
 #include "utility.h"
-void takeScreenshot(HWND hwnd)
-{
+void takeScreenshot(HWND hwnd) {
 	RECT winSize;
 	GetClientRect(hwnd,&winSize);
 	INT32 areaWidth = winSize.right - winSize.left;

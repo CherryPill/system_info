@@ -116,8 +116,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return 0;
 			break;
 		}
-		case WM_DESTROY:
-		{
+		case WM_DESTROY: {
 			PostQuitMessage(WM_QUIT);
 			return 0;
 		}

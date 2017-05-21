@@ -12,10 +12,8 @@ void centerWindow(POINT *upperLeftCorner) {
 void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
 }
-std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
-{
-	if (!bstr)
-	{
+std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp) {
+	if (!bstr) {
 		// define NULL functionality. I just clear the target.
 		dst.clear();
 		return dst;
@@ -24,13 +22,12 @@ std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp)
 	//  nullchar in the BSTR. note: BSTR's support imbedded nullchars,
 	//  so this will only convert through the first nullchar.
 	int res = WideCharToMultiByte(cp, 0, bstr, -1, NULL, 0, NULL, NULL);
-	if (res > 0)
-	{
+	if (res > 0) {
 		dst.resize(res);
 		WideCharToMultiByte(cp, 0, bstr, -1, &dst[0], res, NULL, NULL);
 	}
-	else
-	{    // no content. clear target
+	// no content. clear target
+	else {
 		dst.clear();
 	}
 	return dst;
@@ -57,8 +54,7 @@ wstring parseDiskStorageName(wstring modelName)
 		return finalString;
 	}
 }
-wstring convertUIntToString(UINT64 num)
-{
+wstring convertUIntToString(UINT64 num) {
 	wstring str;
 	TCHAR *buff = new TCHAR[256];
 	_stprintf(buff,L"%u",num);
@@ -103,8 +99,7 @@ void getCurrentDateTimeVerbose(TCHAR *buffer) {
 		currentTime.wMinute);
 }
 //adjusts item height based on the number of elements and returns updated offset
-UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCount)
-{
+UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCount) {
 	HWND itemHandle = GetDlgItem(windowHandle, ITEM_ID);
 	RECT itemHandleDimensions;
 	GetWindowRect(itemHandle, &itemHandleDimensions);

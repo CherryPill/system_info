@@ -1,14 +1,13 @@
 #include "aboutDialog.h"
 #include "utility.h"
-BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lParam)
-{
+BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lParam) {
 	switch (message) {
 	case WM_NOTIFY: {
 		switch (((LPNMHDR)lParam)->code) {
 			case NM_CLICK:
 			case NM_RETURN: {
 				PNMLINK pNMLink = (PNMLINK)lParam;
-				LITEM   item = pNMLink->item;
+				LITEM item = pNMLink->item;
 				if ((((LPNMHDR)lParam)->hwndFrom == GetDlgItem(dlgHandle, IDC_GITHUB)) && (item.iLink == 0)) {
 					ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
 				}
