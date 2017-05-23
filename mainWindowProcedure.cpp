@@ -28,7 +28,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			EnumChildWindows(hwnd, 
 			(WNDENUMPROC)SetFont, 
 			(LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
-			RECT rc = { 0 };
+			RECT rc = {0};
 			GetClientRect(hwnd, &rc);
 			SCROLLINFO si = { 0 };
 			si.cbSize = sizeof(SCROLLINFO);

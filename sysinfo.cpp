@@ -127,6 +127,9 @@ int getSystemInformation(SystemInfo *localMachine)
 	// Step 6: --------------------------------------------------
 	// Use the IWbemServices pointer to make requests of WMI ----
 	
+	//temp
+	getCPUTemp(localMachine, hres, pSvc, pLoc);
+	//hardware
 	getBIOS(localMachine);
 	getOS(localMachine, hres, pSvc, pLoc);
 	getCPU(localMachine, hres, pSvc, pLoc);
@@ -403,11 +406,14 @@ void getMB(SystemInfo *localMachine,
 
 		wstring manufacturer;
 		wstring product;
+		wstring socket;
 		manufacturer = vtProp.bstrVal;
 		manufacturer.erase(manufacturer.length());
 		hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
+		
 		product = vtProp.bstrVal;
-		localMachine->setMB(manufacturer + L" " + product);
+		localMachine->setMB(manufacturer + L" " + product + L" (" + getSocket(hres, pSvc, pLoc)+L")");
+
 		VariantClear(&vtProp);
 		pclsObj->Release();
 	}
@@ -877,4 +883,54 @@ void getBIOS(SystemInfo *localMachine) {
 		DumpSMBIOSStruct(&(pDMIData->SMBIOSTableData), pDMIData->Length, biosData);
 	}
 	localMachine->setBIOS(biosData);
+}
+void getCPUTemp(SystemInfo *localMachine,
+	HRESULT hres, IWbemServices *pSvc,
+	IWbemLocator *pLoc) {
+	//stub for now	
+}
+wstring getSocket(HRESULT hres, IWbemServices *pSvc,
+	IWbemLocator *pLoc) {
+	wstring socket;
+	IEnumWbemClassObject* pEnumerator = NULL;
+	hres = pSvc->ExecQuery(
+		bstr_t("WQL"),
+		bstr_t("SELECT * FROM Win32_Processor"),
+		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
+		NULL,
+		&pEnumerator);
+
+	if (FAILED(hres))
+	{
+		cout << "Query for operating system name failed."
+			<< " Error code = 0x"
+			<< hex << hres << endl;
+		pSvc->Release();
+		pLoc->Release();
+		CoUninitialize();
+		// Program has failed.
+	}
+	IWbemClassObject *pclsObj = NULL;
+	ULONG uReturn = 0;
+
+	while (pEnumerator)
+	{
+		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
+			&pclsObj, &uReturn);
+
+		if (0 == uReturn)
+		{
+			break;
+		}
+
+		VARIANT vtProp;
+		
+		// Get the value of the Name property
+		hr = pclsObj->Get(L"SocketDesignation", 0, &vtProp, 0, 0);
+		socket = vtProp.bstrVal;
+		VariantClear(&vtProp);
+		pclsObj->Release();
+	}
+	pEnumerator->Release();
+	return socket;
 }
