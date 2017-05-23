@@ -28,7 +28,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			EnumChildWindows(hwnd, 
 			(WNDENUMPROC)SetFont, 
 			(LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
-			RECT rc = { 0 };
+			RECT rc = {0};
 			GetClientRect(hwnd, &rc);
 			SCROLLINFO si = { 0 };
 			si.cbSize = sizeof(SCROLLINFO);
@@ -200,17 +200,15 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 			NULL,
 			NULL
 		);
-		if (y >= GPU_INFO  && y < AUDIO_INFO)
-		{
+		if (y >= GPU_INFO  && y < AUDIO_INFO) {
 			UINT32 listSize = isAdjustRequired(y, info);
 			//return rec structure
-			if (listSize>2)
-			{
+			if (listSize>2) {
 				yStartOffSet = adjustItemHeight(parent, y, listSize);
 				continue;
 			}
 		}
-		yStartOffSet += (ITEM_HEIGHT + 10);
+		yStartOffSet += (ITEM_HEIGHT + 2);
 	}
 	scrollFullPageHeight = yStartOffSet;
 }
@@ -227,8 +225,6 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
 		SetWindowText(GetDlgItem(mainWindowHwnd, RAM_INFO),
 			currentMachineInfo->getRAM().c_str());
 	
-	
-
 	SetWindowText(GetDlgItem(mainWindowHwnd, GPU_INFO),
 		formListString(currentMachineInfo,
 						HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER, WRITE_OUT_TYPE::APP_WINDOW).c_str());
