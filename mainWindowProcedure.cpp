@@ -28,17 +28,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			EnumChildWindows(hwnd, 
 			(WNDENUMPROC)SetFont, 
 			(LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
-			RECT rc = {0};
-			GetClientRect(hwnd, &rc);
-			SCROLLINFO si = { 0 };
-			si.cbSize = sizeof(SCROLLINFO);
-			si.fMask = SIF_ALL;
-			si.nMin = 5;
-			si.nMax = scrollFullPageHeight;
-			si.nPage = (rc.bottom - rc.top);
-			si.nPos = 0;
-			si.nTrackPos = 0;
-			SetScrollInfo(hwnd, SB_VERT, &si, true);
+		
 			return 0;
 		}
 		case WM_COMMAND: {
@@ -81,46 +71,10 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return (LONG)grayBrush;
 			break;
 		}
-		case WM_VSCROLL: {		
-			auto action = LOWORD(wParam);
-			HWND hScroll = (HWND)lParam;
-			int pos = -1;
-			if (action == SB_THUMBPOSITION || action == SB_THUMBTRACK) {
-				pos = HIWORD(wParam);
-			}
-			else if (action == SB_LINEDOWN) {
-				pos = scrollY + 30;
-			}
-			else if (action == SB_LINEUP) {
-				pos = scrollY - 30;
-			}
-			if (pos == -1)
-				break;
-			WCHAR buf[20];
-			SCROLLINFO si = { 0 };
-			si.cbSize = sizeof(SCROLLINFO);
-			si.fMask = SIF_POS;
-			si.nPos = pos;
-			si.nTrackPos = 0;
-			SetScrollInfo(hwnd, SB_VERT, &si, true);
-			GetScrollInfo(hwnd, SB_VERT, &si);
-			pos = si.nPos;
-			POINT pt;
-			pt.x = 0;
-			pt.y = pos - scrollY;
-			auto hdc = GetDC(hwnd);
-			LPtoDP(hdc, &pt, 1);
-			ReleaseDC(hwnd, hdc);
-			ScrollWindow(hwnd, 0, -pt.y, NULL, NULL);
-			scrollY = pos;
-			return 0;
-			break;
-		}
 		case WM_DESTROY: {
 			PostQuitMessage(WM_QUIT);
 			return 0;
 		}
-		
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }

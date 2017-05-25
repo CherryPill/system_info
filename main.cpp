@@ -33,7 +33,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			0,
 			wc.lpszClassName,
 			L"SystemInfo",
-			WS_SYSMENU|WS_MINIMIZEBOX|WS_VSCROLL,
+			WS_SYSMENU|WS_OVERLAPPEDWINDOW,
 			upperLeftCorner.x,
 			upperLeftCorner.y,
 			mainWindowWidth,
@@ -43,12 +43,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			hInstance,
 			NULL
 			);
-	SCROLLINFO scInfo;
-	scInfo.cbSize = sizeof(SCROLLINFO);
-	scInfo.nMin = 0;
-	scInfo.nMax = mainWindowHeight*2;
-	scInfo.fMask = SIF_RANGE;
-	SetScrollInfo(mainWindowHwnd,SB_VERT, &scInfo, TRUE);
 	SetClassLongPtr(mainWindowHwnd, GCLP_HBRBACKGROUND, (LONG)grayBrush);
 	ShowWindow(mainWindowHwnd, nCmdShow);
 	UpdateWindow(mainWindowHwnd);

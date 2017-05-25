@@ -1,10 +1,1 @@
-﻿  SoftwareInfo.cpp
-v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(24): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
-v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(27): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
-v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(30): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
-v:\projects\systeminfo\systeminfo\systeminfo\softwareinfo.cpp(33): warning C4996: 'wcscpy': This function or variable may be unsafe. Consider using wcscpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\corecrt_wstring.h(121): note: see declaration of 'wcscpy'
-  SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\x64\Debug\SystemInfo.exe
+﻿  SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\x64\Debug\SystemInfo.exe
