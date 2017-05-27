@@ -346,15 +346,15 @@ void getOS(SystemInfo *localMachine,
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
 		wstring fullOSstring;
 		string OSName;
-		string OSArchitecture;
+		wstring OSArchitecture;
 		wstring OSNameWide;
 
 		OSNameWide = vtProp.bstrVal;
 		hr = pclsObj->Get(L"OSArchitecture", 0, &vtProp, 0, 0);
-		BstrToStdString(vtProp.bstrVal, OSArchitecture);
+		OSArchitecture = vtProp.bstrVal;
 		int garbageIndex = OSNameWide.find(L"|");
 		OSNameWide = OSNameWide.erase(garbageIndex, OSNameWide.length() - garbageIndex);
-		fullOSstring = OSNameWide;
+		fullOSstring = OSNameWide + L" " + OSArchitecture;
 
 		localMachine->setOS(fullOSstring);
 
