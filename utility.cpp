@@ -130,9 +130,12 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 			hardwareListSize = info->getCDROMDevices().size();
 			break;
 		}
-		case AUDIO_INFO:
-		{
+		case AUDIO_INFO: {
 			hardwareListSize = info->getAudio().size();
+			break;
+		}
+		case NETWORK_INFO: {
+			hardwareListSize = info->getNetworkAdapters().size();
 			break;
 		}
 	}
@@ -159,6 +162,16 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_CDROM) {
 		values = currentMachine->getCDROMDevices();
 		emptyValue = itemStrings[8];
+	}
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK) {
+		vector<NetAdapter> detectedAdapters = currentMachine->getNetworkAdapters();
+		for (auto iterator = detectedAdapters.begin();
+			iterator != detectedAdapters.end();
+			iterator++) {
+			wstring completeString = iterator->getAdapterDesc()
+			+ L" (IP: "+ iterator->getAdapterAdr() + L")";
+			values.push_back(completeString);
+		}
 	}
 	if (values.empty()) {
 		return emptyValue + L" not detected";
@@ -209,8 +222,8 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 	}
 }
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
-	if (counter >= 5 && counter <= 8) {
-		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), WRITE_OUT_TYPE::FILE).c_str();
+	if (counter >= 5 && counter <= 9) {
+		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 6), WRITE_OUT_TYPE::FILE).c_str();
 	}
 	else {
 		switch (counter) {
@@ -234,14 +247,23 @@ void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
 			fileStream << info->getRAM().c_str();
 			break;
 		}
-		case 9: {
+		case 10: {
 			fileStream << info->getAudio().c_str();
 			break;
 		}
-		case 10: {
+		case 11: {
 			fileStream << info->getUptime().c_str();
 			break;
 		}
 		}
 	}
+}
+wstring fromChToWideStr(char *value) {
+	char txtBuff[256] = { 0 };
+	wstring wStr;
+	wchar_t _wtxtBuff[256] = { 0 };
+	strcpy(txtBuff, value);
+	mbstowcs(_wtxtBuff, txtBuff, sizeof(txtBuff));
+	wStr = wstring(_wtxtBuff);
+	return wStr;
 }

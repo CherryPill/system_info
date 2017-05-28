@@ -3,6 +3,7 @@
 #include <intrin.h>
 #include <comdef.h>
 #include <Wbemidl.h>
+#include "network.h"
 #include "globalVars.h"
 #include "sysinfo.h"
 #include "SystemInfo.h"
@@ -140,6 +141,7 @@ int getSystemInformation(SystemInfo *localMachine)
 	getStorage(localMachine, hres, pSvc, pLoc);
 	getCDROM(localMachine, hres, pSvc, pLoc);
 	getAudio(localMachine, hres, pSvc, pLoc);
+	getNetworkAdapters(localMachine);
 	getUptime(localMachine);
 	// Cleanup
 	// ========
