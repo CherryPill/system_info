@@ -226,7 +226,7 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 }
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
 	if (counter >= 5 && counter <= 9) {
-		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 6), WRITE_OUT_TYPE::FILE).c_str();
+		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), WRITE_OUT_TYPE::FILE).c_str();
 	}
 	else {
 		switch (counter) {
