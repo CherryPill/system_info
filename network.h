@@ -3,6 +3,7 @@
 #include "SystemInfo.h"
 using namespace std;
 class SystemInfo;
+//used as a place holder for the external internet address (ipv4)
 class NetAdapter {
 private:
 	wstring adapterDesc;
@@ -18,3 +19,4 @@ public:
 	wstring getAdapterGW(void);
 };
 void getNetworkAdapters(SystemInfo*);
+int getIpAddress(char *ipBuff);

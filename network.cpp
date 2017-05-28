@@ -1,6 +1,8 @@
 #include <winsock2.h>
 #include <iphlpapi.h>
+#include <wininet.h>
 #pragma comment(lib, "IPHLPAPI.lib")
+#pragma comment(lib, "wininet")
 #include "network.h"
 #include "utility.h"
 
@@ -59,5 +61,51 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 			pAdapter = pAdapter->Next;
 		}
 	}
+	NetAdapter extIpPlaceHolder = NetAdapter();
+	wstring externalIpAddressDesc;
+	wstring externalIp = L"Unable to fetch IP";
+	char buff[128] = {0};
+	if (getIpAddress(buff)) {
+		externalIpAddressDesc = L"Connected to the Internet";
+		externalIp = fromChToWideStr(buff);
+	}
+	else {
+		externalIpAddressDesc = L"Not connected to the Internet";
+	}
+	extIpPlaceHolder.setAdapterDesc(externalIpAddressDesc);
+	extIpPlaceHolder.setAdapterAdr(externalIp);
+	localMachine->addNetworkAdapter(extIpPlaceHolder);
 	int sentinel = 0xf;
+}
+int getIpAddress(char *ipBuff) {
+	int connectionRes = 1;
+	HINTERNET hInternet, hFile;
+	DWORD rSize;
+	char *buffer = new char[128];
+	
+	hInternet = InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+
+	if ((hFile = 
+		InternetOpenUrl(
+		hInternet, 
+		L"https://api.ipify.org", 
+		NULL, 
+		0, 
+		INTERNET_FLAG_RELOAD,
+		0)) != NULL)
+	{
+		hFile = InternetOpenUrl(hInternet, L"https://api.ipify.org", NULL, 0, INTERNET_FLAG_RELOAD, 0);
+		InternetReadFile(hFile, buffer, 128, &rSize);
+		buffer[rSize] = '\0';
+		strcpy(ipBuff, buffer);
+		InternetCloseHandle(hFile);
+		connectionRes = 1;
+	}
+	else {
+		connectionRes = 0;
+	}
+	InternetCloseHandle(hInternet);
+	//test fallback
+	//strcpy(ipBuff, "1.1.1.1.");
+	return connectionRes;
 }

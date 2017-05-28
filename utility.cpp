@@ -106,7 +106,7 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	MapWindowPoints(HWND_DESKTOP, windowHandle, (LPPOINT)&itemHandleDimensions, 2);
 	UINT32 adjustedItemHeight;
 	UINT32 adjustedYAxisOffset;
-	adjustedItemHeight = innerItemsCount * 13;
+	adjustedItemHeight = innerItemsCount * 15;
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight;
 	return adjustedYAxisOffset;
 }
@@ -169,7 +169,7 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 			iterator != detectedAdapters.end();
 			iterator++) {
 			wstring completeString = iterator->getAdapterDesc()
-			+ L" (IP: "+ iterator->getAdapterAdr() + L")";
+			+ L": "+ iterator->getAdapterAdr();
 			values.push_back(completeString);
 		}
 	}
