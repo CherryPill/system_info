@@ -9,11 +9,14 @@ private:
 	wstring adapterDesc;
 	wstring adapterAddr;
 	wstring adapterGW;
+	wstring adapterType;
 public:
 	NetAdapter() {}
+	void setAdapterType(wstring);
 	void setAdapterDesc(wstring);
 	void setAdapterAdr(wstring);
 	void setAdapterGW(wstring);
+	wstring getAdapterType(void);
 	wstring getAdapterDesc(void);
 	wstring getAdapterAdr(void);
 	wstring getAdapterGW(void);

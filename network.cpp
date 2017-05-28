@@ -13,7 +13,7 @@ void NetAdapter::setAdapterAdr(wstring v) {
 	(*this).adapterAddr = v;
 }
 void NetAdapter::setAdapterGW(wstring v) {
-
+	//stub
 }
 wstring NetAdapter::getAdapterDesc(void) {
 	return (*this).adapterDesc;
@@ -23,6 +23,12 @@ wstring NetAdapter::getAdapterAdr(void) {
 }
 wstring NetAdapter::getAdapterGW(void) {
 	return L"null";
+}
+void NetAdapter::setAdapterType(wstring v) {
+	(*this).adapterType = v;
+}
+wstring NetAdapter::getAdapterType(void) {
+	return (*this).adapterType;
 }
 void getNetworkAdapters(SystemInfo* localMachine) {
 	PIP_ADAPTER_INFO pAdapterInfo;
@@ -55,8 +61,10 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 			NetAdapter adapter = NetAdapter();
 			wstring desc = fromChToWideStr(pAdapter->Description);
 			wstring ipAddr = fromChToWideStr(pAdapter->IpAddressList.IpAddress.String);
+			wstring type = fromIntToWideStr(pAdapter->Type);
 			adapter.setAdapterDesc(desc);
 			adapter.setAdapterAdr(ipAddr);
+			adapter.setAdapterType(type);
 			localMachine->addNetworkAdapter(adapter);
 			pAdapter = pAdapter->Next;
 		}
@@ -64,6 +72,7 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 	NetAdapter extIpPlaceHolder = NetAdapter();
 	wstring externalIpAddressDesc;
 	wstring externalIp = L"Unable to fetch IP";
+	wstring type = L"null";
 	char buff[128] = {0};
 	if (getIpAddress(buff)) {
 		externalIpAddressDesc = L"Connected to the Internet";
@@ -74,6 +83,7 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 	}
 	extIpPlaceHolder.setAdapterDesc(externalIpAddressDesc);
 	extIpPlaceHolder.setAdapterAdr(externalIp);
+	extIpPlaceHolder.setAdapterType(type);
 	localMachine->addNetworkAdapter(extIpPlaceHolder);
 	int sentinel = 0xf;
 }

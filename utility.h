@@ -50,4 +50,5 @@ std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
 void openFileDiag(HWND,FILE_EXTENSION,TCHAR*);
 void writeToFile(wofstream&, SystemInfo*, int);
 wstring fromChToWideStr(char *value);
+wstring fromIntToWideStr(int);
 #endif

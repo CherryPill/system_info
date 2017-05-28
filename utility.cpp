@@ -170,6 +170,9 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 			iterator++) {
 			wstring completeString = iterator->getAdapterDesc()
 			+ L": "+ iterator->getAdapterAdr();
+			if (iterator->getAdapterType() != L"null") {
+				completeString+= L" ("+ iterator->getAdapterType()+L")";
+			}
 			values.push_back(completeString);
 		}
 	}
@@ -266,4 +269,37 @@ wstring fromChToWideStr(char *value) {
 	mbstowcs(_wtxtBuff, txtBuff, sizeof(txtBuff));
 	wStr = wstring(_wtxtBuff);
 	return wStr;
+}
+wstring fromIntToWideStr(int type) {
+	wstring connType;
+	switch (type) {
+		case 1:
+			connType = L"Other";
+			break;
+		case 6:
+			connType = L"Ethernet";
+			break;
+		case 9:
+			connType = L"Token Ring";
+			break;
+		case 15:
+			connType = L"FDDI\n";
+			break;
+		case 23:
+			connType = L"PPP\n";
+			break;
+		case 24:
+			connType = L"Loopback";
+			break;
+		case 28:
+			connType = L"Slip";
+			break;
+		case 71:
+			connType = L"Wi-Fi";
+			break;
+		default:
+			connType = L"Unknown type";
+			break;
+	}
+	return connType;
 }
