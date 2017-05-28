@@ -83,8 +83,7 @@ BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 	return TRUE;
 }
 void loadImages(void) {
-	for (int x = 0;x<11;x++)
-	{
+	for (int x = 0;x<totalItemsCount;x++) {
 		HICON newIcon = (HICON)LoadImage(ghInstance, 
 		MAKEINTRESOURCE(ICON_IDS[x]), IMAGE_ICON, 16, 16, NULL);
 		iconArr.push_back(newIcon);
@@ -97,7 +96,6 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	int xStartOffSetInformation = xStartOffSetLabel + 25 ;
 	//labels + information as a table
 	for (int x = 0, y = BIOS_INFO,z=BIOS_ICON_LABEL;x<BIOS_INFO;x++,y++,z++) {
-		int sentinel = 0xf;
 		//icon
 		CreateWindowEx
 			(
@@ -163,6 +161,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 			}
 		}
 		yStartOffSet += (ITEM_HEIGHT + 2);
+		int sentinel = 0xf;
 	}
 	scrollFullPageHeight = yStartOffSet;
 }
@@ -191,6 +190,10 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
 	SetWindowText(GetDlgItem(mainWindowHwnd, OPTICAL_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_CDROM, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
+		formListString(currentMachineInfo,
+			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
 		currentMachineInfo->getAudio().c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),

@@ -149,6 +149,7 @@
     <ClCompile Include="globalVars.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainWindowProcedure.cpp" />
+    <ClCompile Include="network.cpp" />
     <ClCompile Include="saveSpecs.cpp" />
     <ClCompile Include="screenCapture.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="iconLabelIDs.h" />
     <ClInclude Include="itemIDs.h" />
     <ClInclude Include="mainWindowProcedure.h" />
+    <ClInclude Include="network.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="saveSpecs.h" />
     <ClInclude Include="screenCapture.h" />
@@ -195,6 +197,7 @@
     <Image Include="Icons\mainIcon.ico" />
     <Image Include="Icons\mb.ico" />
     <Image Include="Icons\monitor.ico" />
+    <Image Include="Icons\network.ico" />
     <Image Include="Icons\optical.ico" />
     <Image Include="Icons\os.ico" />
     <Image Include="Icons\RAM.ico" />

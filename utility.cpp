@@ -106,7 +106,7 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	MapWindowPoints(HWND_DESKTOP, windowHandle, (LPPOINT)&itemHandleDimensions, 2);
 	UINT32 adjustedItemHeight;
 	UINT32 adjustedYAxisOffset;
-	adjustedItemHeight = innerItemsCount * 13;
+	adjustedItemHeight = innerItemsCount * 15;
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight;
 	return adjustedYAxisOffset;
 }
@@ -130,9 +130,12 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 			hardwareListSize = info->getCDROMDevices().size();
 			break;
 		}
-		case AUDIO_INFO:
-		{
+		case AUDIO_INFO: {
 			hardwareListSize = info->getAudio().size();
+			break;
+		}
+		case NETWORK_INFO: {
+			hardwareListSize = info->getNetworkAdapters().size();
 			break;
 		}
 	}
@@ -159,6 +162,19 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_CDROM) {
 		values = currentMachine->getCDROMDevices();
 		emptyValue = itemStrings[8];
+	}
+	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK) {
+		vector<NetAdapter> detectedAdapters = currentMachine->getNetworkAdapters();
+		for (auto iterator = detectedAdapters.begin();
+			iterator != detectedAdapters.end();
+			iterator++) {
+			wstring completeString = iterator->getAdapterDesc()
+			+ L": "+ iterator->getAdapterAdr();
+			if (iterator->getAdapterType() != L"null") {
+				completeString+= L" ("+ iterator->getAdapterType()+L")";
+			}
+			values.push_back(completeString);
+		}
 	}
 	if (values.empty()) {
 		return emptyValue + L" not detected";
@@ -209,7 +225,7 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 	}
 }
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
-	if (counter >= 5 && counter <= 8) {
+	if (counter >= 5 && counter <= 9) {
 		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), WRITE_OUT_TYPE::FILE).c_str();
 	}
 	else {
@@ -234,14 +250,56 @@ void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
 			fileStream << info->getRAM().c_str();
 			break;
 		}
-		case 9: {
+		case 10: {
 			fileStream << info->getAudio().c_str();
 			break;
 		}
-		case 10: {
+		case 11: {
 			fileStream << info->getUptime().c_str();
 			break;
 		}
 		}
 	}
+}
+wstring fromChToWideStr(char *value) {
+	char txtBuff[256] = { 0 };
+	wstring wStr;
+	wchar_t _wtxtBuff[256] = { 0 };
+	strcpy(txtBuff, value);
+	mbstowcs(_wtxtBuff, txtBuff, sizeof(txtBuff));
+	wStr = wstring(_wtxtBuff);
+	return wStr;
+}
+wstring fromIntToWideStr(int type) {
+	wstring connType;
+	switch (type) {
+		case 1:
+			connType = L"Other";
+			break;
+		case 6:
+			connType = L"Ethernet";
+			break;
+		case 9:
+			connType = L"Token Ring";
+			break;
+		case 15:
+			connType = L"FDDI\n";
+			break;
+		case 23:
+			connType = L"PPP\n";
+			break;
+		case 24:
+			connType = L"Loopback";
+			break;
+		case 28:
+			connType = L"Slip";
+			break;
+		case 71:
+			connType = L"Wi-Fi";
+			break;
+		default:
+			connType = L"Unknown type";
+			break;
+	}
+	return connType;
 }

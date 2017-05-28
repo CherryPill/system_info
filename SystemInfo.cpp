@@ -26,6 +26,9 @@ void SystemInfo::addDisplayDevice(wstring device) {
 void SystemInfo::addStorageMedium(wstring medium) {
 	(*this).storageMediums.push_back(medium);
 }
+void SystemInfo::addNetworkAdapter(NetAdapter adapter) {
+	(*this).networkAdapters.push_back(adapter);
+}
 void SystemInfo::addGPUDevice(wstring device) {
 	(*this).GPUDevices.push_back(device);
 }
@@ -64,4 +67,7 @@ wstring SystemInfo::getBIOS(void) {
 }
 void SystemInfo::setBIOS(wstring bios) {
 	(*this).BIOS = bios;
+}
+vector<NetAdapter> SystemInfo::getNetworkAdapters(void) {
+	return (*this).networkAdapters;
 }

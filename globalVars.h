@@ -18,7 +18,9 @@ extern HBRUSH grayBrush;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
 
-static WORD ICON_IDS[11] {
+const static int totalItemsCount = 12;
+
+static WORD ICON_IDS[totalItemsCount] {
 	BIOS_ICON,
 	OS_ICON,
 	CPU_ICON,
@@ -28,10 +30,11 @@ static WORD ICON_IDS[11] {
 	DISPLAY_ICON,
 	STORAGE_ICON,
 	OPTICAL_ICON,
+	NETWORK_ICON,
 	AUDIO_ICON,
 	UPTIME_ICON
 };
-static wstring itemStrings[11] = {
+static wstring itemStrings[totalItemsCount] = {
 	L"BIOS/UEFI",
 	L"Operating System",
 	L"CPU",
@@ -41,6 +44,7 @@ static wstring itemStrings[11] = {
 	L"Display",
 	L"Storage",
 	L"Optical drives",
+	L"Network and Connections",
 	L"Sound",
 	L"Uptime"
 };

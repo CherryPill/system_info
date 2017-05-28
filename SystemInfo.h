@@ -1,9 +1,13 @@
 #pragma once
+#include <Windows.h>
+
 #include <iostream>
 #include <vector>
 #include <string.h>
+#include "network.h"
 #include "appconst.h"
 using namespace std;
+class NetAdapter;
 class SystemInfo
 {
 private:
@@ -27,11 +31,11 @@ private:
 	vector<wstring> storageMediums;
 	vector<wstring> displayDevices;
 	vector<wstring> CDROMDevices;
+	vector<NetAdapter> networkAdapters;
 	wstring audio;
 	wstring uptime;
 public:
-	static SystemInfo *getCurrentInstance()
-	{
+	static SystemInfo *getCurrentInstance() {
 		static SystemInfo *currentInstance = new SystemInfo();
 		return currentInstance;
 	}
@@ -45,6 +49,7 @@ public:
 	vector<wstring> getGPUDevices(void);
 	vector<wstring> getStorageMediums(void);
 	vector<wstring> getDisplayDevices(void);
+	vector<NetAdapter> getNetworkAdapters(void);
 	wstring getOS(void);
 	void setBIOS(wstring bios);
 	void setUptime(wstring uptime);
@@ -53,9 +58,11 @@ public:
 	void setMB(wstring MB);
 	void addDisplayDevice(wstring device);
 	void addStorageMedium(wstring medium);
+	void addNetworkAdapter(NetAdapter adapter);
 	void addGPUDevice(wstring device);
 	void setOS(wstring OS);
 	void setAudio(wstring audio);
 	void addCDROMDevice(wstring CDROM);
+
 };
 

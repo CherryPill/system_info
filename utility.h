@@ -12,7 +12,8 @@ enum class HARDWARE_VECTOR_TYPE {
 	HARDWARE_VIDEO_ADAPTER=0,
 	HARDWARE_DISPLAY=1,
 	HARDWARE_STORAGE=2,
-	HARDWARE_CDROM=3
+	HARDWARE_CDROM=3,
+	HARDWARE_NETWORK=4
 };
 enum class WINDOW_CENTER_TYPE {
 	CENTER_MAIN,
@@ -48,4 +49,6 @@ void getCurrentDateTimeVerbose(TCHAR *);
 std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
 void openFileDiag(HWND,FILE_EXTENSION,TCHAR*);
 void writeToFile(wofstream&, SystemInfo*, int);
+wstring fromChToWideStr(char *value);
+wstring fromIntToWideStr(int);
 #endif

@@ -48,6 +48,9 @@
     <ClCompile Include="SMBIOS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="network.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="globalVars.h">
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SMBIOS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="network.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -169,6 +175,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Icons\bios.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Icons\network.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
