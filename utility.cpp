@@ -78,25 +78,40 @@ void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension)
 void getCurrentDateTime(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
 	GetLocalTime(&currentTime);
-	_stprintf(buffer, _T("%d-%d-%d @ %d %d"),
+	TCHAR minBuff[16];
+	prependMinuteStr(currentTime.wMinute, minBuff);
+	_stprintf(buffer, _T("%d-%d-%d @ %d %s"),
 		currentTime.wYear,
 		currentTime.wMonth,
 		currentTime.wDay,
 		currentTime.wHour,
-		currentTime.wMinute);
-		int sentinel = 0xf;
+		minBuff);
+}
+void prependMinuteStr(WORD min, TCHAR *minBuff) {
+	if (min < 10) {
+		_itow(min, minBuff, 10);
+		wstring temp = wstring(minBuff);
+		temp = L"0" + temp;
+		_tcscpy(minBuff, temp.c_str());
+	}
+	else {
+		_stprintf(minBuff, L"%d", min);
+	}
 }
 //format: Friday, January 21, 2017 @ 0 00
 void getCurrentDateTimeVerbose(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
+	WORD min;
+	TCHAR minBuff[16];
 	GetLocalTime(&currentTime);
+	prependMinuteStr(currentTime.wMinute, minBuff);
 	_stprintf(buffer, _T("%s, %s %d, %d @ %d:%d"),
 		timeVerboseDaysOfWeek[currentTime.wDayOfWeek],
 		timeVerboseMonths[currentTime.wMonth],
 		currentTime.wDay,
 		currentTime.wYear,
 		currentTime.wHour,
-		currentTime.wMinute);
+		minBuff);
 }
 //adjusts item height based on the number of elements and returns updated offset
 UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCount) {

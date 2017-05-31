@@ -51,4 +51,5 @@ void openFileDiag(HWND,FILE_EXTENSION,TCHAR*);
 void writeToFile(wofstream&, SystemInfo*, int);
 wstring fromChToWideStr(char *value);
 wstring fromIntToWideStr(int);
+void prependMinuteStr(WORD min, TCHAR *minBuff);
 #endif
