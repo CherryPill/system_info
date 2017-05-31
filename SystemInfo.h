@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string.h>
+
 #include "network.h"
 #include "appconst.h"
 using namespace std;

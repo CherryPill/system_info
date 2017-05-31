@@ -1,11 +1,23 @@
-#include <winsock2.h>
+﻿#include <winsock2.h>
 #include <iphlpapi.h>
 #include <wininet.h>
-#pragma comment(lib, "IPHLPAPI.lib")
-#pragma comment(lib, "wininet")
+
+#include <atlconv.h>
+#include <atlbase.h> 
+#include <atlstr.h>
 #include "network.h"
 #include "utility.h"
 
+#pragma comment(lib, "IPHLPAPI.lib")
+#pragma comment(lib, "wininet")
+#pragma comment (lib, "ws2_32.lib")
+char *getUniCastIP(PIP_ADAPTER_UNICAST_ADDRESS pUnicast) {
+	SOCKET_ADDRESS actualAddress = pUnicast->Address;
+	LPSOCKADDR sock = actualAddress.lpSockaddr;
+	sockaddr_in *act = (sockaddr_in*)sock;
+	char *uniCastAddress = inet_ntoa(act->sin_addr);
+	return uniCastAddress;
+}
 void NetAdapter::setAdapterDesc(wstring v) {
 	(*this).adapterDesc = v;
 }
@@ -31,42 +43,34 @@ wstring NetAdapter::getAdapterType(void) {
 	return (*this).adapterType;
 }
 void getNetworkAdapters(SystemInfo* localMachine) {
-	PIP_ADAPTER_INFO pAdapterInfo;
-	PIP_ADAPTER_INFO pAdapter = NULL;
-	DWORD dwRetVal = 0;
+	PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
+	PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+	DWORD dwRetValAddr = 0;
 	UINT i;
+	ULONG outBufLen = 0x3A98;
 
-	/* variables used to print DHCP time info */
-	struct tm newtime;
-	char buffer[32];
-	errno_t error;
-
-	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
-	pAdapterInfo = (IP_ADAPTER_INFO *)malloc(sizeof(IP_ADAPTER_INFO));
-	if (pAdapterInfo == NULL) {
-		printf("Error allocating memory needed to call GetAdaptersinfo\n");
+	pAddresses = (IP_ADAPTER_ADDRESSES *)malloc(outBufLen);
+	if (pAddresses == NULL) {
+		printf ("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+		exit(1);
 	}
-	// Make an initial call to GetAdaptersInfo to get
-	// the necessary size into the ulOutBufLen variable
-	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
-		free(pAdapterInfo);
-		pAdapterInfo = (IP_ADAPTER_INFO *)malloc(ulOutBufLen);
-		if (pAdapterInfo == NULL) {
-			printf("Error allocating memory needed to call GetAdaptersinfo\n");
-		}
-	}
-	if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
-		pAdapter = pAdapterInfo;
-		while (pAdapter) {
-			NetAdapter adapter = NetAdapter();
-			wstring desc = fromChToWideStr(pAdapter->Description);
-			wstring ipAddr = fromChToWideStr(pAdapter->IpAddressList.IpAddress.String);
-			wstring type = fromIntToWideStr(pAdapter->Type);
-			adapter.setAdapterDesc(desc);
-			adapter.setAdapterAdr(ipAddr);
-			adapter.setAdapterType(type);
-			localMachine->addNetworkAdapter(adapter);
-			pAdapter = pAdapter->Next;
+	dwRetValAddr = GetAdaptersAddresses(AF_INET, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen);
+	USES_CONVERSION;
+	if (dwRetValAddr == NO_ERROR) {
+		pCurrAddresses = pAddresses;
+		while (pCurrAddresses) {
+			if (pCurrAddresses->IfType != 0x18 && pCurrAddresses->IfIndex != 0x83) {
+				PIP_ADAPTER_UNICAST_ADDRESS pUnicast = pCurrAddresses->FirstUnicastAddress;
+				NetAdapter adapter = NetAdapter();
+				wstring desc = wstring(pCurrAddresses->Description);
+				wstring ipAddr = CA2W(getUniCastIP(pUnicast));
+				wstring type = pCurrAddresses->FriendlyName;
+				adapter.setAdapterDesc(desc);
+				adapter.setAdapterAdr(ipAddr);
+				adapter.setAdapterType(type);
+				localMachine->addNetworkAdapter(adapter);
+			}
+			pCurrAddresses = pCurrAddresses->Next;
 		}
 	}
 	NetAdapter extIpPlaceHolder = NetAdapter();
@@ -104,7 +108,6 @@ int getIpAddress(char *ipBuff) {
 		INTERNET_FLAG_RELOAD,
 		0)) != NULL)
 	{
-		hFile = InternetOpenUrl(hInternet, L"https://api.ipify.org", NULL, 0, INTERNET_FLAG_RELOAD, 0);
 		InternetReadFile(hFile, buffer, 128, &rSize);
 		buffer[rSize] = '\0';
 		strcpy(ipBuff, buffer);
@@ -119,3 +122,4 @@ int getIpAddress(char *ipBuff) {
 	//strcpy(ipBuff, "1.1.1.1.");
 	return connectionRes;
 }
+
