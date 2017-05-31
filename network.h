@@ -1,9 +1,10 @@
 #pragma once
 #include <string.h>
+
 #include "SystemInfo.h"
 using namespace std;
 class SystemInfo;
-//used as a place holder for the external internet address (ipv4)
+//also used as a place holder for the external internet address (ipv4)
 class NetAdapter {
 private:
 	wstring adapterDesc;
