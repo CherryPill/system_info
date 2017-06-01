@@ -6,7 +6,8 @@
 #include "SystemInfo.h"
 enum class WRITE_OUT_TYPE {
 	APP_WINDOW,
-	FILE
+	FILE_TXT,
+	FILE_NON_TXT
 };
 enum class HARDWARE_VECTOR_TYPE {
 	HARDWARE_VIDEO_ADAPTER=0,
@@ -48,7 +49,8 @@ void getCurrentDateTime(TCHAR *);
 void getCurrentDateTimeVerbose(TCHAR *);
 std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
 void openFileDiag(HWND,FILE_EXTENSION,TCHAR*);
-void writeToFile(wofstream&, SystemInfo*, int);
+void writeToFile(wofstream&, SystemInfo*, int, WRITE_OUT_TYPE);
 wstring fromChToWideStr(char *value);
 wstring fromIntToWideStr(int);
+void prependMinuteStr(WORD min, TCHAR *minBuff);
 #endif

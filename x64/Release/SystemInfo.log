@@ -1,12 +1,1 @@
-﻿  network.cpp
-network.cpp(18): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-  C:\Program Files (x86)\Windows Kits\8.1\Include\um\winsock2.h(1868): note: see declaration of 'inet_ntoa'
-network.cpp(49): warning C4101: 'i': unreferenced local variable
-network.cpp(113): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\string.h(119): note: see declaration of 'strcpy'
-  Generating code
-  3 of 1016 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    3 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\x64\Release\SystemInfo.exe
+﻿  SystemInfo.vcxproj -> V:\Projects\SystemInfo\SystemInfo\x64\Release\SystemInfo.exe

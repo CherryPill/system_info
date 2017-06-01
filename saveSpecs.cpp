@@ -42,7 +42,7 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info) {
 		htmlOutFile << itemStrings[x].c_str();
 		htmlOutFile << _T("\t\t</div>\n");
 		htmlOutFile << _T("\t\t<div class=\"info\">");
-		writeToFile(htmlOutFile, info, x);
+		writeToFile(htmlOutFile, info, x, WRITE_OUT_TYPE::FILE_NON_TXT);
 		htmlOutFile << L"\t</div>\n</div>\n";
 	}
 	htmlOutFile << L"</div>\n</body>\n</html>\n";
@@ -74,7 +74,7 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info) {
 		xmlOutFile << itemStrings[x].c_str();
 		xmlOutFile << _T("\">\n\t\t");
 		//wrap this part
-		writeToFile(xmlOutFile, info, x);
+		writeToFile(xmlOutFile, info, x, WRITE_OUT_TYPE::FILE_NON_TXT);
 		xmlOutFile << L"\t</item>\n";
 	}
 	xmlOutFile<<L"</hardwareinfo>\n";
@@ -96,13 +96,15 @@ bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
 	txtOutFile.open(fullSavePath, wofstream::out);
 	txtOutFile.imbue(loc);
 	TCHAR commentBuff[256] = { 0 };
+	getCurrentDateTimeVerbose(commentBuff);
 	txtOutFile << saveSpecs::uniformComment;
 	txtOutFile << commentBuff;
-	txtOutFile << saveSpecs::xmlDTD;
+	txtOutFile<<endl<<endl;
 	for (int x = 0; x < totalItemsCount; x++) {
 		txtOutFile << itemStrings[x].c_str();
 		txtOutFile << _T(":\n");
-		writeToFile(txtOutFile, info, x);
+		txtOutFile << _T("\t");
+		writeToFile(txtOutFile, info, x, WRITE_OUT_TYPE::FILE_TXT);
 		txtOutFile<<endl;
 	}
 	txtOutFile.close();
