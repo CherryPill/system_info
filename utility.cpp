@@ -105,7 +105,7 @@ void getCurrentDateTimeVerbose(TCHAR *buffer) {
 	TCHAR minBuff[16];
 	GetLocalTime(&currentTime);
 	prependMinuteStr(currentTime.wMinute, minBuff);
-	_stprintf(buffer, _T("%s, %s %d, %d @ %d:%d"),
+	_stprintf(buffer, _T("%s, %s %d, %d @ %d:%s"),
 		timeVerboseDaysOfWeek[currentTime.wDayOfWeek],
 		timeVerboseMonths[currentTime.wMonth],
 		currentTime.wDay,
@@ -197,14 +197,17 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 	else {
 		for (auto iterator = values.begin();
 		iterator != values.end();
-			iterator++)
-		{
+			iterator++) {
 			finalString.append((*iterator));
-			wType == WRITE_OUT_TYPE::FILE
-				?
-			finalString.append(L"<br />")
-				:
-			finalString.append(L"\n");
+			if (wType == WRITE_OUT_TYPE::FILE_NON_TXT) {
+				finalString.append(L"<br />");
+			}
+			else if (wType == WRITE_OUT_TYPE::FILE_TXT) {
+				finalString.append(L"\n\t");
+			}
+			else {
+				finalString.append(L"\n");
+			}
 		}
 		return finalString;
 	}
@@ -239,9 +242,9 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 		//failure
 	}
 }
-void writeToFile(wofstream &fileStream, SystemInfo *info, int counter) {
+void writeToFile(wofstream &fileStream, SystemInfo *info, int counter, WRITE_OUT_TYPE woType) {
 	if (counter >= 5 && counter <= 9) {
-		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), WRITE_OUT_TYPE::FILE).c_str();
+		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), woType).c_str();
 	}
 	else {
 		switch (counter) {
