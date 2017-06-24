@@ -25,4 +25,6 @@
 #define AUDIO_INFO 22
 #define UPTIME_INFO 23
 #define END_INFO 24
+
+#define AUX_IP_TOGGLE 720
 #endif

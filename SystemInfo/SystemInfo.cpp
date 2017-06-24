@@ -9,7 +9,7 @@ void SystemInfo::setMB(wstring MB) {
 	(*this).MB = MB;
 }
 wstring SystemInfo::getMB() {
-	return (*this).MB = MB;
+	return (*this).MB;
 }
 vector<wstring> SystemInfo::getGPUDevices() {
 	return (*this).GPUDevices;
@@ -28,6 +28,12 @@ void SystemInfo::addStorageMedium(wstring medium) {
 }
 void SystemInfo::addNetworkAdapter(NetAdapter adapter) {
 	(*this).networkAdapters.push_back(adapter);
+}
+void SystemInfo::addNetworkAdapterText(wstring adapter) {
+	(*this).networkAdaptersText.push_back(adapter);
+}
+vector<wstring> SystemInfo::getNetworkAdaptersText() {
+	return (*this).networkAdaptersText;
 }
 void SystemInfo::addGPUDevice(wstring device) {
 	(*this).GPUDevices.push_back(device);

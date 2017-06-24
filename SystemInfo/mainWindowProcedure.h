@@ -6,5 +6,6 @@ LRESULT CALLBACK mainWindowProc(HWND, UINT, WPARAM, LPARAM);
 BOOL CALLBACK SetFont(HWND child, LPARAM font);
 void createHardwareInfoHolders(HWND, SystemInfo*);
 void populateInfoHolders(SystemInfo *machine, HWND);
+void createIPToggleControl(HWND parent);
 void loadImages(void);
 #endif

@@ -68,7 +68,7 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 				adapter.setAdapterDesc(desc);
 				adapter.setAdapterAdr(ipAddr);
 				adapter.setAdapterType(type);
-				localMachine->addNetworkAdapter(adapter);
+				localMachine->addNetworkAdapterText(netAdapterStringWrapper(adapter));
 			}
 			pCurrAddresses = pCurrAddresses->Next;
 		}
@@ -88,11 +88,13 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 	extIpPlaceHolder.setAdapterDesc(externalIpAddressDesc);
 	extIpPlaceHolder.setAdapterAdr(externalIp);
 	extIpPlaceHolder.setAdapterType(type);
-	localMachine->addNetworkAdapter(extIpPlaceHolder);
-	int sentinel = 0xf;
+	//localMachine->addNetworkAdapter(extIpPlaceHolder);
+	localMachine->addNetworkAdapterText(netAdapterStringWrapper(extIpPlaceHolder));
 }
 int getIpAddress(char *ipBuff) {
 	int connectionRes = 1;
+	/*
+	
 	HINTERNET hInternet, hFile;
 	DWORD rSize;
 	char *buffer = new char[128];
@@ -119,7 +121,8 @@ int getIpAddress(char *ipBuff) {
 	}
 	InternetCloseHandle(hInternet);
 	//test fallback
-	//strcpy(ipBuff, "1.1.1.1.");
+	*/
+	strcpy(ipBuff, "1.1.1.1.");
 	return connectionRes;
 }
 

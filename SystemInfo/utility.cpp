@@ -5,12 +5,31 @@
 #include "utility.h"
 #include "itemIDs.h"
 #include "SystemInfo.h"
+void positionWindow(POINT *upperLeftCorner) {
+	int offset = 0;
+	if (PROGRAM_INSTANCE) {
+		offset = 16;
+	}
+	(*upperLeftCorner).x = (GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2) + offset;
+	(*upperLeftCorner).y = (GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2) + offset;
+}
 void centerWindow(POINT *upperLeftCorner) {
 	(*upperLeftCorner).x = GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2;
 	(*upperLeftCorner).y = GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2;
 }
 void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
+}
+bool isMultiSlot(int index) {
+	return (index > 4 && index < 9) ? true : false;
+}
+std::wstring convertStringToWide(const std::string& as) {
+	wchar_t* buf = new wchar_t[as.size() * 2 + 2];
+	swprintf(buf, L"%S", as.c_str());
+	std::wstring rval = buf;
+	trimWhiteSpace(rval);
+	delete[] buf;
+	return rval;
 }
 std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp) {
 	if (!bstr) {
@@ -54,6 +73,18 @@ wstring parseDiskStorageName(wstring modelName)
 		return finalString;
 	}
 }
+vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter) {
+	vector<wstring> res;
+	do {
+		const wchar_t *begin = s;
+		while (*s != delimiter && *s) {
+			s++;
+		}
+		res.push_back(wstring(begin, s));
+		s += 5;
+	} while (*s++ != 0);
+	return res;
+}
 wstring convertUIntToString(UINT64 num) {
 	wstring str;
 	TCHAR *buff = new TCHAR[256];
@@ -63,39 +94,45 @@ wstring convertUIntToString(UINT64 num) {
 	return str;
 }
 void trimWhiteSpace(wstring &str) {
+	if(!str.empty()) {
 	int whiteSpaceStart = str.find_last_not_of(L" \t");
 	str.erase(whiteSpaceStart+1);
+	int whiteSpaceStartBeginning = str.find_first_not_of(L" \n\t");
+	str.erase(str.begin(), str.end()-(str.length() - whiteSpaceStartBeginning));
+	}
 }
 //Generates string in the following format: "sysinfo capture @ YYYY-MM-DD-HH:MM.required_extension"
 void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension) {
 	ZeroMemory(completeFileName, sizeof(completeFileName));
 	TCHAR timeDateFileName[256];
 	getCurrentDateTime(timeDateFileName);
-	_tcscpy(completeFileName, _T("sysinfo capture "));
+	_tcscpy(completeFileName, _T("sysinfo-capture-"));
 	_tcscat(completeFileName, timeDateFileName);
 	_tcscat(completeFileName, savefileExtensions[(int)requiredExtension]);
 }
 void getCurrentDateTime(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
 	GetLocalTime(&currentTime);
+	TCHAR finalTimeString[256];
 	TCHAR minBuff[16];
 	prependMinuteStr(currentTime.wMinute, minBuff);
-	_stprintf(buffer, _T("%d-%d-%d @ %d %s"),
+	_stprintf(buffer, _T("%d-%d-%d_@_%d.%s"),
 		currentTime.wYear,
 		currentTime.wMonth,
 		currentTime.wDay,
 		currentTime.wHour,
-		minBuff);
+		minBuff,
+		currentTime.wSecond);
 }
-void prependMinuteStr(WORD min, TCHAR *minBuff) {
-	if (min < 10) {
-		_itow(min, minBuff, 10);
-		wstring temp = wstring(minBuff);
+void prependMinuteStr(WORD val, TCHAR *valBuff) {
+	if (val < 10) {
+		_itow(val, valBuff, 10);
+		wstring temp = wstring(valBuff);
 		temp = L"0" + temp;
-		_tcscpy(minBuff, temp.c_str());
+		_tcscpy(valBuff, temp.c_str());
 	}
 	else {
-		_stprintf(minBuff, L"%d", min);
+		_stprintf(valBuff, L"%d", val);
 	}
 }
 //format: Friday, January 21, 2017 @ 0 00
@@ -125,8 +162,7 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight;
 	return adjustedYAxisOffset;
 }
-UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
-{
+UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info) {
 	UINT32 hardwareListSize = 0;
 	switch (ITEM_ID) {
 		case GPU_INFO: {
@@ -150,7 +186,7 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 			break;
 		}
 		case NETWORK_INFO: {
-			hardwareListSize = info->getNetworkAdapters().size();
+			hardwareListSize = info->getNetworkAdaptersText().size();
 			break;
 		}
 	}
@@ -159,7 +195,7 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info)
 //this function forms a single string to display within the program window
 //make HARDWARE_TYPE instead of harware_vector_type to process strings and vectors
 wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WRITE_OUT_TYPE wType) {
-	wstring finalString;
+	wstring finalString = L"";
 	vector<wstring> values;
 	wstring emptyValue;
 	if (type == HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER) {
@@ -179,17 +215,8 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 		emptyValue = itemStrings[8];
 	}
 	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK) {
-		vector<NetAdapter> detectedAdapters = currentMachine->getNetworkAdapters();
-		for (auto iterator = detectedAdapters.begin();
-			iterator != detectedAdapters.end();
-			iterator++) {
-			wstring completeString = iterator->getAdapterDesc()
-			+ L": "+ iterator->getAdapterAdr();
-			if (iterator->getAdapterType() != L"null") {
-				completeString+= L" ("+ iterator->getAdapterType()+L")";
-			}
-			values.push_back(completeString);
-		}
+		values = currentMachine->getNetworkAdaptersText();
+		emptyValue = itemStrings[9];
 	}
 	if (values.empty()) {
 		return emptyValue + L" not detected";
@@ -198,21 +225,16 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 		for (auto iterator = values.begin();
 		iterator != values.end();
 			iterator++) {
+			finalString.append(writeOutPrefix[static_cast<int>(wType) % 2]);
 			finalString.append((*iterator));
-			if (wType == WRITE_OUT_TYPE::FILE_NON_TXT) {
-				finalString.append(L"<br />");
-			}
-			else if (wType == WRITE_OUT_TYPE::FILE_TXT) {
-				finalString.append(L"\n\t");
-			}
-			else {
-				finalString.append(L"\n");
-			}
+			finalString.append(writeOutPostfix[static_cast<int>(wType)]);
 		}
 		return finalString;
 	}
 }
-void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath)  {
+void openFileDiag(HWND mainWindow, 
+	FILE_EXTENSION extension, 
+	TCHAR *fullOpenSavePath, int mode)  {
 	OPENFILENAME fileName;
 	TCHAR szFile[MAX_PATH];
 	ZeroMemory(&fileName, sizeof(fileName));
@@ -224,23 +246,40 @@ void openFileDiag(HWND mainWindow, FILE_EXTENSION extension, TCHAR *fullSavePath
 	
 	TCHAR *shortExtension = savefileExtensions[(int)extension];
 	fileName.lpstrFilter = savefileExtensionsLong[(int)extension];
-	fileName.Flags =
-		OFN_PATHMUSTEXIST
-		| OFN_OVERWRITEPROMPT
-		| OFN_EXPLORER
-		| OFN_HIDEREADONLY;
+	if (mode) {
+		fileName.Flags =
+			OFN_PATHMUSTEXIST
+			| OFN_OVERWRITEPROMPT
+			| OFN_EXPLORER
+			| OFN_HIDEREADONLY;
+	}
+	else {
+		fileName.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+	}
 	TCHAR buffer[256];
 	ZeroMemory(&buffer, sizeof(buffer));
 	generateFileName(buffer,extension);
 	fileName.lpstrFileTitle = buffer;
 	fileName.lpstrFile = buffer;
-	if (GetSaveFileName(&fileName)) {
-		_tcscpy(fullSavePath, fileName.lpstrFile);
-		//success
+	if (mode) {
+		if (GetSaveFileName(&fileName)) {
+			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
+			//success
+		}
+		else {
+			//failure
+		}
 	}
-	else{
-		//failure
+	else {
+		if (GetOpenFileName(&fileName)) {
+			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
+			//success
+		}
+		else {
+			//failure
+		}
 	}
+
 }
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter, WRITE_OUT_TYPE woType) {
 	if (counter >= 5 && counter <= 9) {
@@ -320,4 +359,12 @@ wstring fromIntToWideStr(int type) {
 			break;
 	}
 	return connType;
+}
+wstring netAdapterStringWrapper(NetAdapter adapter) {
+	wstring completeString = adapter.getAdapterDesc()
+			+ L": " + adapter.getAdapterAdr();
+	if (adapter.getAdapterType() != L"null") {
+			completeString += L" (" + adapter.getAdapterType() + L")";
+		}
+	return completeString;
 }

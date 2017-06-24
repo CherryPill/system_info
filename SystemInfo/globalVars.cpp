@@ -5,6 +5,9 @@
 #include "globalVars.h"
 HINSTANCE ghInstance = NULL;
 HWND mainWindowHwnd = NULL;
+int PROGRAM_INSTANCE = 0;
+TCHAR PROGRAM_DATA_IMPORT_LOCATION[256] = {0};
+TCHAR *execName = NULL;
 int mainWindowWidth = 600;
 int mainWindowHeight = 660;
 int scrollY = 0;
