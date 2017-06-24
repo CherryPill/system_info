@@ -16,12 +16,19 @@
 #include "utility.h"
 #include "saveSpecs.h"
 #include "aboutDialog.h"
+#include "binImport.h"
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	switch (msg) {
 		case WM_CREATE:{
 			loadImages();
-		    getSystemInformation(localMachine->getCurrentInstance());
+			if (PROGRAM_INSTANCE == 1) {
+				importData(localMachine->getCurrentInstance());
+			}
+			else {
+				getSystemInformation(localMachine->getCurrentInstance());
+			}
+			
 			createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
 			populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
 			
@@ -37,16 +44,24 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					takeScreenshot(hwnd);
 					break;
 				}
-				case ID_FILE_SAVEASXML: {
+				case ID_EXPORT_XML: {
 					saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
-				case ID_FILE_SAVEASTXT: {
+				case ID_EXPORT_TXT: {
 					saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance());
 					break;
 				}
-				case ID_FILE_SAVEASHTML: {
+				case ID_EXPORT_HTML: {
 					saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance());
+					break;
+				}
+				case ID_EXPORT_BIN: {
+					//stub
+					break;
+				}
+				case ID_IMPORT_FROMXML: {
+					importAsXML(hwnd);
 					break;
 				}
 				case ID_ABOUT: {
@@ -165,8 +180,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	}
 	scrollFullPageHeight = yStartOffSet;
 }
-void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
-{
+void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 		SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
 		currentMachineInfo->getBIOS().c_str());
 		SetWindowText(GetDlgItem(mainWindowHwnd, OS_INFO),
@@ -193,9 +207,29 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd)
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
-
+	//if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
+		//createIPToggleControl(GetDlgItem(mainWindowHwnd, NETWORK_INFO));
+	//}
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
 		currentMachineInfo->getAudio().c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
 		currentMachineInfo->getUptime().c_str());
 }
+/*
+void createIPToggleControl(HWND parent) {
+	CreateWindowEx(
+		0,
+		L"Static",
+		L"Hide IP",
+		WS_VISIBLE | WS_CHILD | SS_CENTER | DS_SETFONT,
+		20,
+		20,
+		64,
+		20,
+		parent,
+		(HMENU)AUX_IP_TOGGLE,
+		NULL,
+		NULL
+	);
+}
+*/

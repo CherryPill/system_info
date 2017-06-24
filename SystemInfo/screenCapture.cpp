@@ -22,7 +22,7 @@ void takeScreenshot(HWND hwnd) {
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
 
-	openFileDiag(hwnd, FILE_EXTENSION::PNG,fullSavePath);
+	openFileDiag(hwnd, FILE_EXTENSION::PNG,fullSavePath, 1);
 	screen.Save(fullSavePath);
 	DeleteObject(hCaptureBitmap);
 	ReleaseDC(hwnd, mainWindowDC);

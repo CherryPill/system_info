@@ -7,6 +7,9 @@
 #include "SoftwareInfo.h"
 #include "resource.h"
 using namespace std;
+extern int PROGRAM_INSTANCE; //0 - parent, 1 - child
+extern TCHAR PROGRAM_DATA_IMPORT_LOCATION[256]; //path to the bin file to import data from if the process is spawned by parent
+extern TCHAR *execName;
 extern SoftwareInfo *shippedSoftWare;
 extern HINSTANCE ghInstance;
 extern HWND mainWindowHwnd;

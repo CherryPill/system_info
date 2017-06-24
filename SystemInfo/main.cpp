@@ -4,8 +4,21 @@
 #include "globalVars.h"
 #include "utility.h"
 #include "mainWindowProcedure.h"
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow) {
+	int argc;
+	//if argcount > 1 then a snapshot is being loaded
+	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (argc > 1) {
+		PROGRAM_INSTANCE = 1;
+		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[1]);
+	}
+#ifdef _DEBUG
+	for (int x = 0; x < argc;x++)
+		MessageBox(NULL, argv[x], _T("arg"), MB_OK);
+#endif
+	LocalFree(argv);
 	shippedSoftWare = new SoftwareInfo();
 	MSG message;
 	WNDCLASSEX wc = {0}; //nullifying the struct
@@ -27,12 +40,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	ghInstance = hInstance;
 	POINT upperLeftCorner;
-	centerWindow(&upperLeftCorner);
+	positionWindow(&upperLeftCorner);
+	//centerWindow(&upperLeftCorner);
 	mainWindowHwnd = CreateWindowEx
 		(
 			0,
 			wc.lpszClassName,
-			L"SystemInfo",
+			PROGRAM_INSTANCE?L"SystemInfo (snapshot)":L"SystemInfo",
 			WS_SYSMENU|WS_OVERLAPPEDWINDOW,
 			upperLeftCorner.x,
 			upperLeftCorner.y,
