@@ -3,7 +3,7 @@ SoftwareInfo *shippedSoftWare;
 SoftwareInfo::SoftwareInfo() {
 	this->setSoftwareName(_T("SystemInfo"));
 	this->setSoftwareDesc(_T("Hardware information tool for windows"));
-	this->setSoftwareRepo(_T("https://github.com/CherryPill/system_info"));
+	this->setSoftwareRepo(_T("<a href=\"https://github.com/CherryPill/system_info\">Github repo</a>"));
 	this->setSoftwareVer(_T("1.2 [64-bit]"));
 }
 SoftwareInfo::~SoftwareInfo() {
