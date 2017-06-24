@@ -8,3 +8,5 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+*.VC.db
+*.VC.VC.opendb
