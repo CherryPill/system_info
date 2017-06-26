@@ -10,6 +10,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	int argc;
 	//if argcount > 1 then a snapshot is being loaded
 	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	TCHAR fullExecPath[256] = {0};
+	GetModuleFileName(NULL, fullExecPath, 256);
+	getFileNameFromPath(fullExecPath, execName);
+	_tcscat(execName, L" ");
 	if (argc > 1) {
 		PROGRAM_INSTANCE = 1;
 		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[1]);

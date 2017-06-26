@@ -368,3 +368,16 @@ wstring netAdapterStringWrapper(NetAdapter adapter) {
 		}
 	return completeString;
 }
+void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
+	TCHAR fullPathTempBuff[256] = { 0 };
+	_tcscpy(fullPathTempBuff, fullPath);
+#define fullPath fullPathTempBuff
+	TCHAR *ptr = _tcstok(fullPath, _T("\\"));
+	TCHAR *prevInstance;
+	while (ptr != NULL) {
+		prevInstance = ptr;
+		ptr = _tcstok(NULL, _T("\\"));
+	}
+	_tcscpy(fileName, prevInstance);
+#undef fullPath
+}
