@@ -60,6 +60,6 @@ void importData(SystemInfo* snapshotInstance) {
 		}
 	}
 	else {
-		MessageBox(NULL, (LPCWSTR)res.status, _T("Oops"), MB_OK | MB_ICONERROR);
+		MessageBox(NULL, _T("Unable to parse XML file"), _T("Oops"), MB_OK | MB_ICONERROR);
 	}
 }

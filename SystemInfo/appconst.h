@@ -4,6 +4,6 @@
 	#define ITEM_WIDTH 350
 	#define ITEM_HEIGHT 40
 	#define ITEM_INFO_WIDTH 500
-	#define ITEM_INFO_HEIGHT 200
+	#define ITEM_INFO_HEIGHT 400
 
 #endif
