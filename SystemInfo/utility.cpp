@@ -225,7 +225,7 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 		for (auto iterator = values.begin();
 		iterator != values.end();
 			iterator++) {
-			finalString.append(writeOutPrefix[static_cast<int>(wType) % 2]);
+			finalString.append(writeOutPrefix[static_cast<int>(wType)]);
 			finalString.append((*iterator));
 			finalString.append(writeOutPostfix[static_cast<int>(wType)]);
 		}

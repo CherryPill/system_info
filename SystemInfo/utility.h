@@ -11,6 +11,7 @@ enum class FILE_IO_OPERATION {
 static wstring writeOutPrefix[] {
 	L"",
 	L"",
+	L"",
 	L"<subitem>"
 };
 static wstring writeOutPostfix[]{
