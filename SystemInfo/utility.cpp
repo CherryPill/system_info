@@ -159,7 +159,7 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	UINT32 adjustedItemHeight;
 	UINT32 adjustedYAxisOffset;
 	adjustedItemHeight = innerItemsCount * 15;
-	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight;
+	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + 5;
 	return adjustedYAxisOffset;
 }
 UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info) {
