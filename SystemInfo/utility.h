@@ -74,5 +74,6 @@ std::wstring convertStringToWide(const std::string& as);
 void prependMinuteStr(WORD min, TCHAR *minBuff);
 vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter);
 std::wstring netAdapterStringWrapper(NetAdapter);
+void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
 bool isMultiSlot(int);
 #endif
