@@ -74,8 +74,7 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info) {
 		xmlOutFile << _T("\">\n\t\t");
 		
 		writeToFile(xmlOutFile, info, x, WRITE_OUT_TYPE::FILE_XML);
-		
-		
+	
 		xmlOutFile << L"\t</item>\n";
 	}
 	xmlOutFile<<L"</hardwareinfo>\n";

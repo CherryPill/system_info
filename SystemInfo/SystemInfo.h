@@ -48,6 +48,9 @@ public:
 	vector<wstring> getDisplayDevices(void);
 	vector<NetAdapter> getNetworkAdapters(void);
 	vector<wstring> getNetworkAdaptersText(void);
+	vector<wstring>& getNetworkAdaptersTextRef(void) {
+		return this->networkAdaptersText;
+	}
 	wstring getOS(void);
 	void setBIOS(wstring bios);
 	void setUptime(wstring uptime);

@@ -239,8 +239,6 @@ void openFileDiag(HWND mainWindow,
 	TCHAR szFile[MAX_PATH];
 	ZeroMemory(&fileName, sizeof(fileName));
 	fileName.lStructSize = sizeof(fileName);
-	//fileName.lpstrFile = szFile;
-	//fileName.lpstrFile[0] = '\0';
 	fileName.hwndOwner = mainWindow;
 	fileName.nMaxFile = sizeof(szFile);
 	
