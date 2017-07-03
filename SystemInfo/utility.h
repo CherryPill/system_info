@@ -8,6 +8,10 @@ enum class FILE_IO_OPERATION {
 	SAVE_AS,
 	OPEN
 };
+static wstring ipToggleText[]{
+		L"Hide IP",
+		L"Show IP"
+};
 static wstring writeOutPrefix[] {
 	L"",
 	L"",
@@ -44,6 +48,7 @@ enum class FILE_EXTENSION {
 	BIN,
 	PNG
 };
+
 static std::wstring storageMediumManufacturers[20]
 {
 	L"Western Digital",

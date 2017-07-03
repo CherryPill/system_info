@@ -20,66 +20,75 @@
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	switch (msg) {
-		case WM_CREATE:{
-			loadImages();
-			if (PROGRAM_INSTANCE == 1) {
-				importData(localMachine->getCurrentInstance());
-			}
-			else {
-				getSystemInformation(localMachine->getCurrentInstance());
-			}
-			
-			createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
-			populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
-			
-			EnumChildWindows(hwnd, 
-			(WNDENUMPROC)SetFont, 
+	case WM_CREATE: {
+		loadImages();
+		if (PROGRAM_INSTANCE == 1) {
+			importData(localMachine->getCurrentInstance());
+		}
+		else {
+			getSystemInformation(localMachine->getCurrentInstance());
+		}
+
+		createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
+		populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
+
+		EnumChildWindows(hwnd,
+			(WNDENUMPROC)SetFont,
 			(LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
-		
-			return 0;
+			toggleIpAddress(hwnd, NULL);
+		return 0;
+	}
+	
+	case WM_COMMAND: {
+		switch (LOWORD(wParam)) {
+		case ID_FILE_TAKESCREENSHOT: {
+			takeScreenshot(hwnd);
+			break;
 		}
-		case WM_COMMAND: {
-			switch (LOWORD(wParam)) {
-				case ID_FILE_TAKESCREENSHOT: {
-					takeScreenshot(hwnd);
-					break;
-				}
-				case ID_EXPORT_XML: {
-					saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance());
-					break;
-				}
-				case ID_EXPORT_TXT: {
-					saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance());
-					break;
-				}
-				case ID_EXPORT_HTML: {
-					saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance());
-					break;
-				}
-				case ID_EXPORT_BIN: {
-					//stub
-					break;
-				}
-				case ID_IMPORT_FROMXML: {
-					importAsXML(hwnd);
-					break;
-				}
-				case ID_ABOUT: {
-					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)aboutDlgProc);
-					break;
-				}
-				case ID_FILE_EXIT: {
-					PostQuitMessage(WM_QUIT);
-					break;
-				}
-			}
+		case ID_EXPORT_XML: {
+			saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance());
+			break;
 		}
-		case WM_CTLCOLORSTATIC: {
-			HDC hdcStatic = (HDC)wParam;
-			if ( GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
-				SetTextColor(hdcStatic, RGB(125, 207, 246));
+		case ID_EXPORT_TXT: {
+			saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance());
+			break;
+		}
+		case ID_EXPORT_HTML: {
+			saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance());
+			break;
+		}
+		case ID_EXPORT_BIN: {
+			//stub
+			break;
+		}
+		case ID_IMPORT_FROMXML: {
+			importAsXML(hwnd);
+			break;
+		}
+		case ID_ABOUT: {
+			DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)aboutDlgProc);
+			break;
+		}
+		case ID_FILE_EXIT: {
+			PostQuitMessage(WM_QUIT);
+			break;
+		}
+		case AUX_IP_TOGGLE: {
+			toggleIpAddress(hwnd, localMachine);
+			break;
+		}
+		}
+	}
+	case WM_CTLCOLORSTATIC: {
+		HDC hdcStatic = (HDC)wParam;
+		if (GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
+			SetTextColor(hdcStatic, RGB(125, 207, 246));
+		}
+		else {
+			if (GetDlgCtrlID((HWND)lParam) == AUX_IP_TOGGLE){
+				SetTextColor(hdcStatic, RGB(255, 0, 0));
+				
 			}
-			else {
 				SetTextColor(hdcStatic, RGB(255, 255, 255));
 			}
 			SetBkColor(hdcStatic, RGB(81, 81, 81));
@@ -95,6 +104,9 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 }
 BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 	SendMessage(child, WM_SETFONT, (LPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SendMessage(GetDlgItem(GetParent(child), AUX_IP_TOGGLE), 
+		WM_SETFONT, 
+		(WPARAM)ipToggleBtnFont, MAKELPARAM(true, 0));
 	return TRUE;
 }
 void loadImages(void) {
@@ -110,7 +122,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	int xStartOffSetLabel = 80;
 	int xStartOffSetInformation = xStartOffSetLabel + 25 ;
 	//labels + information as a table
-	for (int x = 0, y = BIOS_INFO,z=BIOS_ICON_LABEL;x<BIOS_INFO;x++,y++,z++) {
+	for (int x = BIOS_LABEL, y = BIOS_INFO,z=BIOS_ICON_LABEL;x<BIOS_INFO;x++,y++,z++) {
 		//icon
 		CreateWindowEx
 			(
@@ -152,13 +164,16 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 				NULL,
 				NULL
 				);
+		if (x == 9) {
+			createIPToggleControl(parent, xStartOffSetLabel+140, yStartOffSet);
+		}
 		//info
 		CreateWindowEx(
 			0,
 			L"Static",
 			(L"Detecting..."+itemStrings[x]).c_str(),
 			WS_VISIBLE | WS_CHILD |SS_LEFT | DS_SETFONT,
-			xStartOffSetInformation,
+			xStartOffSetInformation+5,
 			yStartOffSet+16,
 			ITEM_INFO_WIDTH,
 			ITEM_INFO_HEIGHT,
@@ -176,7 +191,6 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 			}
 		}
 		yStartOffSet += (ITEM_HEIGHT + 2);
-		int sentinel = 0xf;
 	}
 	scrollFullPageHeight = yStartOffSet;
 }
@@ -207,29 +221,55 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
-	//if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
+	if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
 		//createIPToggleControl(GetDlgItem(mainWindowHwnd, NETWORK_INFO));
-	//}
+	}
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
 		currentMachineInfo->getAudio().c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
 		currentMachineInfo->getUptime().c_str());
 }
-/*
-void createIPToggleControl(HWND parent) {
+
+void createIPToggleControl(HWND parent, int xOff, int yOff) {
 	CreateWindowEx(
 		0,
-		L"Static",
-		L"Hide IP",
-		WS_VISIBLE | WS_CHILD | SS_CENTER | DS_SETFONT,
-		20,
-		20,
+		L"Button",
+		ipToggleText[0].c_str(),
+		WS_VISIBLE | WS_CHILD | WS_TABSTOP,
+		xOff,
+		yOff,
 		64,
-		20,
+		15,
 		parent,
 		(HMENU)AUX_IP_TOGGLE,
 		NULL,
 		NULL
 	);
+	
 }
-*/
+void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
+	static bool showStatus = 0;
+	static wstring savedIP;
+	SetWindowText(GetDlgItem(mainWindow, AUX_IP_TOGGLE), ipToggleText[showStatus].c_str());
+	if (info != NULL) {
+
+		if (!showStatus) {
+			info->getNetworkAdaptersTextRef().back().assign(savedIP);
+		}
+		else {
+			savedIP.assign(info->getNetworkAdaptersText().back());
+			//hide ip
+			info->getNetworkAdaptersTextRef().back().clear();
+			info->getNetworkAdaptersTextRef().back().assign(L"Connected to the Internet: (IP hidden by user)");
+			
+		}
+		trimWhiteSpace(info->getNetworkAdaptersTextRef().back());
+		updateNetworkAdaptersView(info);
+	}
+	showStatus = !showStatus;
+}
+void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
+	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
+		formListString(currentMachineInfo,
+			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+}

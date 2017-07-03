@@ -8,7 +8,7 @@
 #include "resource.h"
 using namespace std;
 extern int PROGRAM_INSTANCE; //0 - parent, 1 - child
-extern TCHAR PROGRAM_DATA_IMPORT_LOCATION[256]; //path to the bin file to import data from if the process is spawned by parent
+extern TCHAR PROGRAM_DATA_IMPORT_LOCATION[256]; //path to the xml file to import data from if the process is spawned by parent
 extern TCHAR execName[256];
 extern SoftwareInfo *shippedSoftWare;
 extern HINSTANCE ghInstance;
@@ -62,7 +62,7 @@ static TCHAR *savefileExtensionsLong[5] = {
 	_T(".txt files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0"),
 	_T(".xml files (*.xml)\0*.xml\0All Files (*.*)\0*.*\0"),
 	_T(".html files (*.html)\0*.html\0All Files (*.*)\0*.*\0"),
-	_T(".sysinfo files (*.sysinfo)\0*.sysinfo\0All Files (*.*)\0*.*\0"),
+	_T(".sysinfo files (*.sysinfo)\0*.sysinfo\0All Files (*.*)\0*.*\0"), //not used
 	_T(".png images (*.png)\0*.png\0All Files (*.*)\0*.*\0")
 };
 static wstring RAMFormFactors[24] {
@@ -120,4 +120,7 @@ static wstring RAMMemoryTypes[26] {
 //time functions
 extern TCHAR *timeVerboseMonths[];
 extern TCHAR *timeVerboseDaysOfWeek[];
+//font
+extern HFONT ipToggleBtnFont;
+
 #endif

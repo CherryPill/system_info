@@ -18,6 +18,7 @@ TCHAR *fontFamilies[] = {
 	_T("Courier New")
 };
 HFONT appNameFontLarge = CreateFont(-28, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
+HFONT ipToggleBtnFont = CreateFont(-10, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
 
 TCHAR *timeVerboseMonths[] = {
 	_T("Dummy"),
