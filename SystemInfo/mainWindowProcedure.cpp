@@ -272,4 +272,8 @@ void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
+		currentMachineInfo->getAudio().c_str());
+	SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
+		currentMachineInfo->getUptime().c_str());
 }
