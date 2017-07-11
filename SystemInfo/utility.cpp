@@ -162,7 +162,7 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + 5;
 	return adjustedYAxisOffset;
 }
-UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info) {
+UINT32 getInfoBoxItemCount(UINT32 ITEM_ID, SystemInfo *info) {
 	UINT32 hardwareListSize = 0;
 	switch (ITEM_ID) {
 		case GPU_INFO: {
@@ -181,12 +181,12 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info) {
 			hardwareListSize = info->getCDROMDevices().size();
 			break;
 		}
-		case AUDIO_INFO: {
-			hardwareListSize = info->getAudio().size();
-			break;
-		}
 		case NETWORK_INFO: {
 			hardwareListSize = info->getNetworkAdaptersText().size();
+			break;
+		}
+		default: {
+			return 1; //single field like CPU or BIOS
 			break;
 		}
 	}
