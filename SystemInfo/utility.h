@@ -66,7 +66,7 @@ std::wstring parseDiskStorageName(std::wstring);
 std::wstring convertUIntToString(UINT64);
 void trimWhiteSpace(std::wstring&);
 void generateFileName(TCHAR*, FILE_EXTENSION);
-UINT32 isAdjustRequired(UINT32,SystemInfo*);
+UINT32 getInfoBoxItemCount(UINT32,SystemInfo*);
 UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
 void getCurrentDateTimeVerbose(TCHAR *);

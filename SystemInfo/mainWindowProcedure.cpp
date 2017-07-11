@@ -173,17 +173,17 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 			L"Static",
 			(L"Detecting..."+itemStrings[x]).c_str(),
 			WS_VISIBLE | WS_CHILD |SS_LEFT | DS_SETFONT,
-			xStartOffSetInformation+5,
+			xStartOffSetInformation,
 			yStartOffSet+16,
 			ITEM_INFO_WIDTH,
-			ITEM_INFO_HEIGHT,
+			getInfoBoxItemCount(y, info) * ITEM_INFO_INITIAL_HEIGTH,
 			parent,
 			(HMENU)y,
 			NULL,
 			NULL
 		);
 		if (y >= GPU_INFO  && y < AUDIO_INFO) {
-			UINT32 listSize = isAdjustRequired(y, info);
+			UINT32 listSize = getInfoBoxItemCount(y, info);
 			//return rec structure
 			if (listSize>2) {
 				yStartOffSet = adjustItemHeight(parent, y, listSize);
@@ -272,8 +272,4 @@ void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
-	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
-		currentMachineInfo->getAudio().c_str());
-	SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
-		currentMachineInfo->getUptime().c_str());
 }
