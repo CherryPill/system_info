@@ -19,10 +19,8 @@ int getSystemInformation(SystemInfo *localMachine)
 	// Initialize COM. ------------------------------------------
 
 	hres = CoInitializeEx(0, COINIT_MULTITHREADED);
-	if (FAILED(hres))
-	{
-		cout << "Failed to initialize COM library. Error code = 0x"
-			<< hex << hres << endl;
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Failed to initialize COM library"), _T("Fatal Error"), MB_OK);
 		return 1;                  // Program has failed.
 	}
 
@@ -42,10 +40,8 @@ int getSystemInformation(SystemInfo *localMachine)
 		);
 
 
-	if (FAILED(hres))
-	{
-		cout << "Failed to initialize security. Error code = 0x"
-			<< hex << hres << endl;
+	if (FAILED(hres)){
+		MessageBox(NULL, _T("Failed to initialize security"), _T("Fatal Error"), MB_OK);
 		CoUninitialize();
 		return 1;                    // Program has failed.
 	}
@@ -61,11 +57,8 @@ int getSystemInformation(SystemInfo *localMachine)
 		CLSCTX_INPROC_SERVER,
 		IID_IWbemLocator, (LPVOID *)&pLoc);
 
-	if (FAILED(hres))
-	{
-		cout << "Failed to create IWbemLocator object."
-			<< " Err code = 0x"
-			<< hex << hres << endl;
+	if (FAILED(hres)){
+		MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
 		CoUninitialize();
 		return 1;                 // Program has failed.
 	}
@@ -89,16 +82,14 @@ int getSystemInformation(SystemInfo *localMachine)
 		&pSvc                    // pointer to IWbemServices proxy
 		);
 
-	if (FAILED(hres))
-	{
-		cout << "Could not connect. Error code = 0x"
-			<< hex << hres << endl;
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Could not connect"), _T("Fatal Error"), MB_OK);
 		pLoc->Release();
 		CoUninitialize();
 		return 1;                // Program has failed.
 	}
 
-	cout << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
+	//cout << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
 
 
 	// Step 5: --------------------------------------------------
@@ -115,10 +106,8 @@ int getSystemInformation(SystemInfo *localMachine)
 		EOAC_NONE                    // proxy capabilities 
 		);
 
-	if (FAILED(hres))
-	{
-		cout << "Could not set proxy blanket. Error code = 0x"
-			<< hex << hres << endl;
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Could not set proxy blanket"), _T("Fatal Error"), MB_OK);
 		pSvc->Release();
 		pLoc->Release();
 		CoUninitialize();
@@ -148,7 +137,6 @@ int getSystemInformation(SystemInfo *localMachine)
 
 	pSvc->Release();
 	pLoc->Release();
-	//pEnumerator->Release();
 	CoUninitialize();
 
 	return 0;   // Program successfully completed.
@@ -206,8 +194,7 @@ void getCPU(SystemInfo *localMachine,
 		processor = vtProp.bstrVal;
 		trimNullTerminator(processor);
 		trimWhiteSpace(processor);
-		if (processor.find(L"@",0) == string::npos)
-		{
+		if (processor.find(L"@",0) == string::npos) {
 			hr = pclsObj->Get(L"MaxClockSpeed", 0, &vtProp, 0, 0);
 			maxClockInMhZ = vtProp.uintVal;
 			maxClockInGhZ = (double)maxClockInMhZ / 1000;
@@ -215,8 +202,7 @@ void getCPU(SystemInfo *localMachine,
 			maxClock = wstring(maxClockBuff);
 			fullCPUString = processor + L" @ " + maxClock + L" Ghz";
 		}
-		else
-		{
+		else {
 			fullCPUString = processor;
 		}
 	
@@ -368,8 +354,7 @@ void getOS(SystemInfo *localMachine,
 }
 void getMB(SystemInfo *localMachine,
 		HRESULT hres, IWbemServices *pSvc,
-		IWbemLocator *pLoc)
-{
+		IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = NULL;
 	hres = pSvc->ExecQuery(
@@ -379,8 +364,7 @@ void getMB(SystemInfo *localMachine,
 		NULL,
 		&pEnumerator);
 
-	if (FAILED(hres))
-	{
+	if (FAILED(hres)) {
 		cout << "Query for operating system name failed."
 			<< " Error code = 0x"
 			<< hex << hres << endl;
@@ -391,8 +375,7 @@ void getMB(SystemInfo *localMachine,
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
 			&pclsObj, &uReturn);
 
@@ -411,6 +394,7 @@ void getMB(SystemInfo *localMachine,
 		wstring socket;
 		manufacturer = vtProp.bstrVal;
 		manufacturer.erase(manufacturer.length());
+		trimWhiteSpace(manufacturer);
 		hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
 		
 		product = vtProp.bstrVal;
@@ -652,8 +636,7 @@ void getDimensionsAndFrequency(HRESULT hres,
 }
 void getStorage(SystemInfo *localMachine,
 	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc)
-{
+	IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = NULL;
 	hres = pSvc->ExecQuery(
@@ -663,8 +646,7 @@ void getStorage(SystemInfo *localMachine,
 		NULL,
 		&pEnumerator);
 
-	if (FAILED(hres))
-	{
+	if (FAILED(hres)) {
 		cout << "Query for operating system name failed."
 			<< " Error code = 0x"
 			<< hex << hres << endl;
@@ -676,13 +658,11 @@ void getStorage(SystemInfo *localMachine,
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
 			&pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -702,15 +682,15 @@ void getStorage(SystemInfo *localMachine,
 		modelName = vtProp.bstrVal;
 		manufacturerName = parseDiskStorageName(modelName);
 		trimNullTerminator(modelName);
-
+		trimWhiteSpace(manufacturerName);
 		hr = pclsObj->Get(L"Size", 0, &vtProp, 0, 0);
 
 		capacityStr = vtProp.bstrVal;
 		capacityBytes = stoull(capacityStr);
 		capacityGiBDbl = capacityBytes/pow(1024,3);
 		capacityGiBStr = convertUIntToString(capacityGiBDbl);
-
-		storageFullString = manufacturerName +L" "+ modelName + L" ("+capacityGiBStr+L" GB)";
+		
+		storageFullString = manufacturerName + (manufacturerName==L""?L"":L" ")+ modelName + L" ("+capacityGiBStr+L" GB)";
 
 		localMachine->addStorageMedium(storageFullString);
 
@@ -880,9 +860,16 @@ void getBIOS(SystemInfo *localMachine) {
 	needBufferSize = GetSystemFirmwareTable(Signature, 0, NULL, 0);
 	pBuff = (LPBYTE)malloc(needBufferSize);
 	if (pBuff) {
-		GetSystemFirmwareTable(Signature, 0, pBuff, needBufferSize);
-		const PRawSMBIOSData pDMIData = (PRawSMBIOSData)pBuff;
-		DumpSMBIOSStruct(&(pDMIData->SMBIOSTableData), pDMIData->Length, biosData);
+		if (GetSystemFirmwareTable(Signature, 0, pBuff, needBufferSize)) {
+			const PRawSMBIOSData pDMIData = (PRawSMBIOSData)pBuff;
+			DumpSMBIOSStruct(&(pDMIData->SMBIOSTableData), pDMIData->Length, biosData);
+		}
+		else {
+			MessageBox(NULL, _T("Failed to fetch firmware tables"), _T("Fatal Error"), MB_OK);
+		}
+	}
+	else {
+		MessageBox(NULL, _T("Memory allocation failed"), _T("Fatal Error"), MB_OK);
 	}
 	localMachine->setBIOS(biosData);
 }

@@ -185,8 +185,9 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 		if (y >= GPU_INFO  && y < AUDIO_INFO) {
 			UINT32 listSize = getInfoBoxItemCount(y, info);
 			//return rec structure
-			if (listSize>2) {
+			if (listSize>=2) {
 				yStartOffSet = adjustItemHeight(parent, y, listSize);
+
 				continue;
 			}
 		}
