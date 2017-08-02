@@ -253,9 +253,8 @@ void getRAM(SystemInfo *localMachine,
 
 		// Get the value of the Name property
 		//format
-		//manufacturer + gb channel ddr @ mhz (no timings yet)
-		hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
-		wstring manufacturer;
+		//gb channel ddr @ mhz (no timings yet)
+
 		wstring clockStr;
 		UINT32 clock;
 		UINT16 formFactor;
@@ -264,9 +263,6 @@ void getRAM(SystemInfo *localMachine,
 		wstring formFactorStr;
 		wstring memoryTypeStr;
 		UINT16 memoryType;
-		manufacturer = vtProp.bstrVal;
-		trimNullTerminator(manufacturer);
-		trimWhiteSpace(manufacturer);
 		uint64_t capacity;
 		double capacityDouble;
 		TCHAR capacityStrBuff[10];
@@ -284,8 +280,8 @@ void getRAM(SystemInfo *localMachine,
 		clock = vtProp.uintVal;
 		_stprintf(clockStrBuff, _T("%d"), clock);
 		clockStr = wstring(clockStrBuff);
-		localMachine->setRAM(manufacturer + L" " + capacityStr +
-		L" GiB " + formFactorStr + L" "+memoryTypeStr+L" "+clockStr+L"Mhz");
+		localMachine->setRAM(capacityStr +
+		L" GB " + formFactorStr + L" "+memoryTypeStr+L" "+clockStr+L"MHz");
 
 		VariantClear(&vtProp);
 
@@ -459,7 +455,7 @@ wstring getActualPhysicalMemory(HRESULT hres,
 		pclsObj->Release();
 	}
 	TCHAR capacityStrBuff[100];
-	_stprintf(capacityStrBuff, _T("%.1lf"), accumulatedRAM);
+	_stprintf(capacityStrBuff, _T("%.2lf"), accumulatedRAM);
 	ram = wstring(capacityStrBuff);
 	pEnumerator->Release();
 	return ram;
@@ -690,7 +686,7 @@ void getStorage(SystemInfo *localMachine,
 		capacityGiBDbl = capacityBytes/pow(1024,3);
 		capacityGiBStr = convertUIntToString(capacityGiBDbl);
 		
-		storageFullString = manufacturerName + (manufacturerName==L""?L"":L" ")+ modelName + L" ("+capacityGiBStr+L" GB)";
+		storageFullString = capacityGiBStr + L" GB " + manufacturerName + (manufacturerName==L""?L"":L" ")+ modelName;
 
 		localMachine->addStorageMedium(storageFullString);
 
