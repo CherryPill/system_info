@@ -20,9 +20,6 @@ void centerWindow(POINT *upperLeftCorner) {
 void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
 }
-bool isMultiSlot(int index) {
-	return (index > 4 && index < 9) ? true : false;
-}
 std::wstring convertStringToWide(const std::string& as) {
 	wchar_t* buf = new wchar_t[as.size() * 2 + 2];
 	swprintf(buf, L"%S", as.c_str());
@@ -232,7 +229,7 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 		return finalString;
 	}
 }
-void openFileDiag(HWND mainWindow, 
+ACTION openFileDiag(HWND mainWindow, 
 	FILE_EXTENSION extension, 
 	TCHAR *fullOpenSavePath, int mode)  {
 	OPENFILENAME fileName;
@@ -254,13 +251,14 @@ void openFileDiag(HWND mainWindow,
 	else {
 		fileName.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
 	}
-	TCHAR buffer[256];
-	ZeroMemory(&buffer, sizeof(buffer));
-	generateFileName(buffer,extension);
-	fileName.lpstrFileTitle = buffer;
-	fileName.lpstrFile = buffer;
 	if (mode) {
+		TCHAR buffer[256];
+		ZeroMemory(&buffer, sizeof(buffer));
+		generateFileName(buffer, extension);
+		fileName.lpstrFileTitle = buffer;
+		fileName.lpstrFile = buffer;
 		if (GetSaveFileName(&fileName)) {
+			
 			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
 			//success
 		}
@@ -270,11 +268,11 @@ void openFileDiag(HWND mainWindow,
 	}
 	else {
 		if (GetOpenFileName(&fileName)) {
-			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
+			return ACTION::ACCEPTED;
 			//success
 		}
 		else {
-			//failure
+			return ACTION::CANCELED_OUT;
 		}
 	}
 

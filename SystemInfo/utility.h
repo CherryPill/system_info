@@ -71,7 +71,7 @@ UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
 void getCurrentDateTimeVerbose(TCHAR *);
 std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
-void openFileDiag(HWND,FILE_EXTENSION,TCHAR*, int);
+enum class ACTION openFileDiag(HWND,FILE_EXTENSION,TCHAR*, int);
 void writeToFile(wofstream&, SystemInfo*, int, WRITE_OUT_TYPE);
 wstring fromChToWideStr(char *value);
 wstring fromIntToWideStr(int);
@@ -80,5 +80,4 @@ void prependMinuteStr(WORD min, TCHAR *minBuff);
 vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter);
 std::wstring netAdapterStringWrapper(NetAdapter);
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
-bool isMultiSlot(int);
 #endif

@@ -82,7 +82,12 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	case WM_CTLCOLORSTATIC: {
 		HDC hdcStatic = (HDC)wParam;
 		if (GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
-			SetTextColor(hdcStatic, RGB(125, 207, 246));
+			if (GetDlgCtrlID((HWND)lParam) == SNAPSHOT_LABEL) {
+				SetTextColor(hdcStatic, RGB(255, 255, 255));
+			}
+			else {
+				SetTextColor(hdcStatic, RGB(125, 207, 246));
+			}	
 		}
 		else {
 			if (GetDlgCtrlID((HWND)lParam) == AUX_IP_TOGGLE){
@@ -118,6 +123,23 @@ void loadImages(void) {
 }
 
 void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
+	/*CreateWindowEx
+		(
+			0,
+			L"Static",
+			L"Snapshot as of 2017-10-10 @ 13:44",
+			WS_VISIBLE |
+			WS_CHILD |
+			DS_SETFONT | SS_LEFT,
+			0,
+			0,
+			200,
+			ITEM_HEIGHT,
+			parent,
+			(HMENU)SNAPSHOT_LABEL,
+			NULL,
+			NULL
+			);*/
 	UINT32 yStartOffSet = 20;
 	int xStartOffSetLabel = 80;
 	int xStartOffSetInformation = xStartOffSetLabel + 25 ;

@@ -85,35 +85,35 @@ void importAsXML(HWND hwnd) {
 
 	TCHAR fullOpenPath[256];
 	ZeroMemory(&fullOpenPath, sizeof(fullOpenPath));
-	openFileDiag(hwnd, FILE_EXTENSION::XML, fullOpenPath, 0);
-
-
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
-
-	ZeroMemory(&si, sizeof(si));
-	si.cb = sizeof(si);
-	ZeroMemory(&pi, sizeof(pi));
-
 	
-	// Start the child process. 
-	TCHAR fullExecLine[256] = { 0 };
-	_tcscpy(fullExecLine, execName);
-	_tcscat(fullExecLine, fullOpenPath);
-	DWORD err;
-	DWORD res = 1;
-	LPTSTR szcmdLine = _tcsdup(fullExecLine);
-	if (!CreateProcess(NULL,   // No module name (use command line)
-		szcmdLine,        // Command line
-		NULL,           // Process handle not inheritable
-		NULL,           // Thread handle not inheritable
-		FALSE,          // Set handle inheritance to FALSE
-		0,              // No creation flags
-		NULL,           // Use parent's environment block
-		NULL,           // Use parent's starting directory 
-		&si,            // Pointer to STARTUPINFO structure
-		&pi)) {
-		MessageBox(NULL, L"Unable to create process", L"Something happened", MB_OK | MB_ICONERROR);
+	if (openFileDiag(hwnd, FILE_EXTENSION::XML, fullOpenPath, 0) != ACTION::CANCELED_OUT){
+		STARTUPINFO si;
+		PROCESS_INFORMATION pi;
+
+		ZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+		ZeroMemory(&pi, sizeof(pi));
+
+
+		// Start the child process. 
+		TCHAR fullExecLine[256] = { 0 };
+		_tcscpy(fullExecLine, execName);
+		_tcscat(fullExecLine, fullOpenPath);
+		DWORD err;
+		DWORD res = 1;
+		LPTSTR szcmdLine = _tcsdup(fullExecLine);
+		if (!CreateProcess(NULL,   // No module name (use command line)
+			szcmdLine,        // Command line
+			NULL,           // Process handle not inheritable
+			NULL,           // Thread handle not inheritable
+			FALSE,          // Set handle inheritance to FALSE
+			0,              // No creation flags
+			NULL,           // Use parent's environment block
+			NULL,           // Use parent's starting directory 
+			&si,            // Pointer to STARTUPINFO structure
+			&pi)) {
+			MessageBox(NULL, L"Unable to create process", L"Something happened", MB_OK | MB_ICONERROR);
+		}
 	}
 }
 bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
