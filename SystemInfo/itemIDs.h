@@ -1,5 +1,6 @@
 #ifndef ITEMIDS_H
 #define ITEMIDS_H
+#define SNAPSHOT_LABEL -1
 #define BIOS_LABEL 0
 #define OS_LABEL 1
 #define CPU_LABEL 2

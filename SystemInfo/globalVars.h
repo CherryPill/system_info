@@ -123,4 +123,9 @@ extern TCHAR *timeVerboseDaysOfWeek[];
 //font
 extern HFONT ipToggleBtnFont;
 
+enum class ACTION {
+	ACCEPTED,
+	CANCELED_OUT
+};
+
 #endif
