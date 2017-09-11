@@ -2,7 +2,7 @@
 
 SystemInfo enables you to view information about the hardware components of your computer. 
 <p align="center">
-<img src="http://i.imgur.com/BAe1aKO.png">
+<img src="https://i.imgur.com/vmmwSer.png">
 </p>
 <hr />
 
