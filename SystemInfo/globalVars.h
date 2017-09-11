@@ -21,7 +21,7 @@ extern HBRUSH grayBrush;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
 
-const static int totalItemsCount = 12;
+const static int totalItemsCount = 13;
 
 static WORD ICON_IDS[totalItemsCount] {
 	BIOS_ICON,
@@ -37,6 +37,14 @@ static WORD ICON_IDS[totalItemsCount] {
 	AUDIO_ICON,
 	UPTIME_ICON
 };
+static wstring UI_messagesTxt[] = {
+	L"Successfully written to ",
+	L"Error writing to "
+};
+static wstring UI_messagesCapt[] = {
+	L"Success",
+	L"Error"
+};
 static wstring itemStrings[totalItemsCount] = {
 	L"BIOS/UEFI",
 	L"Operating System",
@@ -49,7 +57,8 @@ static wstring itemStrings[totalItemsCount] = {
 	L"Optical drives",
 	L"Network and Connections",
 	L"Sound",
-	L"Uptime"
+	L"Uptime",
+	L"Snapshot"
 };
 static TCHAR *savefileExtensions[5] = {
 	_T(".txt"),

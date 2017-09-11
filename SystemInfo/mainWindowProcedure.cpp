@@ -46,15 +46,37 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			break;
 		}
 		case ID_EXPORT_XML: {
-			saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance());
+			TCHAR *dateTime = new TCHAR[256];
+			getCurrentDateTimeVerbose(dateTime);
+			wstring dateTimeConv(dateTime);
+			localMachine->
+				getCurrentInstance()->
+					setSnapshotGenDateTime(dateTimeConv);
+			delete dateTime;
+			if (saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance())) {
+				displayMessage(UI_MESS_RES::SUCCESS, UI_MESS_ACTION::WRITE_OUT_XML);
+			}
+			else {
+				displayMessage(UI_MESS_RES::FAILURE, UI_MESS_ACTION::WRITE_OUT_XML);
+			}
 			break;
 		}
 		case ID_EXPORT_TXT: {
-			saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance());
+			if (saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance())) {
+				displayMessage(UI_MESS_RES::SUCCESS, UI_MESS_ACTION::WRITE_OUT_TXT);
+			}
+			else {
+				displayMessage(UI_MESS_RES::FAILURE, UI_MESS_ACTION::WRITE_OUT_TXT);
+			}
 			break;
 		}
 		case ID_EXPORT_HTML: {
-			saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance());
+			if (saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance())) {
+				displayMessage(UI_MESS_RES::SUCCESS, UI_MESS_ACTION::WRITE_OUT_HTML);
+			}
+			else {
+				displayMessage(UI_MESS_RES::FAILURE, UI_MESS_ACTION::WRITE_OUT_HTML);
+			}
 			break;
 		}
 		case ID_EXPORT_BIN: {
@@ -83,7 +105,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		HDC hdcStatic = (HDC)wParam;
 		if (GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
 			if (GetDlgCtrlID((HWND)lParam) == SNAPSHOT_LABEL) {
-				SetTextColor(hdcStatic, RGB(255, 255, 255));
+				SetTextColor(hdcStatic, RGB(0, 255, 0));
 			}
 			else {
 				SetTextColor(hdcStatic, RGB(125, 207, 246));
@@ -123,23 +145,25 @@ void loadImages(void) {
 }
 
 void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
-	/*CreateWindowEx
+	if (PROGRAM_INSTANCE == 1) {
+		CreateWindowEx
 		(
 			0,
 			L"Static",
-			L"Snapshot as of 2017-10-10 @ 13:44",
+			(L"Snapshot as of "+info->getSnapshotGenDateTime()).c_str(),
 			WS_VISIBLE |
 			WS_CHILD |
-			DS_SETFONT | SS_LEFT,
+			DS_SETFONT | SS_CENTER,
+			mainWindowWidth/2-200,
 			0,
-			0,
-			200,
+			400,
 			ITEM_HEIGHT,
 			parent,
 			(HMENU)SNAPSHOT_LABEL,
 			NULL,
 			NULL
-			);*/
+		);
+	}
 	UINT32 yStartOffSet = 20;
 	int xStartOffSetLabel = 80;
 	int xStartOffSetInformation = xStartOffSetLabel + 25 ;
@@ -295,4 +319,17 @@ void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+}
+void displayMessage(UI_MESS_RES res, UI_MESS_ACTION act) {
+	MessageBox(NULL, (UI_messagesTxt[static_cast<int>(res)] +
+		 savefileExtensions[static_cast<int>(act)] + L" file").c_str(), 
+			UI_messagesCapt[static_cast<int>(res)].c_str(), 
+				MB_OK 
+				| 
+					!static_cast<int>(res)
+						?
+							MB_ICONINFORMATION
+						:
+							MB_ICONERROR);
+
 }

@@ -31,6 +31,7 @@ private:
 	vector<wstring> networkAdaptersText;
 	wstring audio;
 	wstring uptime;
+	wstring snapshotGenDateTime;
 public:
 	static SystemInfo *getCurrentInstance() {
 		static SystemInfo *currentInstance = new SystemInfo();
@@ -52,6 +53,7 @@ public:
 		return this->networkAdaptersText;
 	}
 	wstring getOS(void);
+	wstring getSnapshotGenDateTime();
 	void setBIOS(wstring bios);
 	void setUptime(wstring uptime);
 	void setCPU(wstring CPU);
@@ -65,4 +67,5 @@ public:
 	void setOS(wstring OS);
 	void setAudio(wstring audio);
 	void addCDROMDevice(wstring CDROM);
+	void setSnapshotGenDateTime(wstring dt);
 };

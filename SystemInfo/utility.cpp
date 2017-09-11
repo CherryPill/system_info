@@ -235,6 +235,7 @@ ACTION openFileDiag(HWND mainWindow,
 	OPENFILENAME fileName;
 	TCHAR szFile[MAX_PATH];
 	ZeroMemory(&fileName, sizeof(fileName));
+	szFile[0] = L'\0';
 	fileName.lStructSize = sizeof(fileName);
 	fileName.hwndOwner = mainWindow;
 	fileName.nMaxFile = sizeof(szFile);
@@ -260,6 +261,7 @@ ACTION openFileDiag(HWND mainWindow,
 		if (GetSaveFileName(&fileName)) {
 			
 			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
+
 			//success
 		}
 		else {
@@ -267,7 +269,10 @@ ACTION openFileDiag(HWND mainWindow,
 		}
 	}
 	else {
+		
+		fileName.lpstrFile = szFile;
 		if (GetOpenFileName(&fileName)) {
+			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
 			return ACTION::ACCEPTED;
 			//success
 		}
@@ -309,6 +314,10 @@ void writeToFile(wofstream &fileStream, SystemInfo *info, int counter, WRITE_OUT
 		}
 		case 11: {
 			fileStream << info->getUptime().c_str();
+			break;
+		}
+		case 12: {
+			fileStream << info->getSnapshotGenDateTime().c_str();
 			break;
 		}
 		}
@@ -376,4 +385,12 @@ void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
 	}
 	_tcscpy(fileName, prevInstance);
 #undef fullPath
+}
+bool fileIOCheck(wofstream &stream) {
+	if (stream) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
