@@ -122,7 +122,7 @@ int getIpAddress(char *ipBuff) {
 	InternetCloseHandle(hInternet);
 	//test fallback
 	
-	strcpy(ipBuff, "1.1.1.1.");
+	//strcpy(ipBuff, "1.1.1.1.");
 	return connectionRes;
 }
 
