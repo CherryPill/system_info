@@ -17,6 +17,7 @@ BOOL CALLBACK aboutDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM l
 		break;
 	}
 	case WM_INITDIALOG: {
+		SendDlgItemMessage(dlgHandle, IDC_STATIC_ICON, STM_SETICON, (WPARAM)(HICON)LoadImage(ghInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 64, 64, NULL), NULL);
 		DWORD buffSize = 256;
 		TCHAR inputBuff[256];
 		ZeroMemory(inputBuff, sizeof(inputBuff));

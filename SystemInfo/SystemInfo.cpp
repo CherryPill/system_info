@@ -77,3 +77,9 @@ void SystemInfo::setBIOS(wstring bios) {
 vector<NetAdapter> SystemInfo::getNetworkAdapters(void) {
 	return (*this).networkAdapters;
 }
+void SystemInfo::setSnapshotGenDateTime(wstring snapshotGenDateTime) {
+	(*this).snapshotGenDateTime = snapshotGenDateTime;
+}
+wstring SystemInfo::getSnapshotGenDateTime(void) {
+	return (*this).snapshotGenDateTime;
+}

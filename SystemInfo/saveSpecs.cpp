@@ -35,7 +35,7 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info) {
 	htmlOutFile << saveSpecs::htmlCommentEnd;
 	htmlOutFile << saveSpecs::htmlStartPoint;
 	htmlOutFile << L"<div id=\"hardwareinfo\">\n";
-	for (int x = 0; x < totalItemsCount; x++) {
+	for (int x = 0; x < totalItemsCount-1; x++) { //excluding snapshot
 		htmlOutFile << _T("\t<div class=\"item\">\n");
 		htmlOutFile << _T("\t\t<div class=\"header\">");
 		htmlOutFile << itemStrings[x].c_str();
@@ -46,7 +46,7 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info) {
 	}
 	htmlOutFile << L"</div>\n</body>\n</html>\n";
 	htmlOutFile.close();
-	return true;
+	return fileIOCheck(htmlOutFile);
 }
 bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info) {
 	TCHAR fullSavePath[256];
@@ -79,7 +79,7 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info) {
 	}
 	xmlOutFile<<L"</hardwareinfo>\n";
 	xmlOutFile.close();
-	return true;
+	return fileIOCheck(xmlOutFile);
 }
 void importAsXML(HWND hwnd) {
 
@@ -99,6 +99,8 @@ void importAsXML(HWND hwnd) {
 		TCHAR fullExecLine[256] = { 0 };
 		_tcscpy(fullExecLine, execName);
 		_tcscat(fullExecLine, fullOpenPath);
+		
+		
 		DWORD err;
 		DWORD res = 1;
 		LPTSTR szcmdLine = _tcsdup(fullExecLine);
@@ -132,7 +134,7 @@ bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
 	txtOutFile << saveSpecs::uniformComment;
 	txtOutFile << commentBuff;
 	txtOutFile<<endl<<endl;
-	for (int x = 0; x < totalItemsCount; x++) {
+	for (int x = 0; x < totalItemsCount-1; x++) { //excluding snapshot
 		txtOutFile << itemStrings[x].c_str();
 		txtOutFile << _T(":\n");
 		txtOutFile << _T("\t");
@@ -140,7 +142,7 @@ bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
 		txtOutFile<<endl;
 	}
 	txtOutFile.close();
-	return true;
+	return fileIOCheck(txtOutFile);
 }
 saveSpecs::~saveSpecs() {
 }

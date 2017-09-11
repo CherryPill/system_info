@@ -45,7 +45,6 @@ void importData(SystemInfo* snapshotInstance) {
 				for (pugi::xml_node subitem : item.children()) {
 					snapshotInstance->addStorageMedium(subitem.first_child().value());
 				}
-				
 			}
 			else if (attrValue == L"Optical drives") {
 				for (pugi::xml_node subitem : item.children()) {
@@ -56,6 +55,9 @@ void importData(SystemInfo* snapshotInstance) {
 				for (pugi::xml_node subitem : item.children()) {
 					snapshotInstance->addNetworkAdapterText(subitem.first_child().value());
 				}
+			}
+			else if (attrValue == L"Snapshot") {
+				snapshotInstance->setSnapshotGenDateTime(itemValue);
 			}
 		}
 	}

@@ -4,6 +4,15 @@
 #include <fstream>
 #include <tchar.h>
 #include "SystemInfo.h"
+enum class UI_MESS_RES {
+	SUCCESS,
+	FAILURE
+};
+enum class UI_MESS_ACTION {
+	WRITE_OUT_TXT,
+	WRITE_OUT_XML,
+	WRITE_OUT_HTML
+};
 enum class FILE_IO_OPERATION {
 	SAVE_AS,
 	OPEN
@@ -49,8 +58,7 @@ enum class FILE_EXTENSION {
 	PNG
 };
 
-static std::wstring storageMediumManufacturers[20]
-{
+static std::wstring storageMediumManufacturers[20] {
 	L"Western Digital",
 	L"Seagate",
 	L"Fujitsu",
@@ -80,4 +88,5 @@ void prependMinuteStr(WORD min, TCHAR *minBuff);
 vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter);
 std::wstring netAdapterStringWrapper(NetAdapter);
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
+bool fileIOCheck(wofstream&);
 #endif

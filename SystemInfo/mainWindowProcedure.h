@@ -10,4 +10,5 @@ void createIPToggleControl(HWND, int, int);
 void loadImages(void);
 void toggleIpAddress(HWND, SystemInfo*);
 void updateNetworkAdaptersView(SystemInfo*);
+void displayMessage(enum class UI_MESS_RES, enum class UI_MESS_ACTION);
 #endif
