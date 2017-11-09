@@ -4,6 +4,15 @@
 #include <fstream>
 #include <tchar.h>
 #include "SystemInfo.h"
+enum class UI_MESS_RES {
+	SUCCESS,
+	FAILURE
+};
+enum class UI_MESS_ACTION {
+	WRITE_OUT_TXT,
+	WRITE_OUT_XML,
+	WRITE_OUT_HTML
+};
 enum class FILE_IO_OPERATION {
 	SAVE_AS,
 	OPEN
@@ -49,8 +58,7 @@ enum class FILE_EXTENSION {
 	PNG
 };
 
-static std::wstring storageMediumManufacturers[20]
-{
+static std::wstring storageMediumManufacturers[20] {
 	L"Western Digital",
 	L"Seagate",
 	L"Fujitsu",
@@ -66,12 +74,12 @@ std::wstring parseDiskStorageName(std::wstring);
 std::wstring convertUIntToString(UINT64);
 void trimWhiteSpace(std::wstring&);
 void generateFileName(TCHAR*, FILE_EXTENSION);
-UINT32 isAdjustRequired(UINT32,SystemInfo*);
+UINT32 getInfoBoxItemCount(UINT32,SystemInfo*);
 UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
 void getCurrentDateTimeVerbose(TCHAR *);
 std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
-void openFileDiag(HWND,FILE_EXTENSION,TCHAR*, int);
+enum class ACTION openFileDiag(HWND,FILE_EXTENSION,TCHAR*, int);
 void writeToFile(wofstream&, SystemInfo*, int, WRITE_OUT_TYPE);
 wstring fromChToWideStr(char *value);
 wstring fromIntToWideStr(int);
@@ -80,5 +88,5 @@ void prependMinuteStr(WORD min, TCHAR *minBuff);
 vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter);
 std::wstring netAdapterStringWrapper(NetAdapter);
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
-bool isMultiSlot(int);
+bool fileIOCheck(wofstream&);
 #endif

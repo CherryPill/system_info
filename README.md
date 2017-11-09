@@ -2,7 +2,7 @@
 
 SystemInfo enables you to view information about the hardware components of your computer. 
 <p align="center">
-<img src="http://i.imgur.com/7Bz7E5C.png">
+<img src="https://i.imgur.com/vmmwSer.png">
 </p>
 <hr />
 
@@ -17,11 +17,14 @@ Supports the following operating systems:
 - Windows 8/8.1 (x86/x64)
 - Windows 10 (x86/x64)
 
+
 Might also work on modern Windows Server systems, but I didn't test it.
 
 The program is written in C/C++ and uses barebones WindowsAPI for its GUI.
 
 This program is free software.
+
+<a href="https://github.com/CherryPill/system_info/releases">Download</a>
 
 ***
 

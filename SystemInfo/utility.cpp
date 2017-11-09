@@ -20,9 +20,6 @@ void centerWindow(POINT *upperLeftCorner) {
 void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
 }
-bool isMultiSlot(int index) {
-	return (index > 4 && index < 9) ? true : false;
-}
 std::wstring convertStringToWide(const std::string& as) {
 	wchar_t* buf = new wchar_t[as.size() * 2 + 2];
 	swprintf(buf, L"%S", as.c_str());
@@ -162,7 +159,7 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + 5;
 	return adjustedYAxisOffset;
 }
-UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info) {
+UINT32 getInfoBoxItemCount(UINT32 ITEM_ID, SystemInfo *info) {
 	UINT32 hardwareListSize = 0;
 	switch (ITEM_ID) {
 		case GPU_INFO: {
@@ -181,12 +178,12 @@ UINT32 isAdjustRequired(UINT32 ITEM_ID, SystemInfo *info) {
 			hardwareListSize = info->getCDROMDevices().size();
 			break;
 		}
-		case AUDIO_INFO: {
-			hardwareListSize = info->getAudio().size();
-			break;
-		}
 		case NETWORK_INFO: {
 			hardwareListSize = info->getNetworkAdaptersText().size();
+			break;
+		}
+		default: {
+			return 1; //single field like CPU or BIOS
 			break;
 		}
 	}
@@ -232,12 +229,13 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 		return finalString;
 	}
 }
-void openFileDiag(HWND mainWindow, 
+ACTION openFileDiag(HWND mainWindow, 
 	FILE_EXTENSION extension, 
 	TCHAR *fullOpenSavePath, int mode)  {
 	OPENFILENAME fileName;
 	TCHAR szFile[MAX_PATH];
 	ZeroMemory(&fileName, sizeof(fileName));
+	szFile[0] = L'\0';
 	fileName.lStructSize = sizeof(fileName);
 	fileName.hwndOwner = mainWindow;
 	fileName.nMaxFile = sizeof(szFile);
@@ -254,14 +252,16 @@ void openFileDiag(HWND mainWindow,
 	else {
 		fileName.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
 	}
-	TCHAR buffer[256];
-	ZeroMemory(&buffer, sizeof(buffer));
-	generateFileName(buffer,extension);
-	fileName.lpstrFileTitle = buffer;
-	fileName.lpstrFile = buffer;
 	if (mode) {
+		TCHAR buffer[256];
+		ZeroMemory(&buffer, sizeof(buffer));
+		generateFileName(buffer, extension);
+		fileName.lpstrFileTitle = buffer;
+		fileName.lpstrFile = buffer;
 		if (GetSaveFileName(&fileName)) {
+			
 			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
+
 			//success
 		}
 		else {
@@ -269,12 +269,15 @@ void openFileDiag(HWND mainWindow,
 		}
 	}
 	else {
+		
+		fileName.lpstrFile = szFile;
 		if (GetOpenFileName(&fileName)) {
 			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
+			return ACTION::ACCEPTED;
 			//success
 		}
 		else {
-			//failure
+			return ACTION::CANCELED_OUT;
 		}
 	}
 
@@ -311,6 +314,10 @@ void writeToFile(wofstream &fileStream, SystemInfo *info, int counter, WRITE_OUT
 		}
 		case 11: {
 			fileStream << info->getUptime().c_str();
+			break;
+		}
+		case 12: {
+			fileStream << info->getSnapshotGenDateTime().c_str();
 			break;
 		}
 		}
@@ -378,4 +385,12 @@ void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
 	}
 	_tcscpy(fileName, prevInstance);
 #undef fullPath
+}
+bool fileIOCheck(wofstream &stream) {
+	if (stream) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
