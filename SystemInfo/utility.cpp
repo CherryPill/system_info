@@ -394,3 +394,59 @@ bool fileIOCheck(wofstream &stream) {
 		return false;
 	}
 }
+
+void calculateTimeAndFormat(TCHAR *formattedTimeString) {
+
+	UINT64 uptimeMilliseconds = GetTickCount64();
+	UINT64 uptimeSeconds = 0;
+	UINT64 uptimeMinutes = 0;
+	UINT64 uptimeHours = 0;
+	UINT64 uptimeDays = 0;
+
+	uptimeSeconds = uptimeMilliseconds / 1000;
+	uptimeMinutes = uptimeSeconds / 60;
+	uptimeHours = uptimeSeconds / 3600;
+	if (uptimeMinutes>1) {
+		uptimeSeconds -= uptimeMinutes * 60;
+	}
+	if (uptimeHours > 0) {
+		uptimeMinutes -= uptimeHours * 60;
+		if (uptimeHours > 24) {
+			uptimeDays = uptimeHours / 24;
+			uptimeHours -= uptimeDays * 24;
+		}
+	}
+	if (uptimeDays != 0) {
+		if (uptimeHours != 0) {
+			if (uptimeHours > 1) {
+				_stprintf(formattedTimeString,
+					uptimeDays>1 ? L"%llu days, %llu hrs, %llu mins, %llu seconds" : 
+					L"%llu day, %llu hrs, %llu mins, %llu seconds",
+					uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+			}
+			else {
+				_stprintf(formattedTimeString, uptimeDays>1 ? L"%llu days, %llu hr" 
+				: L"%llu day, %llu hr, %llu mins, %ll seconds", uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+
+			}
+			_stprintf(formattedTimeString, L"%llu days, %llu hrs, %llu mins, %llu seconds", 
+			uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+		}
+		else {
+			_stprintf(formattedTimeString, uptimeDays>1 ? L"%llu days, %llu hrs, %llu mins, %llu seconds" :
+			 L"%llu day, %llu hrs, %llu mins, %llu seconds", uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+		}
+	}
+	else {
+		if (uptimeHours < 1) {
+			_stprintf(formattedTimeString, L"%llu mins, %llu secs", uptimeMinutes, uptimeSeconds);
+			//_stprintf(formattedTimeString, L"%s",L"Less than an hour");
+		}
+		else if (uptimeHours == 1) {
+			_stprintf(formattedTimeString, L"%llu hr, %llu mins, %llu seconds", uptimeHours, uptimeMinutes, uptimeSeconds);
+		}
+		else {
+			_stprintf(formattedTimeString, L"%llu hrs, %llu mins, %llu seconds", uptimeHours, uptimeMinutes, uptimeSeconds);
+		}
+	}
+}

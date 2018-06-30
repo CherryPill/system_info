@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <tchar.h>
+#include <process.h>
 #include "resource.h"
 #include "SystemInfo.h"
 #include "sysinfo.h"
@@ -17,8 +18,11 @@
 #include "saveSpecs.h"
 #include "aboutDialog.h"
 #include "binImport.h"
+int g_scrollY = 0;
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
+	PAINTSTRUCT ps;
+	HDC hdc;
 	switch (msg) {
 	case WM_CREATE: {
 		loadImages();
@@ -31,7 +35,20 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 		createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
 		populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
-
+			
+			RECT rc = { 0 };
+			GetClientRect(hwnd, &rc);
+			SCROLLINFO si = { 0 };
+			si.cbSize = sizeof(SCROLLINFO);
+			si.fMask = SIF_ALL;
+			si.nMin = 0;
+			si.nMax = scrollFullPageHeight;
+			si.nPage = (rc.bottom - rc.top);
+			si.nPos = 0;
+			si.nTrackPos = 0;
+			SetScrollInfo(hwnd, SB_VERT, &si, true);
+		
+		
 		EnumChildWindows(hwnd,
 			(WNDENUMPROC)SetFont,
 			(LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
@@ -125,6 +142,67 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_DESTROY: {
 			PostQuitMessage(WM_QUIT);
 			return 0;
+		}
+		case WM_PAINT: {
+			hdc = BeginPaint(hwnd, &ps);
+			// TODO: Add any drawing code here...
+			EndPaint(hwnd, &ps);
+		}
+		case WM_LBUTTONDOWN:
+		{
+			SCROLLINFO si = { 0 };
+			si.cbSize = sizeof(SCROLLINFO);
+			si.fMask = SIF_POS;
+			si.nPos = 0;
+			si.nTrackPos = 0;
+			GetScrollInfo(hwnd, SB_VERT, &si);
+		
+			break;
+		}
+		case WM_VSCROLL:
+		{
+			auto action = LOWORD(wParam);
+			HWND hScroll = (HWND)lParam;
+			int pos = -1;
+			if (action == SB_THUMBPOSITION || action == SB_THUMBTRACK) {
+				pos = HIWORD(wParam);
+			}
+			else if (action == SB_LINEDOWN) {
+				pos = g_scrollY + 30;
+			}
+			else if (action == SB_LINEUP) {
+				pos = g_scrollY - 30;
+			}
+			if (pos == -1)
+				break;
+			WCHAR buf[20];
+			SCROLLINFO si = { 0 };
+			si.cbSize = sizeof(SCROLLINFO);
+			si.fMask = SIF_POS;
+			si.nPos = pos;
+			si.nTrackPos = 0;
+			SetScrollInfo(hwnd, SB_VERT, &si, true);
+			GetScrollInfo(hwnd, SB_VERT, &si);
+			pos = si.nPos;
+			POINT pt;
+			pt.x = 0;
+			pt.y = pos - g_scrollY;
+			auto hdc = GetDC(hwnd);
+			LPtoDP(hdc, &pt, 1);
+			ReleaseDC(hwnd, hdc);
+			ScrollWindow(hwnd, 0, -pt.y, NULL, NULL);
+			g_scrollY = pos;
+			return 0;
+		}
+		case WM_SIZE: {
+			int newWidth = LOWORD(lParam);
+			int newHeight = HIWORD(lParam);
+			wchar_t *t = new wchar_t[100];
+			_stprintf(t,L"%dx%d",newWidth,newHeight);
+			#ifdef _DEBUG
+				MessageBox(NULL, t, L"Window size", MB_OK);
+			#endif
+			break;
 		}
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -233,13 +311,15 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 			//return rec structure
 			if (listSize>=2) {
 				yStartOffSet = adjustItemHeight(parent, y, listSize);
-
 				continue;
 			}
 		}
 		yStartOffSet += (ITEM_HEIGHT + 2);
 	}
 	scrollFullPageHeight = yStartOffSet;
+	wchar_t *t = new wchar_t[100];
+	_stprintf(t,L"%d",scrollFullPageHeight);
+
 }
 void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 		SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
@@ -273,8 +353,25 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 	}
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
 		currentMachineInfo->getAudio().c_str());
-	SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
-		currentMachineInfo->getUptime().c_str());
+	if (!PROGRAM_INSTANCE) {
+		DWORD uptimeThreadId;
+		HANDLE threadHandle = (HANDLE) _beginthreadex(0, 0, updateUptime, 0, 0, 0);
+	}
+	else {
+		SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
+			currentMachineInfo->getUptime().c_str());
+	}
+}
+
+unsigned int __stdcall updateUptime(void *t) {
+	static TCHAR timeBuff[256];
+	while (true) {
+		ZeroMemory(timeBuff, sizeof(timeBuff));
+		calculateTimeAndFormat(timeBuff);
+		BOOL res = SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO), timeBuff);
+		Sleep(500);
+	}
+	_endthreadex(0);
 }
 
 void createIPToggleControl(HWND parent, int xOff, int yOff) {
@@ -315,11 +412,13 @@ void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
 	}
 	showStatus = !showStatus;
 }
+
 void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 }
+
 void displayMessage(UI_MESS_RES res, UI_MESS_ACTION act) {
 	MessageBox(NULL, (UI_messagesTxt[static_cast<int>(res)] +
 		 savefileExtensions[static_cast<int>(act)] + L" file").c_str(), 
@@ -332,4 +431,16 @@ void displayMessage(UI_MESS_RES res, UI_MESS_ACTION act) {
 						:
 							MB_ICONERROR);
 
+}
+
+void displayMessageGeneric(UI_MESS_RES res, const TCHAR *message) {
+	MessageBox(NULL, message,
+		UI_messagesCapt[static_cast<int>(res)].c_str(),
+		MB_OK
+		|
+			!static_cast<int>(res)
+				?
+					MB_ICONINFORMATION
+				:
+					MB_ICONERROR);
 }

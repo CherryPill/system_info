@@ -89,4 +89,5 @@ vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter);
 std::wstring netAdapterStringWrapper(NetAdapter);
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
 bool fileIOCheck(wofstream&);
+void calculateTimeAndFormat(TCHAR*);
 #endif

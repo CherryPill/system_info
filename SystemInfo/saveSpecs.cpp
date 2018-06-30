@@ -28,6 +28,11 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info) {
 	htmlOutFile.open(fullSavePath, wofstream::out);
 	htmlOutFile.imbue(loc);
 	TCHAR commentBuff[256] = {0};
+
+
+	
+
+
 	getCurrentDateTimeVerbose(commentBuff);
 	htmlOutFile<<saveSpecs::htmlCommentStart;
 	htmlOutFile<<saveSpecs::uniformComment;

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <tchar.h>
-#include "SoftwareInfo.h"
+#include "SoftwareInfo.h"	
 #include "resource.h"
 using namespace std;
 extern int PROGRAM_INSTANCE; //0 - parent, 1 - child

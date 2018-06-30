@@ -22,4 +22,5 @@ wstring getActualPhysicalMemory(HRESULT, IWbemServices*, IWbemLocator*);
 wstring getSocket(HRESULT, IWbemServices*, IWbemLocator*);
 void getDimensionsAndFrequency(HRESULT, IWbemServices*, IWbemLocator*, UINT*);
 void getAudio(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
+IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc, IWbemServices *pSvc, BSTR stringQuery);
 #endif

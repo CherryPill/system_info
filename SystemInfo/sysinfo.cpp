@@ -3,13 +3,37 @@
 #include <intrin.h>
 #include <comdef.h>
 #include <Wbemidl.h>
+#include <sstream>
+#include <atlconv.h>
 #include "network.h"
 #include "globalVars.h"
 #include "sysinfo.h"
 #include "SystemInfo.h"
 #include "utility.h"
 #include "SMBIOS.h"
+#include "mainWindowProcedure.h"
 #pragma comment(lib, "wbemuuid.lib")
+
+void getCPUTemp(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+//hardware
+void getBIOS(SystemInfo *localMachine);
+void getOS(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getCPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getMB(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getRAM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getGPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getMonitor(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getStorage(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getCDROM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getAudio(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void getNetworkAdapters(SystemInfo *localMachine);
+void getUptime(SystemInfo *localMachine);
+
+void (*getInfoFuncs[])(SystemInfo*,HRESULT, IWbemServices*, IWbemLocator*) = 
+							{getOS, getCPU, getMB, getRAM, getGPU, getMonitor, 
+							getStorage, getCDROM, getAudio};
+
+
 //the actual function that does all the work
 int getSystemInformation(SystemInfo *localMachine)
 {
@@ -116,20 +140,16 @@ int getSystemInformation(SystemInfo *localMachine)
 
 	// Step 6: --------------------------------------------------
 	// Use the IWbemServices pointer to make requests of WMI ----
-	
+
 	//temp
 	getCPUTemp(localMachine, hres, pSvc, pLoc);
 	//hardware
 	getBIOS(localMachine);
-	getOS(localMachine, hres, pSvc, pLoc);
-	getCPU(localMachine, hres, pSvc, pLoc);
-	getMB(localMachine, hres, pSvc, pLoc);
-	getRAM(localMachine, hres, pSvc, pLoc);
-	getGPU(localMachine, hres, pSvc, pLoc);
-	getMonitor(localMachine, hres, pSvc, pLoc);
-	getStorage(localMachine, hres, pSvc, pLoc);
-	getCDROM(localMachine, hres, pSvc, pLoc);
-	getAudio(localMachine, hres, pSvc, pLoc);
+
+	for (int x = 0;x< sizeof(getInfoFuncs)/sizeof(getInfoFuncs[0]);x++) {
+		(*getInfoFuncs[x])(localMachine, hres, pSvc, pLoc);
+	}
+	
 	getNetworkAdapters(localMachine);
 	getUptime(localMachine);
 	// Cleanup
@@ -141,33 +161,12 @@ int getSystemInformation(SystemInfo *localMachine)
 
 	return 0;   // Program successfully completed.
 }
-void getCPUInfo()
-{
-	
-}
+
 void getCPU(SystemInfo *localMachine,
 	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc)
-{
+	IWbemLocator *pLoc) {
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
 
-	IEnumWbemClassObject* pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_Processor"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
-
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		           // Program has failed.
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -200,7 +199,7 @@ void getCPU(SystemInfo *localMachine,
 			maxClockInGhZ = (double)maxClockInMhZ / 1000;
 			_stprintf(maxClockBuff, _T("%.1lf"), maxClockInGhZ);
 			maxClock = wstring(maxClockBuff);
-			fullCPUString = processor + L" @ " + maxClock + L" Ghz";
+			fullCPUString = processor + L" @ " + maxClock + L" GHz";
 		}
 		else {
 			fullCPUString = processor;
@@ -214,28 +213,11 @@ void getCPU(SystemInfo *localMachine,
 	}
 	pEnumerator->Release();
 }
+
 void getRAM(SystemInfo *localMachine,
 	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc)
-{
-	IEnumWbemClassObject *pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_PhysicalMemory"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
-
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		              // Program has failed.
-	}
+	IWbemLocator *pLoc) {
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_PhysicalMemory"));
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -267,12 +249,21 @@ void getRAM(SystemInfo *localMachine,
 		double capacityDouble;
 		TCHAR capacityStrBuff[10];
 		TCHAR clockStrBuff[10];
+		wstring bankLabel;
+		UINT32 bank;
+		TCHAR bankLabelBuff[100];
+		wstring bankStr;
 		capacityStr = getActualPhysicalMemory(hres, pSvc,pLoc);
 		
 		hr = pclsObj->Get(L"FormFactor", 0, &vtProp, 0, 0);
 		formFactor = vtProp.uintVal;
 		formFactorStr = RAMFormFactors[formFactor];
 		
+		hr = pclsObj->Get(L"BankLabel", 0, &vtProp, 0, 0);
+		bank = vtProp.uintVal;
+		_stprintf(bankLabelBuff, _T("%d"), bank);
+		bankStr = wstring(bankLabelBuff);
+
 		hr = pclsObj->Get(L"MemoryType", 0, &vtProp, 0, 0);
 		memoryType = vtProp.uintVal;
 		memoryTypeStr = RAMMemoryTypes[memoryType];
@@ -291,26 +282,8 @@ void getRAM(SystemInfo *localMachine,
 }
 void getOS(SystemInfo *localMachine, 
 			HRESULT hres, IWbemServices *pSvc,
-			IWbemLocator *pLoc)
-{
-	IEnumWbemClassObject* pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_OperatingSystem"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
-
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		             // Program has failed.
-	}
+			IWbemLocator *pLoc) {
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_OperatingSystem"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -351,23 +324,8 @@ void getOS(SystemInfo *localMachine,
 void getMB(SystemInfo *localMachine,
 		HRESULT hres, IWbemServices *pSvc,
 		IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = NULL;
-	pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_BaseBoard"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_BaseBoard"));
 
-	if (FAILED(hres)) {
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -403,26 +361,10 @@ void getMB(SystemInfo *localMachine,
 }
 wstring getActualPhysicalMemory(HRESULT hres, 
 	IWbemServices *pSvc,
-	IWbemLocator *pLoc)
-{
+	IWbemLocator *pLoc){
 	wstring ram;
-	IEnumWbemClassObject *pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_PhysicalMemory"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_PhysicalMemory"));
 
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 	double accumulatedRAM = 0;
@@ -464,24 +406,8 @@ void getGPU(SystemInfo *localMachine,
 	HRESULT hres, IWbemServices *pSvc,
 	IWbemLocator *pLoc)
 {
-	IEnumWbemClassObject *pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_VideoController"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_VideoController"));
 
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		// Program has failed.
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -527,24 +453,8 @@ void getMonitor(SystemInfo *localMachine,
 	HRESULT hres, IWbemServices *pSvc,
 	IWbemLocator *pLoc)
 {
-	IEnumWbemClassObject *pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_DesktopMonitor"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DesktopMonitor"));
 
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		// Program has failed.
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -586,23 +496,8 @@ void getDimensionsAndFrequency(HRESULT hres,
 	IWbemServices *pSvc,
 	IWbemLocator *pLoc, UINT *arr)
 {
-	IEnumWbemClassObject *pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_DisplayConfiguration"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DisplayConfiguration"));
 
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 	double accumulatedRAM = 0;
@@ -633,24 +528,8 @@ void getDimensionsAndFrequency(HRESULT hres,
 void getStorage(SystemInfo *localMachine,
 	HRESULT hres, IWbemServices *pSvc,
 	IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = NULL;
-	pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_DiskDrive"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DiskDrive"));
 
-	if (FAILED(hres)) {
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		// Program has failed.
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -700,26 +579,9 @@ void getCDROM(SystemInfo *localMachine,
 	HRESULT hres, IWbemServices *pSvc,
 	IWbemLocator *pLoc)
 {
-
 	IEnumWbemClassObject* pEnumerator = NULL;
-	pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_CDROMDrive"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_CDROMDrive"));
 
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		// Program has failed.
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -753,24 +615,8 @@ void getAudio(SystemInfo *localMachine,
 	IWbemLocator *pLoc)
 {
 	IEnumWbemClassObject* pEnumerator = NULL;
-	pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_SoundDevice"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
+	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_SoundDevice"));
 
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		// Program has failed.
-	}
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -799,53 +645,18 @@ void getAudio(SystemInfo *localMachine,
 	}
 	pEnumerator->Release();
 }
-void getUptime(SystemInfo *localMachine) {
-		VARIANT vtProp;
-		wstring soundCaption;
-		wstring uptimeStr;
-		UINT64 uptimeMilliseconds = GetTickCount64();
-		UINT64 uptimeSeconds = 0;
-		UINT64 uptimeHours = 0;
-		UINT64 uptimeDays = 0;
-		TCHAR *format = NULL;
-		TCHAR formattedTimeString[256] = {0};
-		uptimeSeconds = uptimeMilliseconds/1000;
-		uptimeHours = uptimeSeconds/3600;
-		if (uptimeHours > 0) {
-			if (uptimeHours > 24) {
-				uptimeDays = uptimeHours / 24;
-				uptimeHours -= uptimeDays * 24;
-			}
-		}
-			if (uptimeDays != 0) {
-				if (uptimeHours != 0) {
-					if (uptimeHours > 1) {
-						_stprintf(formattedTimeString, uptimeDays>1?L"%llu days and %llu hours": L"%llu day and %llu hours", uptimeDays, uptimeHours);
-					}
-					else{
-						_stprintf(formattedTimeString, uptimeDays>1?L"%llu days and %llu hour":L"%llu day and %llu hour", uptimeDays, uptimeHours);
 
-					}
-					_stprintf(formattedTimeString, L"%llu days and %llu hours", uptimeDays, uptimeHours);
-				}
-				else {
-					_stprintf(formattedTimeString, uptimeDays>1?L"%llu days":L"%llu day", uptimeDays, uptimeHours);
-				}
-			}
-			else {
-				if (uptimeHours < 1) {
-					_stprintf(formattedTimeString, L"%s",L"Less than an hour");
-				}
-				else if (uptimeHours == 1) {
-					_stprintf(formattedTimeString, L"%llu hour", uptimeHours);
-				}
-				else {
-					_stprintf(formattedTimeString, L"%llu hours", uptimeHours);
-				}
-			}
-			uptimeStr = wstring(formattedTimeString);
-			localMachine->setUptime(uptimeStr);
+void getUptime(SystemInfo *localMachine) {
+		
+		wstring uptimeStr;
+		TCHAR formattedTimeString[256] = {0};
+
+		calculateTimeAndFormat(formattedTimeString);
+		
+		uptimeStr = wstring(formattedTimeString);
+		localMachine->setUptime(uptimeStr);
 }
+
 void getBIOS(SystemInfo *localMachine) {
 	DWORD needBufferSize = 0;
 	TCHAR biosData[256];
@@ -878,23 +689,8 @@ wstring getSocket(HRESULT hres, IWbemServices *pSvc,
 	IWbemLocator *pLoc) {
 	wstring socket;
 	IEnumWbemClassObject* pEnumerator = NULL;
-	hres = pSvc->ExecQuery(
-		bstr_t("WQL"),
-		bstr_t("SELECT * FROM Win32_Processor"),
-		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-		NULL,
-		&pEnumerator);
-
-	if (FAILED(hres))
-	{
-		cout << "Query for operating system name failed."
-			<< " Error code = 0x"
-			<< hex << hres << endl;
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		// Program has failed.
-	}
+	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
+	
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -918,4 +714,25 @@ wstring getSocket(HRESULT hres, IWbemServices *pSvc,
 	}
 	pEnumerator->Release();
 	return socket;
+}
+
+IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc, 
+										IWbemServices *pSvc, BSTR stringQuery) {
+	IEnumWbemClassObject* pEnumerator = NULL;
+	hres = pSvc->ExecQuery(
+		bstr_t("WQL"),
+		stringQuery,
+		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
+		NULL,
+		&pEnumerator);
+	if (FAILED(hres)){
+		displayMessageGeneric(UI_MESS_RES::FAILURE, 
+		L"Query for operating system failed");
+		pSvc->Release();
+		pLoc->Release();
+		CoUninitialize();
+	}
+	else {
+		return pEnumerator;
+	}
 }

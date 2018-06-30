@@ -11,4 +11,6 @@ void loadImages(void);
 void toggleIpAddress(HWND, SystemInfo*);
 void updateNetworkAdaptersView(SystemInfo*);
 void displayMessage(enum class UI_MESS_RES, enum class UI_MESS_ACTION);
+void displayMessageGeneric(enum class UI_MESS_RES, const TCHAR*);
+unsigned int __stdcall updateUptime(void*);
 #endif

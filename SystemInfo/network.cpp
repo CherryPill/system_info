@@ -95,20 +95,21 @@ int getIpAddress(char *ipBuff) {
 	int connectionRes = 1;
 	
 	
+#ifndef _DEBUG
 	HINTERNET hInternet, hFile;
 	DWORD rSize;
 	char *buffer = new char[128];
-	
+
 	hInternet = InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 
-	if ((hFile = 
+	if ((hFile =
 		InternetOpenUrl(
-		hInternet, 
-		L"https://api.ipify.org", 
-		NULL, 
-		0, 
-		INTERNET_FLAG_RELOAD,
-		0)) != NULL)
+			hInternet,
+			L"https://api.ipify.org",
+			NULL,
+			0,
+			INTERNET_FLAG_RELOAD,
+			0)) != NULL)
 	{
 		InternetReadFile(hFile, buffer, 128, &rSize);
 		buffer[rSize] = '\0';
@@ -121,8 +122,10 @@ int getIpAddress(char *ipBuff) {
 	}
 	InternetCloseHandle(hInternet);
 	//test fallback
-	
-	//strcpy(ipBuff, "1.1.1.1.");
+	#else
+		strcpy(ipBuff, "1.1.1.1.");
+#endif
+
 	return connectionRes;
 }
 
