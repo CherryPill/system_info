@@ -1,5 +1,5 @@
 #include <windows.h>
-#include "SystemInfo.h"
+#include "core/SystemInfo.h"
 #ifndef MAINWINDOWPROCEDURE_H
 #define MAINWINDOWPROCEDURE_H
 LRESULT CALLBACK mainWindowProc(HWND, UINT, WPARAM, LPARAM);
@@ -10,7 +10,5 @@ void createIPToggleControl(HWND, int, int);
 void loadImages(void);
 void toggleIpAddress(HWND, SystemInfo*);
 void updateNetworkAdaptersView(SystemInfo*);
-void displayMessage(enum class UI_MESS_RES, enum class UI_MESS_ACTION);
-void displayMessageGeneric(enum class UI_MESS_RES, const TCHAR*);
 unsigned int __stdcall updateUptime(void*);
 #endif

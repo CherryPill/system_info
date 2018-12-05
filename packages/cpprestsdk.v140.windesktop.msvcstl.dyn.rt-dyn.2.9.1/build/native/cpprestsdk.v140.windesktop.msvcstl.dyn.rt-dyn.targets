@@ -1,0 +1,46 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Force-Enable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' == '' And (('$(PlatformToolset)' != 'v140' And '$(PlatformToolset)' != 'v141') Or '$(ApplicationType)' != '')">
+    <Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn>true</Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Force-Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' != ''">
+    <Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn>true</Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' == ''">
+    <ClCompile>
+      <AdditionalOptions Condition="'$(PlatformToolset)'=='v140' Or '$(PlatformToolset)'=='v141'">/d2notypeopt %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions Condition="'$(PlatformToolset)' == 'v120_xp'">CPPREST_TARGET_XP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <!-- Workaround Visual Studio Android bug missing -funwind-tables if -fexceptions is specified. -->
+      <AdditionalOptions Condition="'$(PlatformToolset)' == 'Clang_3_6'">-funwind-tables %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <LibraryDependencies Condition="'$(PlatformToolset)' == 'Clang_3_6'">m;%(LibraryDependencies)</LibraryDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' == ''">
+    <Link>
+      <AdditionalDependencies Condition="'$(Configuration)' == 'Debug' And '$(Platform)' == 'x64'">$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\Debug\cpprest140d_2_9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)' == 'Release' And '$(Platform)' == 'x64'">$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\Release\cpprest140_2_9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)' == 'Debug' And ('$(Platform)' == 'Win32' Or '$(Platform)' == 'x86')">$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x86\Debug\cpprest140d_2_9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)' == 'Release' And ('$(Platform)' == 'Win32' Or '$(Platform)' == 'x86')">$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x86\Release\cpprest140_2_9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' And '$(Platform)' == 'x64' And '$(Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' == ''">
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\Debug\cpprest140d_2_9.dll" />
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\Debug\cpprest140d_2_9.pdb" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release' And '$(Platform)' == 'x64' And '$(Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' == ''">
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\Release\cpprest140_2_9.dll" />
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\Release\cpprest140_2_9.pdb" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' And ('$(Platform)' == 'Win32' Or '$(Platform)' == 'x86') And '$(Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' == ''">
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x86\Debug\cpprest140d_2_9.dll" />
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x86\Debug\cpprest140d_2_9.pdb" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release' And ('$(Platform)' == 'Win32' Or '$(Platform)' == 'x86') And '$(Disable-cpprestsdk-v140-windesktop-msvcstl-dyn-rt-dyn)' == ''">
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x86\Release\cpprest140_2_9.dll" />
+    <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x86\Release\cpprest140_2_9.pdb" />
+  </ItemGroup>
+</Project>

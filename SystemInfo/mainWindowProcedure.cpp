@@ -6,18 +6,18 @@
 #include <tchar.h>
 #include <process.h>
 #include "resource.h"
-#include "SystemInfo.h"
-#include "sysinfo.h"
-#include "globalVars.h"
-#include "appconst.h"
-#include "itemIDs.h"
-#include "iconLabelIDs.h"
+#include "core/SystemInfo.h"
+#include "core/sysinfo.h"
+#include "glb/globalVars.h"
+#include "const/appconst.h"
+#include "const/itemIDs.h"
+#include "const/iconLabelIDs.h"
 #include "mainWindowProcedure.h"
-#include "screenCapture.h"
-#include "utility.h"
-#include "saveSpecs.h"
-#include "aboutDialog.h"
-#include "binImport.h"
+#include "export/screenCapture.h"
+#include "util/utility.h"
+#include "export/saveSpecs.h"
+#include "dialog/aboutDialog.h"
+#include "import/binImport.h"
 int g_scrollY = 0;
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
@@ -31,6 +31,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		}
 		else {
 			getSystemInformation(localMachine->getCurrentInstance());
+            test();
 		}
 
 		createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
@@ -57,48 +58,39 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	}
 	
 	case WM_COMMAND: {
-		switch (LOWORD(wParam)) {
-		case ID_FILE_TAKESCREENSHOT: {
-			takeScreenshot(hwnd);
+		WORD gottenCommand = LOWORD(wParam);
+		switch (gottenCommand) {
+		case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
+			takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL);
 			break;
 		}
-		case ID_EXPORT_XML: {
+		case ID_FILE_TAKESCREENSHOT_UPLOAD_IMGUR: {
+			takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET);
+			break;
+		}
+		case ID_EXPORT_XML:
+		case ID_EXPORT_TXT:
+		case ID_EXPORT_HTML: {
 			TCHAR *dateTime = new TCHAR[256];
+			//export xml
 			getCurrentDateTimeVerbose(dateTime);
 			wstring dateTimeConv(dateTime);
 			localMachine->
 				getCurrentInstance()->
-					setSnapshotGenDateTime(dateTimeConv);
+				setSnapshotGenDateTime(dateTimeConv);
 			delete dateTime;
-			if (saveSpecs::saveAsXML(hwnd, localMachine->getCurrentInstance())) {
-				displayMessage(UI_MESS_RES::SUCCESS, UI_MESS_ACTION::WRITE_OUT_XML);
+			RESULT_STRUCT resStruct;
+
+			saveSpecs::save(gottenCommand, resStruct, hwnd, localMachine->getCurrentInstance());
+			if (resStruct.result) {
+				displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(gottenCommand));
+				if (displayPromptForAction(actionPromptText[0]) == IDYES) {
+					if ((int)openDefAppForExpData(gottenCommand) <= 0x20) {
+						displayMessageGeneric(UI_MESS_RES::FAILURE, L"Unable to open exported data");
+					}
+				}
+				break;
 			}
-			else {
-				displayMessage(UI_MESS_RES::FAILURE, UI_MESS_ACTION::WRITE_OUT_XML);
-			}
-			break;
-		}
-		case ID_EXPORT_TXT: {
-			if (saveSpecs::saveAsText(hwnd, localMachine->getCurrentInstance())) {
-				displayMessage(UI_MESS_RES::SUCCESS, UI_MESS_ACTION::WRITE_OUT_TXT);
-			}
-			else {
-				displayMessage(UI_MESS_RES::FAILURE, UI_MESS_ACTION::WRITE_OUT_TXT);
-			}
-			break;
-		}
-		case ID_EXPORT_HTML: {
-			if (saveSpecs::saveAsHTML(hwnd, localMachine->getCurrentInstance())) {
-				displayMessage(UI_MESS_RES::SUCCESS, UI_MESS_ACTION::WRITE_OUT_HTML);
-			}
-			else {
-				displayMessage(UI_MESS_RES::FAILURE, UI_MESS_ACTION::WRITE_OUT_HTML);
-			}
-			break;
-		}
-		case ID_EXPORT_BIN: {
-			//stub
-			break;
 		}
 		case ID_IMPORT_FROMXML: {
 			importAsXML(hwnd);
@@ -417,30 +409,4 @@ void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 		formListString(currentMachineInfo,
 			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
-}
-
-void displayMessage(UI_MESS_RES res, UI_MESS_ACTION act) {
-	MessageBox(NULL, (UI_messagesTxt[static_cast<int>(res)] +
-		 savefileExtensions[static_cast<int>(act)] + L" file").c_str(), 
-			UI_messagesCapt[static_cast<int>(res)].c_str(), 
-				MB_OK 
-				| 
-					!static_cast<int>(res)
-						?
-							MB_ICONINFORMATION
-						:
-							MB_ICONERROR);
-
-}
-
-void displayMessageGeneric(UI_MESS_RES res, const TCHAR *message) {
-	MessageBox(NULL, message,
-		UI_messagesCapt[static_cast<int>(res)].c_str(),
-		MB_OK
-		|
-			!static_cast<int>(res)
-				?
-					MB_ICONINFORMATION
-				:
-					MB_ICONERROR);
 }

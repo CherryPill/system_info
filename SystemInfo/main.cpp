@@ -1,8 +1,8 @@
 #define ISOLATION_AWARE_ENABLED 1
 #include <windows.h>
 #include "resource.h"
-#include "globalVars.h"
-#include "utility.h"
+#include "glb/globalVars.h"
+#include "util/utility.h"
 #include "mainWindowProcedure.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,

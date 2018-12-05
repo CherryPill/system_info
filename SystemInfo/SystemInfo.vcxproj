@@ -150,40 +150,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="aboutDialog.cpp" />
-    <ClCompile Include="binImport.cpp" />
-    <ClCompile Include="globalVars.cpp" />
+    <ClCompile Include="core\sysinfo.cpp" />
+    <ClCompile Include="core\SystemInfo.cpp" />
+    <ClCompile Include="dialog\aboutDialog.cpp" />
+    <ClCompile Include="export\saveSpecs.cpp" />
+    <ClCompile Include="export\screenCapture.cpp" />
+    <ClCompile Include="glb\globalVars.cpp" />
+    <ClCompile Include="import\binImport.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainWindowProcedure.cpp" />
-    <ClCompile Include="network.cpp" />
-    <ClCompile Include="pugixml.cpp" />
-    <ClCompile Include="saveSpecs.cpp" />
-    <ClCompile Include="screenCapture.cpp" />
+    <ClCompile Include="meta\SoftwareInfo.cpp" />
+    <ClCompile Include="network\common\network.cpp" />
+    <ClCompile Include="network\rest\multipart_parser.cpp" />
+    <ClCompile Include="network\rest\rest.cpp" />
+    <ClCompile Include="pugi\pugixml.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
-    <ClCompile Include="SoftwareInfo.cpp" />
-    <ClCompile Include="sysinfo.cpp" />
-    <ClCompile Include="SystemInfo.cpp" />
-    <ClCompile Include="utility.cpp" />
+    <ClCompile Include="util\utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="aboutDialog.h" />
-    <ClInclude Include="appconst.h" />
-    <ClInclude Include="binImport.h" />
-    <ClInclude Include="globalVars.h" />
-    <ClInclude Include="iconLabelIDs.h" />
-    <ClInclude Include="itemIDs.h" />
+    <ClInclude Include="const\appconst.h" />
+    <ClInclude Include="const\iconLabelIDs.h" />
+    <ClInclude Include="const\itemIDs.h" />
+    <ClInclude Include="core\sysinfo.h" />
+    <ClInclude Include="core\SystemInfo.h" />
+    <ClInclude Include="dialog\aboutDialog.h" />
+    <ClInclude Include="export\saveSpecs.h" />
+    <ClInclude Include="export\screenCapture.h" />
+    <ClInclude Include="glb\globalVars.h" />
+    <ClInclude Include="import\binImport.h" />
     <ClInclude Include="mainWindowProcedure.h" />
-    <ClInclude Include="network.h" />
-    <ClInclude Include="pugiconfig.hpp" />
-    <ClInclude Include="pugixml.hpp" />
+    <ClInclude Include="meta\SoftwareInfo.h" />
+    <ClInclude Include="network\common\network.h" />
+    <ClInclude Include="network\rest\rest.h" />
+    <ClInclude Include="pugi\pugiconfig.hpp" />
+    <ClInclude Include="pugi\pugixml.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="saveSpecs.h" />
-    <ClInclude Include="screenCapture.h" />
     <ClInclude Include="SMBIOS.h" />
-    <ClInclude Include="SoftwareInfo.h" />
-    <ClInclude Include="sysinfo.h" />
-    <ClInclude Include="SystemInfo.h" />
-    <ClInclude Include="utility.h" />
+    <ClInclude Include="util\utility.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SystemInfo.rc" />
@@ -221,5 +224,13 @@
     </Manifest>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.targets" Condition="Exists('..\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.targets'))" />
+  </Target>
 </Project>
