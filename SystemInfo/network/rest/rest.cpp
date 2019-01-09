@@ -10,7 +10,7 @@ bool uploadImage(RESULT_STRUCT&, TCHAR*) {
 
 	//Set up http client and request
 	http_request req;
-	http_client client(U("https://api.cloudinary.com/v1_1/dx7nbh8ey/image/upload"));
+	http_client client(U("https://api.cloudinary.com/v1_1/:^)/image/upload"));
 	req.set_method(web::http::methods::POST);
 	req.set_body(body, "multipart/form-data; boundary=" + boundary);
 	pplx::task<http_response> response_task = client.request(req);
