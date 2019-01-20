@@ -1,14 +1,8 @@
 #include "rest.h"
 #include "multipart_parser.h"
-#include <cpprest/http_client.h>
-using namespace utility;                    // Common utilities like string conversions
-using namespace web;                        // Common features like URIs.
-using namespace web::http;                  // Common HTTP functionality
-using namespace web::http::client;          // HTTP client features
-
 bool uploadImage(RESULT_STRUCT&, TCHAR*) {
 	//Use MultipartParser to get the encoded body content and boundary
-	web::http::parser::MultipartParser parser;
+	MultipartParser parser;
 	parser.AddParameter("upload_preset", "tnlvl6s7");
 	parser.AddFile("file", "image.jpg");
 	std::string boundary = parser.boundary();
@@ -16,7 +10,7 @@ bool uploadImage(RESULT_STRUCT&, TCHAR*) {
 
 	//Set up http client and request
 	http_request req;
-	http_client client(U("https://api.cloudinary.com/v1_1/dx7nbh8ey/image/upload"));
+	http_client client(U("https://api.cloudinary.com/v1_1/:^)/image/upload"));
 	req.set_method(web::http::methods::POST);
 	req.set_body(body, "multipart/form-data; boundary=" + boundary);
 	pplx::task<http_response> response_task = client.request(req);
@@ -34,5 +28,4 @@ bool uploadImage(RESULT_STRUCT&, TCHAR*) {
 
 		}
 	}
-	return true;
 }
