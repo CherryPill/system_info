@@ -79,18 +79,19 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				getCurrentInstance()->
 				setSnapshotGenDateTime(dateTimeConv);
 			delete dateTime;
-			RESULT_STRUCT resStruct;
+			RESULT_STRUCT resStruct = {};
 
-			saveSpecs::save(gottenCommand, resStruct, hwnd, localMachine->getCurrentInstance());
+			saveSpecs::save(gottenCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
 			if (resStruct.result) {
 				displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(gottenCommand));
 				if (displayPromptForAction(actionPromptText[0]) == IDYES) {
-					if ((int)openDefAppForExpData(gottenCommand) <= 0x20) {
+					if (openDefAppForExpData(gottenCommand, &resStruct) != TRUE) {
 						displayMessageGeneric(UI_MESS_RES::FAILURE, L"Unable to open exported data");
 					}
 				}
 				break;
 			}
+			break;
 		}
 		case ID_IMPORT_FROMXML: {
 			importAsXML(hwnd);

@@ -497,23 +497,20 @@ UI_MESS_ACTION getUIMessByCommand(WORD command) {
 			}
 	}
 }
+
 int displayPromptForAction(std::wstring promptMessage) {
 	return MessageBox(NULL, promptMessage.c_str(),
 		L"Notification", MB_YESNO);
 }
-HINSTANCE openDefAppForExpData(WORD command, RESULT_STRUCT res) {
-	std::wstring openUrl = res.src;
-	switch (command) {
-		case ID_EXPORT_XML:
-		case ID_EXPORT_HTML: {
-			openUrl.insert(0, L"file:///");
-			break;
-		}
-	}
-	return ShellExecute(NULL, 
-		L"open", 
-		openUrl.c_str(), 
-		NULL, 
-		NULL, 
-		SW_SHOWNORMAL);
+
+//opens external application to view exported data, opens 'open with' dialog
+BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res) {
+	std::wstring openUrl = res->src;
+	CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	SHELLEXECUTEINFO sei = { sizeof(sei) };
+	sei.nShow = SW_SHOWNORMAL;
+	sei.lpVerb = L"openas";
+	sei.lpFile = openUrl.c_str();
+	sei.fMask = SEE_MASK_INVOKEIDLIST;
+	return ShellExecuteEx(&sei);
 }

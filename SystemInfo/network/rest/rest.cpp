@@ -1,8 +1,14 @@
 #include "rest.h"
 #include "multipart_parser.h"
+#include <cpprest/http_client.h>
+using namespace utility;                    // Common utilities like string conversions
+using namespace web;                        // Common features like URIs.
+using namespace web::http;                  // Common HTTP functionality
+using namespace web::http::client;          // HTTP client features
+
 bool uploadImage(RESULT_STRUCT&, TCHAR*) {
 	//Use MultipartParser to get the encoded body content and boundary
-	MultipartParser parser;
+	web::http::parser::MultipartParser parser;
 	parser.AddParameter("upload_preset", "tnlvl6s7");
 	parser.AddFile("file", "image.jpg");
 	std::string boundary = parser.boundary();
@@ -28,4 +34,5 @@ bool uploadImage(RESULT_STRUCT&, TCHAR*) {
 
 		}
 	}
+	return true;
 }

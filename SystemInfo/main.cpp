@@ -4,7 +4,6 @@
 #include "glb/globalVars.h"
 #include "util/utility.h"
 #include "mainWindowProcedure.h"
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow) {
 	int argc;

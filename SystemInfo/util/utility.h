@@ -117,5 +117,5 @@ void displayExportMessage(enum class UI_MESS_RES, enum class UI_MESS_ACTION);
 void displayMessageGeneric(enum class UI_MESS_RES, const TCHAR*);
 UI_MESS_ACTION getUIMessByCommand(WORD);
 int displayPromptForAction(std::wstring);
-HINSTANCE openDefAppForExpData(WORD command);
+BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res);
 #endif

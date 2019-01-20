@@ -15,6 +15,7 @@
 
 namespace web {
 	namespace http {
+		namespace parser{
 
 		class MultipartParser
 		{
@@ -48,6 +49,7 @@ namespace web {
 			std::vector<std::pair<std::string, std::string> > params_;
 			std::vector<std::pair<std::string, std::string> > files_;
 		};
+		}
 
 	} //namespace web::http
 } //namespace web

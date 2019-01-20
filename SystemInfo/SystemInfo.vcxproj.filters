@@ -158,6 +158,9 @@
     <ClInclude Include="network\rest\rest.h">
       <Filter>network\rest</Filter>
     </ClInclude>
+    <ClInclude Include="network\rest\multipart_parser.h">
+      <Filter>network\rest</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SystemInfo.rc">
@@ -243,5 +246,8 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="SystemInfo.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

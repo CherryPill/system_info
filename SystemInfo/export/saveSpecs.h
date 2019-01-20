@@ -1,6 +1,7 @@
 #pragma once
 #include "../core/SystemInfo.h"
 #include <tchar.h>
+#include "../util/utility.h"
 class saveSpecs
 {
 private:
@@ -12,10 +13,12 @@ private:
 	static const TCHAR *CSSCommentStart;
 	static const TCHAR *CSSCommentEnd;
 public:
-	static bool saveAsXML(HWND, SystemInfo*);
-	static bool saveAsHTML(HWND, SystemInfo*);
-	static bool saveAsText(HWND, SystemInfo*);
-	static bool save(WORD command, RESULT_STRUCT res, HWND hwnd,
+	static bool saveAsXML(HWND, SystemInfo*, RESULT_STRUCT*);
+	static bool saveAsHTML(HWND, SystemInfo*, RESULT_STRUCT*);
+	static bool saveAsText(HWND, SystemInfo*, RESULT_STRUCT*);
+	static bool save(WORD command, 
+		RESULT_STRUCT *res, 
+		HWND hwnd,
 		SystemInfo *localMachine);
 	saveSpecs();
 	~saveSpecs();

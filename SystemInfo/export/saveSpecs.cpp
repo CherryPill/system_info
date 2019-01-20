@@ -16,77 +16,102 @@ const TCHAR *saveSpecs::CSSCommentStart = _T("/*");
 const TCHAR *saveSpecs::CSSCommentEnd = _T("*/\n");
 saveSpecs::saveSpecs() {}
 
+//to do add file write exceptions
 bool saveSpecs::save(WORD command, 
-					RESULT_STRUCT res, 
+					RESULT_STRUCT *res, 
 					HWND hwnd, 
 					SystemInfo *localMachine) {
-
+	
+	switch (command) {
+		case ID_EXPORT_XML: {
+			res->result = saveAsXML(hwnd, localMachine, res);
+			break;
+		}
+		case ID_EXPORT_TXT: {
+			res->result = saveAsText(hwnd, localMachine, res);
+			break;
+		}
+		case ID_EXPORT_HTML: {
+			res->result = saveAsHTML(hwnd, localMachine, res);
+			break;
+		}
+	}
+	return res->result;
 }
-bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info) {
+bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
 
-	openFileDiag(hwnd, FILE_EXTENSION::HTML, fullSavePath, 1);
+	if (openFileDiag(hwnd, FILE_EXTENSION::HTML, fullSavePath, 1) != ACTION::CANCELED_OUT) {
+		std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
+		wofstream htmlOutFile;
+		htmlOutFile.open(fullSavePath, wofstream::out);
+		htmlOutFile.imbue(loc);
+		TCHAR commentBuff[256] = { 0 };
+		getCurrentDateTimeVerbose(commentBuff);
+		htmlOutFile << saveSpecs::htmlCommentStart;
+		htmlOutFile << saveSpecs::uniformComment;
+		htmlOutFile << commentBuff;
+		htmlOutFile << saveSpecs::htmlCommentEnd;
+		htmlOutFile << saveSpecs::htmlStartPoint;
+		htmlOutFile << L"<div id=\"hardwareinfo\">\n";
+		for (int x = 0; x < totalItemsCount - 1; x++) { //excluding snapshot
+			htmlOutFile << _T("\t<div class=\"item\">\n");
+			htmlOutFile << _T("\t\t<div class=\"header\">");
+			htmlOutFile << itemStrings[x].c_str();
+			htmlOutFile << _T("\t\t</div>\n");
+			htmlOutFile << _T("\t\t<div class=\"info\">");
+			writeToFile(htmlOutFile, info, x, WRITE_OUT_TYPE::FILE_HTML);
+			htmlOutFile << L"\t</div>\n</div>\n";
+		}
+		htmlOutFile << L"</div>\n</body>\n</html>\n";
+		htmlOutFile.close();
+		resultStruct->src.assign(fullSavePath);
 
-	std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
-	wofstream htmlOutFile;
-	htmlOutFile.open(fullSavePath, wofstream::out);
-	htmlOutFile.imbue(loc);
-	TCHAR commentBuff[256] = {0};
-
-	getCurrentDateTimeVerbose(commentBuff);
-	htmlOutFile<<saveSpecs::htmlCommentStart;
-	htmlOutFile<<saveSpecs::uniformComment;
-	htmlOutFile<<commentBuff;
-	htmlOutFile << saveSpecs::htmlCommentEnd;
-	htmlOutFile << saveSpecs::htmlStartPoint;
-	htmlOutFile << L"<div id=\"hardwareinfo\">\n";
-	for (int x = 0; x < totalItemsCount-1; x++) { //excluding snapshot
-		htmlOutFile << _T("\t<div class=\"item\">\n");
-		htmlOutFile << _T("\t\t<div class=\"header\">");
-		htmlOutFile << itemStrings[x].c_str();
-		htmlOutFile << _T("\t\t</div>\n");
-		htmlOutFile << _T("\t\t<div class=\"info\">");
-		writeToFile(htmlOutFile, info, x, WRITE_OUT_TYPE::FILE_HTML);
-		htmlOutFile << L"\t</div>\n</div>\n";
+		return fileIOCheck(htmlOutFile);
 	}
-	htmlOutFile << L"</div>\n</body>\n</html>\n";
-	htmlOutFile.close();
-	return fileIOCheck(htmlOutFile);
+	else {
+		return false;
+	}
 }
-bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info) {
+bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 	
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
 
-	openFileDiag(hwnd, FILE_EXTENSION::XML, fullSavePath, 1);
+	if (openFileDiag(hwnd, FILE_EXTENSION::XML, fullSavePath, 1) != ACTION::CANCELED_OUT) {
 
-	std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
-	wofstream xmlOutFile;
-	xmlOutFile.open(fullSavePath, wofstream::out);
-	xmlOutFile.imbue(loc);
-	TCHAR commentBuff[256] = { 0 };
-	getCurrentDateTimeVerbose(commentBuff);
-	xmlOutFile << saveSpecs::xmlDTD;
-	xmlOutFile << saveSpecs::htmlCommentStart;
-	xmlOutFile << saveSpecs::uniformComment;
-	xmlOutFile << commentBuff;
-	xmlOutFile << saveSpecs::htmlCommentEnd;
-	
-	xmlOutFile<<L"<hardwareinfo>\n";
-	for (int x = 0; x < totalItemsCount; x++) {
-		xmlOutFile << _T("\t<item type=\"");
-		xmlOutFile << itemStrings[x].c_str();
-		xmlOutFile << _T("\">\n\t\t");
-		
-		writeToFile(xmlOutFile, info, x, WRITE_OUT_TYPE::FILE_XML);
-	
-		xmlOutFile << L"\t</item>\n";
+		std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
+		wofstream xmlOutFile;
+		xmlOutFile.open(fullSavePath, wofstream::out);
+		xmlOutFile.imbue(loc);
+		TCHAR commentBuff[256] = { 0 };
+		getCurrentDateTimeVerbose(commentBuff);
+		xmlOutFile << saveSpecs::xmlDTD;
+		xmlOutFile << saveSpecs::htmlCommentStart;
+		xmlOutFile << saveSpecs::uniformComment;
+		xmlOutFile << commentBuff;
+		xmlOutFile << saveSpecs::htmlCommentEnd;
+
+		xmlOutFile << L"<hardwareinfo>\n";
+		for (int x = 0; x < totalItemsCount; x++) {
+			xmlOutFile << _T("\t<item type=\"");
+			xmlOutFile << itemStrings[x].c_str();
+			xmlOutFile << _T("\">\n\t\t");
+
+			writeToFile(xmlOutFile, info, x, WRITE_OUT_TYPE::FILE_XML);
+
+			xmlOutFile << L"\t</item>\n";
+		}
+		xmlOutFile << L"</hardwareinfo>\n";
+		xmlOutFile.close();
+		resultStruct->src.assign(fullSavePath);
+		return fileIOCheck(xmlOutFile);
 	}
-	xmlOutFile<<L"</hardwareinfo>\n";
-	xmlOutFile.close();
-	return fileIOCheck(xmlOutFile);
+	else {
+		return false;
+	}
 }
 void importAsXML(HWND hwnd) {
 
@@ -125,31 +150,36 @@ void importAsXML(HWND hwnd) {
 		}
 	}
 }
-bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info) {
+bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
 
-	openFileDiag(hwnd, FILE_EXTENSION::TXT, fullSavePath, 1);
-
-	std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
-	wofstream txtOutFile;
-	txtOutFile.open(fullSavePath, wofstream::out);
-	txtOutFile.imbue(loc);
-	TCHAR commentBuff[256] = { 0 };
-	getCurrentDateTimeVerbose(commentBuff);
-	txtOutFile << saveSpecs::uniformComment;
-	txtOutFile << commentBuff;
-	txtOutFile<<endl<<endl;
-	for (int x = 0; x < totalItemsCount-1; x++) { //excluding snapshot
-		txtOutFile << itemStrings[x].c_str();
-		txtOutFile << _T(":\n");
-		txtOutFile << _T("\t");
-		writeToFile(txtOutFile, info, x, WRITE_OUT_TYPE::FILE_TXT);
-		txtOutFile<<endl;
+	if (openFileDiag(hwnd, FILE_EXTENSION::TXT, fullSavePath, 1) != ACTION::CANCELED_OUT) {
+		std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
+		wofstream txtOutFile;
+		txtOutFile.open(fullSavePath, wofstream::out);
+		txtOutFile.imbue(loc);
+		TCHAR commentBuff[256] = { 0 };
+		getCurrentDateTimeVerbose(commentBuff);
+		txtOutFile << saveSpecs::uniformComment;
+		txtOutFile << commentBuff;
+		txtOutFile << endl << endl;
+		for (int x = 0; x < totalItemsCount - 1; x++) { //excluding snapshot
+			txtOutFile << itemStrings[x].c_str();
+			txtOutFile << _T(":\n");
+			txtOutFile << _T("\t");
+			writeToFile(txtOutFile, info, x, WRITE_OUT_TYPE::FILE_TXT);
+			txtOutFile << endl;
+		}
+		txtOutFile.close();
+		resultStruct->src.assign(fullSavePath);
+		return fileIOCheck(txtOutFile);
 	}
-	txtOutFile.close();
-	return fileIOCheck(txtOutFile);
+	else {
+		return false;
+	}
+	
 }
 saveSpecs::~saveSpecs() {
 }

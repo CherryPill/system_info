@@ -7,7 +7,7 @@
 
 namespace web {
 	namespace http {
-
+		namespace parser{
 		const std::string MultipartParser::boundary_prefix_("----CppRestSdkClient");
 		const std::string MultipartParser::rand_chars_("0123456789"
 			"abcdefghijklmnopqrstuvwxyz"
@@ -106,7 +106,7 @@ namespace web {
 			*content_type = "application/octet-stream";
 			return;
 		}
-
+	}
 	} //namespace web::http
 } //namespace web
 
