@@ -167,22 +167,32 @@ UINT32 getInfoBoxItemCount(UINT32 ITEM_ID, SystemInfo *info) {
 	switch (ITEM_ID) {
 		case GPU_INFO: {
 			hardwareListSize = info->getGPUDevices().size();
+			if(hardwareListSize==0)
+				hardwareListSize=1;
 			break;
 		}
 		case MONITOR_INFO: {
 			hardwareListSize = info->getDisplayDevices().size();
+			if(hardwareListSize==0)
+				hardwareListSize=1;
 			break;
 		}
 		case STORAGE_INFO: {
 			hardwareListSize = info->getStorageMediums().size();
+			if(hardwareListSize==0)
+				hardwareListSize=1;
 			break;
 		}
 		case OPTICAL_INFO: {
 			hardwareListSize = info->getCDROMDevices().size();
+			if(hardwareListSize==0)
+				hardwareListSize=1;
 			break;
 		}
 		case NETWORK_INFO: {
 			hardwareListSize = info->getNetworkAdaptersText().size();
+			if(hardwareListSize==0)
+				hardwareListSize=1;
 			break;
 		}
 		default: {
