@@ -23,7 +23,7 @@ static vector<HICON> iconArr;
 
 const static int totalItemsCount = 13;
 
-static WORD ICON_IDS[totalItemsCount] {
+static WORD ICON_IDS[totalItemsCount]{
 	BIOS_ICON,
 	OS_ICON,
 	CPU_ICON,
@@ -80,7 +80,7 @@ static TCHAR *savefileExtensionsLong[5] = {
 	_T(".png images (*.png)\0*.png\0All Files (*.*)\0*.*\0")
 };
 
-static wstring RAMFormFactors[24] {
+static wstring RAMFormFactors[24]{
 	L"Unknown form factor",
 	L"",
 	L"SIP",
@@ -107,7 +107,7 @@ static wstring RAMFormFactors[24] {
 	L"LGA"
 };
 
-static wstring RAMMemoryTypes[26] {
+static wstring RAMMemoryTypes[26]{
 	L"DDR3",
 	L"",
 	L"SDRAM",
@@ -145,4 +145,6 @@ enum class ACTION {
 	CANCELED_OUT
 };
 
+extern WNDPROC lpfnScrEditProc;
+extern TCHAR sysInfoConfigDirectoryPath[256];
 #endif

@@ -12,56 +12,43 @@ void importData(SystemInfo* snapshotInstance) {
 			trimWhiteSpace(itemValue);
 			if (attrValue == L"BIOS/UEFI") {
 				snapshotInstance->setBIOS(itemValue);
-			}
-			else if (attrValue == L"Operating System") {
+			} else if (attrValue == L"Operating System") {
 				snapshotInstance->setOS(itemValue);
-			}
-			else if (attrValue == L"CPU") {
+			} else if (attrValue == L"CPU") {
 				snapshotInstance->setCPU(itemValue);
-			}
-			else if (attrValue == L"Motherboard") {
+			} else if (attrValue == L"Motherboard") {
 				snapshotInstance->setMB(itemValue);
-			}
-			else if (attrValue == L"RAM") {
+			} else if (attrValue == L"RAM") {
 				snapshotInstance->setRAM(itemValue);
-			}
-			else if (attrValue == L"Sound") {
+			} else if (attrValue == L"Sound") {
 				snapshotInstance->setAudio(itemValue);
-			}
-			else if (attrValue == L"Uptime") {
+			} else if (attrValue == L"Uptime") {
 				snapshotInstance->setUptime(itemValue);
-			}
-			else if (attrValue == L"GPU") {
-			for(pugi::xml_node subitem : item.children()){
+			} else if (attrValue == L"GPU") {
+				for (pugi::xml_node subitem : item.children()) {
 					snapshotInstance->addGPUDevice(subitem.first_child().value());
 				}
-			}
-			else if (attrValue == L"Display") {
+			} else if (attrValue == L"Display") {
 				for (pugi::xml_node subitem : item.children()) {
 					snapshotInstance->addDisplayDevice(subitem.first_child().value());
 				}
-			}
-			else if (attrValue == L"Storage") {
+			} else if (attrValue == L"Storage") {
 				for (pugi::xml_node subitem : item.children()) {
 					snapshotInstance->addStorageMedium(subitem.first_child().value());
 				}
-			}
-			else if (attrValue == L"Optical drives") {
+			} else if (attrValue == L"Optical drives") {
 				for (pugi::xml_node subitem : item.children()) {
 					snapshotInstance->addCDROMDevice(subitem.first_child().value());
 				}
-			}
-			else if (attrValue == L"Network and Connections") {
+			} else if (attrValue == L"Network and Connections") {
 				for (pugi::xml_node subitem : item.children()) {
 					snapshotInstance->addNetworkAdapterText(subitem.first_child().value());
 				}
-			}
-			else if (attrValue == L"Snapshot") {
+			} else if (attrValue == L"Snapshot") {
 				snapshotInstance->setSnapshotGenDateTime(itemValue);
 			}
 		}
-	}
-	else {
-        displayMessageGeneric(UI_MESS_RES::FAILURE, _T("Unable to parse XML file"));
+	} else {
+		displayMessageGeneric(UI_MESS_RES::FAILURE, _T("Unable to parse XML file"));
 	}
 }

@@ -8,15 +8,15 @@
 using namespace std;
 class NetAdapter;
 class SystemInfo {
-private:
+	private:
 	SystemInfo() {
-			this->BIOS = L"BIOS not detected";
-			this->OS = L"OS not detected";
-			this->RAM = L"RAM not detected";
-			this->MB = L"Motherboard not detected";
-			this->CPU = L"CPU not detected";
-			this->audio = L"Sound card not detected";
-			this->uptime = L"Uptime not set";
+		this->BIOS = L"BIOS not detected";
+		this->OS = L"OS not detected";
+		this->RAM = L"RAM not detected";
+		this->MB = L"Motherboard not detected";
+		this->CPU = L"CPU not detected";
+		this->audio = L"Sound card not detected";
+		this->uptime = L"Uptime not set";
 	}
 	wstring BIOS;
 	wstring OS;
@@ -32,7 +32,8 @@ private:
 	wstring audio;
 	wstring uptime;
 	wstring snapshotGenDateTime;
-public:
+
+	public:
 	static SystemInfo *getCurrentInstance() {
 		static SystemInfo *currentInstance = new SystemInfo();
 		return currentInstance;

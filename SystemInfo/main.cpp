@@ -13,6 +13,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	GetModuleFileName(NULL, fullExecPath, 256);
 	getFileNameFromPath(fullExecPath, execName);
 	_tcscat(execName, L" ");
+	configAppData();
 	if (argc > 1) {
 		PROGRAM_INSTANCE = 1;
 		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[1]);
@@ -63,6 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	SetClassLongPtr(mainWindowHwnd, GCLP_HBRBACKGROUND, (LONG)grayBrush);
 	ShowWindow(mainWindowHwnd, nCmdShow);
 	UpdateWindow(mainWindowHwnd);
+	MessageBox(NULL, sysInfoConfigDirectoryPath, NULL, MB_OK);
 	while (GetMessage(&message, NULL, 0, 0)) {
 		TranslateMessage(&message);
 		DispatchMessage(&message);

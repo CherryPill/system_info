@@ -1,10 +1,13 @@
 #include <Windows.h>
 #include <tchar.h>
 #include <vector>
+#include <ShlObj.h>
+#include <rpc.h>
 #include "../glb/globalVars.h"
 #include "../util/utility.h"
 #include "../const/itemIDs.h"
 #include "../core/SystemInfo.h"
+
 void positionWindow(POINT *upperLeftCorner) {
 
 	int offset = 0;
@@ -14,13 +17,16 @@ void positionWindow(POINT *upperLeftCorner) {
 	(*upperLeftCorner).x = (GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2) + offset;
 	(*upperLeftCorner).y = (GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2) + offset;
 }
+
 void centerWindow(POINT *upperLeftCorner) {
 	(*upperLeftCorner).x = GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2;
 	(*upperLeftCorner).y = GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2;
 }
+
 void trimNullTerminator(wstring &strToTrim) {
 	strToTrim = strToTrim.erase(strToTrim.length());
 }
+
 std::wstring convertStringToWide(const std::string& as) {
 
 	wchar_t* buf = new wchar_t[as.size() * 2 + 2];
@@ -30,6 +36,7 @@ std::wstring convertStringToWide(const std::string& as) {
 	delete[] buf;
 	return rval;
 }
+
 std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp) {
 
 	if (!bstr) {
@@ -51,29 +58,27 @@ std::string& BstrToStdString(const BSTR bstr, std::string& dst, int cp) {
 	}
 	return dst;
 }
-wstring parseDiskStorageName(wstring modelName)
-{
+
+wstring parseDiskStorageName(wstring modelName) {
+
 	wstring finalString = L"";
-	if (modelName.find(L"WDC",0,3) != wstring::npos) {
+	if (modelName.find(L"WDC", 0, 3) != wstring::npos) {
 		return storageMediumManufacturers[0];
-	}
-	else if (modelName.find(L"MHS",0,3) != wstring::npos) {
+	} else if (modelName.find(L"MHS", 0, 3) != wstring::npos) {
 		return storageMediumManufacturers[2];
-	}
-	else if (modelName.find(L"HTS",0,3) != wstring::npos) {
+	} else if (modelName.find(L"HTS", 0, 3) != wstring::npos) {
 		return storageMediumManufacturers[3];
-	}
-	else if (modelName.find(L"DTL") != wstring::npos) {
+	} else if (modelName.find(L"DTL") != wstring::npos) {
 		return storageMediumManufacturers[5];
-	}
-	else if (modelName.find(L"ST",0,2) != wstring::npos || modelName.find(L"SC",0,2) != wstring::npos) {
+	} else if (modelName.find(L"ST", 0, 2) != wstring::npos || modelName.find(L"SC", 0, 2) != wstring::npos) {
 		return storageMediumManufacturers[1];
-	}
-	else {
+	} else {
 		return finalString;
 	}
 }
+
 vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter) {
+
 	vector<wstring> res;
 	do {
 		const wchar_t *begin = s;
@@ -85,22 +90,25 @@ vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter) {
 	} while (*s++ != 0);
 	return res;
 }
+
 wstring convertUIntToString(UINT64 num) {
 	wstring str;
 	TCHAR *buff = new TCHAR[256];
-	_stprintf(buff,L"%u",num);
+	_stprintf(buff, L"%u", num);
 	str = wstring(buff);
 	delete buff;
 	return str;
 }
+
 void trimWhiteSpace(wstring &str) {
-	if(!str.empty()) {
-	int whiteSpaceStart = str.find_last_not_of(L" \t");
-	str.erase(whiteSpaceStart+1);
-	int whiteSpaceStartBeginning = str.find_first_not_of(L" \n\t");
-	str.erase(str.begin(), str.end()-(str.length() - whiteSpaceStartBeginning));
+	if (!str.empty()) {
+		int whiteSpaceStart = str.find_last_not_of(L" \t");
+		str.erase(whiteSpaceStart + 1);
+		int whiteSpaceStartBeginning = str.find_first_not_of(L" \n\t");
+		str.erase(str.begin(), str.end() - (str.length() - whiteSpaceStartBeginning));
 	}
 }
+
 //Generates string in the following format: "sysinfo capture @ YYYY-MM-DD-HH:MM.required_extension"
 void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension) {
 	ZeroMemory(completeFileName, sizeof(completeFileName));
@@ -110,6 +118,7 @@ void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension)
 	_tcscat(completeFileName, timeDateFileName);
 	_tcscat(completeFileName, savefileExtensions[(int)requiredExtension]);
 }
+
 void getCurrentDateTime(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
 	GetLocalTime(&currentTime);
@@ -117,24 +126,25 @@ void getCurrentDateTime(TCHAR *buffer) {
 	TCHAR minBuff[16];
 	prependMinuteStr(currentTime.wMinute, minBuff);
 	_stprintf(buffer, _T("%d-%d-%d_@_%d.%s"),
-		currentTime.wYear,
-		currentTime.wMonth,
-		currentTime.wDay,
-		currentTime.wHour,
-		minBuff,
-		currentTime.wSecond);
+			  currentTime.wYear,
+			  currentTime.wMonth,
+			  currentTime.wDay,
+			  currentTime.wHour,
+			  minBuff,
+			  currentTime.wSecond);
 }
+
 void prependMinuteStr(WORD val, TCHAR *valBuff) {
 	if (val < 10) {
 		_itow(val, valBuff, 10);
 		wstring temp = wstring(valBuff);
 		temp = L"0" + temp;
 		_tcscpy(valBuff, temp.c_str());
-	}
-	else {
+	} else {
 		_stprintf(valBuff, L"%d", val);
 	}
 }
+
 //format: Friday, January 21, 2017 @ 0 00
 void getCurrentDateTimeVerbose(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
@@ -143,13 +153,14 @@ void getCurrentDateTimeVerbose(TCHAR *buffer) {
 	GetLocalTime(&currentTime);
 	prependMinuteStr(currentTime.wMinute, minBuff);
 	_stprintf(buffer, _T("%s, %s %d, %d @ %d:%s"),
-		timeVerboseDaysOfWeek[currentTime.wDayOfWeek],
-		timeVerboseMonths[currentTime.wMonth],
-		currentTime.wDay,
-		currentTime.wYear,
-		currentTime.wHour,
-		minBuff);
+			  timeVerboseDaysOfWeek[currentTime.wDayOfWeek],
+			  timeVerboseMonths[currentTime.wMonth],
+			  currentTime.wDay,
+			  currentTime.wYear,
+			  currentTime.wHour,
+			  minBuff);
 }
+
 //adjusts item height based on the number of elements and returns updated offset
 UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCount) {
 	HWND itemHandle = GetDlgItem(windowHandle, ITEM_ID);
@@ -190,6 +201,9 @@ UINT32 getInfoBoxItemCount(UINT32 ITEM_ID, SystemInfo *info) {
 			break;
 		}
 	}
+	if (!hardwareListSize) {
+		hardwareListSize = 1;
+	}
 	return hardwareListSize;
 }
 //this function forms a single string to display within the program window
@@ -201,30 +215,25 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 	if (type == HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER) {
 		values = currentMachine->getGPUDevices();
 		emptyValue = itemStrings[5];
-	}
-	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY) {
+	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY) {
 		values = currentMachine->getDisplayDevices();
 		emptyValue = itemStrings[6];
-	}
-	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE) {
+	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE) {
 		values = currentMachine->getStorageMediums();
 		emptyValue = itemStrings[7];
-	}
-	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_CDROM) {
+	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_CDROM) {
 		values = currentMachine->getCDROMDevices();
 		emptyValue = itemStrings[8];
-	}
-	else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK) {
+	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK) {
 		values = currentMachine->getNetworkAdaptersText();
 		emptyValue = itemStrings[9];
 	}
 	if (values.empty()) {
 		return emptyValue + L" not detected";
-	}
-	else {
+	} else {
 		for (auto iterator = values.begin();
-		iterator != values.end();
-			iterator++) {
+			 iterator != values.end();
+			 iterator++) {
 			finalString.append(writeOutPrefix[static_cast<int>(wType)]);
 			finalString.append((*iterator));
 			finalString.append(writeOutPostfix[static_cast<int>(wType)]);
@@ -232,9 +241,9 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 		return finalString;
 	}
 }
-ACTION openFileDiag(HWND mainWindow, 
-	FILE_EXTENSION extension, 
-	TCHAR *fullOpenSavePath, int mode)  {
+ACTION openFileDiag(HWND mainWindow,
+					FILE_EXTENSION extension,
+					TCHAR *fullOpenSavePath, int mode) {
 	OPENFILENAME fileName;
 	TCHAR szFile[MAX_PATH];
 	ZeroMemory(&fileName, sizeof(fileName));
@@ -242,7 +251,7 @@ ACTION openFileDiag(HWND mainWindow,
 	fileName.lStructSize = sizeof(fileName);
 	fileName.hwndOwner = mainWindow;
 	fileName.nMaxFile = sizeof(szFile);
-	
+
 	TCHAR *shortExtension = savefileExtensions[(int)extension];
 	fileName.lpstrFilter = savefileExtensionsLong[(int)extension];
 	if (mode) {
@@ -251,8 +260,7 @@ ACTION openFileDiag(HWND mainWindow,
 			| OFN_OVERWRITEPROMPT
 			| OFN_EXPLORER
 			| OFN_HIDEREADONLY;
-	}
-	else {
+	} else {
 		fileName.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
 	}
 	if (mode) {
@@ -262,70 +270,66 @@ ACTION openFileDiag(HWND mainWindow,
 		fileName.lpstrFileTitle = buffer;
 		fileName.lpstrFile = buffer;
 		if (GetSaveFileName(&fileName)) {
-			
 			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
-
 			//success
-		}
-		else {
+		} else {
 			//failure
 		}
-	}
-	else {
-		
+	} else {
+
 		fileName.lpstrFile = szFile;
 		if (GetOpenFileName(&fileName)) {
 			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
 			return ACTION::ACCEPTED;
 			//success
-		}
-		else {
+		} else {
 			return ACTION::CANCELED_OUT;
 		}
 	}
 
 }
+
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter, WRITE_OUT_TYPE woType) {
 	if (counter >= 5 && counter <= 9) {
 		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), woType).c_str();
-	}
-	else {
+	} else {
 		switch (counter) {
-		case 0: {
-			fileStream << info->getBIOS().c_str();
-			break;
-		}
-		case 1: {
-			fileStream << info->getOS().c_str();
-			break;
-		}
-		case 2: {
-			fileStream << info->getCPU().c_str();
-			break;
-		}
-		case 3: {
-			fileStream << info->getMB().c_str();
-			break;
-		}
-		case 4: {
-			fileStream << info->getRAM().c_str();
-			break;
-		}
-		case 10: {
-			fileStream << info->getAudio().c_str();
-			break;
-		}
-		case 11: {
-			fileStream << info->getUptime().c_str();
-			break;
-		}
-		case 12: {
-			fileStream << info->getSnapshotGenDateTime().c_str();
-			break;
-		}
+			case 0: {
+				fileStream << info->getBIOS().c_str();
+				break;
+			}
+			case 1: {
+				fileStream << info->getOS().c_str();
+				break;
+			}
+			case 2: {
+				fileStream << info->getCPU().c_str();
+				break;
+			}
+			case 3: {
+				fileStream << info->getMB().c_str();
+				break;
+			}
+			case 4: {
+				fileStream << info->getRAM().c_str();
+				break;
+			}
+			case 10: {
+				fileStream << info->getAudio().c_str();
+				break;
+			}
+			case 11: {
+				fileStream << info->getUptime().c_str();
+				break;
+			}
+			case 12: {
+				fileStream << info->getSnapshotGenDateTime().c_str();
+				break;
+			}
 		}
 	}
 }
+
 wstring fromChToWideStr(char *value) {
 	char txtBuff[256] = { 0 };
 	wstring wStr;
@@ -335,6 +339,7 @@ wstring fromChToWideStr(char *value) {
 	wStr = wstring(_wtxtBuff);
 	return wStr;
 }
+
 wstring fromIntToWideStr(int type) {
 	wstring connType;
 	switch (type) {
@@ -368,19 +373,21 @@ wstring fromIntToWideStr(int type) {
 	}
 	return connType;
 }
+
 wstring netAdapterStringWrapper(NetAdapter adapter) {
 
 	wstring completeString = adapter.getAdapterDesc()
-			+ L": " + adapter.getAdapterAdr();
+		+ L": " + adapter.getAdapterAdr();
 	if (adapter.getAdapterType() != L"null") {
-			completeString += L" (" + adapter.getAdapterType() + L")";
-		}
+		completeString += L" (" + adapter.getAdapterType() + L")";
+	}
 	return completeString;
 }
+
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
 	TCHAR fullPathTempBuff[256] = { 0 };
 	_tcscpy(fullPathTempBuff, fullPath);
-#define fullPath fullPathTempBuff
+	#define fullPath fullPathTempBuff
 	TCHAR *ptr = _tcstok(fullPath, _T("\\"));
 	TCHAR *prevInstance;
 	while (ptr != NULL) {
@@ -388,13 +395,13 @@ void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
 		ptr = _tcstok(NULL, _T("\\"));
 	}
 	_tcscpy(fileName, prevInstance);
-#undef fullPath
+	#undef fullPath
 }
+
 bool fileIOCheck(wofstream &stream) {
 	if (stream) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -410,7 +417,7 @@ void calculateTimeAndFormat(TCHAR *formattedTimeString) {
 	uptimeSeconds = uptimeMilliseconds / 1000;
 	uptimeMinutes = uptimeSeconds / 60;
 	uptimeHours = uptimeSeconds / 3600;
-	if (uptimeMinutes>1) {
+	if (uptimeMinutes > 1) {
 		uptimeSeconds -= uptimeMinutes * 60;
 	}
 	if (uptimeHours > 0) {
@@ -424,83 +431,79 @@ void calculateTimeAndFormat(TCHAR *formattedTimeString) {
 		if (uptimeHours != 0) {
 			if (uptimeHours > 1) {
 				_stprintf(formattedTimeString,
-					uptimeDays>1 ? L"%llu days, %llu hrs, %llu mins, %llu seconds" : 
-					L"%llu day, %llu hrs, %llu mins, %llu seconds",
-					uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
-			}
-			else {
-				_stprintf(formattedTimeString, uptimeDays>1 ? L"%llu days, %llu hr" 
-				: L"%llu day, %llu hr, %llu mins, %ll seconds", uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+						  uptimeDays > 1 ? L"%llu days, %llu hrs, %llu mins, %llu seconds" :
+						  L"%llu day, %llu hrs, %llu mins, %llu seconds",
+						  uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+			} else {
+				_stprintf(formattedTimeString, uptimeDays > 1 ? L"%llu days, %llu hr"
+						  : L"%llu day, %llu hr, %llu mins, %ll seconds", uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
 
 			}
-			_stprintf(formattedTimeString, L"%llu days, %llu hrs, %llu mins, %llu seconds", 
-			uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+			_stprintf(formattedTimeString, L"%llu days, %llu hrs, %llu mins, %llu seconds",
+					  uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+		} else {
+			_stprintf(formattedTimeString, uptimeDays > 1 ? L"%llu days, %llu hrs, %llu mins, %llu seconds" :
+					  L"%llu day, %llu hrs, %llu mins, %llu seconds", uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
 		}
-		else {
-			_stprintf(formattedTimeString, uptimeDays>1 ? L"%llu days, %llu hrs, %llu mins, %llu seconds" :
-			 L"%llu day, %llu hrs, %llu mins, %llu seconds", uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
-		}
-	}
-	else {
+	} else {
 		if (uptimeHours < 1) {
 			_stprintf(formattedTimeString, L"%llu mins, %llu secs", uptimeMinutes, uptimeSeconds);
 			//_stprintf(formattedTimeString, L"%s",L"Less than an hour");
-		}
-		else if (uptimeHours == 1) {
+		} else if (uptimeHours == 1) {
 			_stprintf(formattedTimeString, L"%llu hr, %llu mins, %llu seconds", uptimeHours, uptimeMinutes, uptimeSeconds);
-		}
-		else {
+		} else {
 			_stprintf(formattedTimeString, L"%llu hrs, %llu mins, %llu seconds", uptimeHours, uptimeMinutes, uptimeSeconds);
 		}
 	}
 }
 
 void displayExportMessage(UI_MESS_RES res, UI_MESS_ACTION act) {
-    MessageBox(NULL, (UI_messagesTxt[static_cast<int>(res)] +
-        savefileExtensions[static_cast<int>(act)] + L" file").c_str(),
-        UI_messagesCapt[static_cast<int>(res)].c_str(),
-        MB_OK
-        |
-        !static_cast<int>(res)
-        ?
-        MB_ICONINFORMATION
-        :
-        MB_ICONERROR);
+	MessageBox(NULL, (UI_messagesTxt[static_cast<int>(res)] +
+					  savefileExtensions[static_cast<int>(act)] + L" file").c_str(),
+			   UI_messagesCapt[static_cast<int>(res)].c_str(),
+			   MB_OK
+			   |
+			   !static_cast<int>(res)
+			   ?
+			   MB_ICONINFORMATION
+			   :
+			   MB_ICONERROR);
 
 }
 
 void displayMessageGeneric(UI_MESS_RES res, const TCHAR *message) {
-    MessageBox(NULL, message,
-        UI_messagesCapt[static_cast<int>(res)].c_str(),
-        MB_OK
-        |
-        !static_cast<int>(res)
-        ?
-        MB_ICONINFORMATION
-        :
-        MB_ICONERROR);
+	MessageBox(NULL, message,
+			   UI_messagesCapt[static_cast<int>(res)].c_str(),
+			   MB_OK
+			   |
+			   !static_cast<int>(res)
+			   ?
+			   MB_ICONINFORMATION
+			   :
+			   MB_ICONERROR);
 }
+
 //gets the appropriate format message 
 UI_MESS_ACTION getUIMessByCommand(WORD command) {
 	switch (command) {
 		case (ID_EXPORT_XML): {
-				return UI_MESS_ACTION::WRITE_OUT_XML;
-				break;
-			}
+			return UI_MESS_ACTION::WRITE_OUT_XML;
+			break;
+		}
 		case (ID_EXPORT_TXT): {
-				return UI_MESS_ACTION::WRITE_OUT_TXT;
-				break;
-			}
+			return UI_MESS_ACTION::WRITE_OUT_TXT;
+			break;
+		}
 		case (ID_EXPORT_HTML): {
-				return UI_MESS_ACTION::WRITE_OUT_HTML;
-				break;
-			}
+			return UI_MESS_ACTION::WRITE_OUT_HTML;
+			break;
+		}
 	}
 }
 
 int displayPromptForAction(std::wstring promptMessage) {
 	return MessageBox(NULL, promptMessage.c_str(),
-		L"Notification", MB_YESNO);
+					  L"Notification", MB_YESNO);
 }
 
 //opens external application to view exported data, opens 'open with' dialog
@@ -513,4 +516,30 @@ BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res) {
 	sei.lpFile = openUrl.c_str();
 	sei.fMask = SEE_MASK_INVOKEIDLIST;
 	return ShellExecuteEx(&sei);
+}
+
+
+void configAppData() {
+	PWSTR sysAppDataPath;
+	TCHAR fullPath[256];
+	if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, NULL, NULL, &sysAppDataPath))) {
+		_tcscpy(fullPath, sysAppDataPath);
+		_tcscat(fullPath, L"\\SystemInfo");
+		CreateDirectoryW(fullPath, NULL);
+		_tcscpy(sysInfoConfigDirectoryPath, fullPath);
+	}
+}
+
+bool dirExists(LPCTSTR dirPath) {
+	DWORD dwAttr = GetFileAttributes(dirPath);
+	return (dwAttr != 0xffffffff && (dwAttr & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+bool createSimpleDirectory(TCHAR *path) {
+	return CreateDirectoryW(path, NULL);
+}
+
+void generateUUID(TCHAR *UUIDString) {
+	UUID uuid;
+	UuidCreate(&uuid);
 }

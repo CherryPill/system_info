@@ -17,6 +17,7 @@
 #include "util/utility.h"
 #include "export/saveSpecs.h"
 #include "dialog/aboutDialog.h"
+#include "dialog/scrUploadDialog.h"
 #include "import/binImport.h"
 int g_scrollY = 0;
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -24,19 +25,18 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	PAINTSTRUCT ps;
 	HDC hdc;
 	switch (msg) {
-	case WM_CREATE: {
-		loadImages();
-		if (PROGRAM_INSTANCE == 1) {
-			importData(localMachine->getCurrentInstance());
-		}
-		else {
-			getSystemInformation(localMachine->getCurrentInstance());
-            test();
-		}
+		case WM_CREATE: {
+			loadImages();
+			if (PROGRAM_INSTANCE == 1) {
+				importData(localMachine->getCurrentInstance());
+			} else {
+				getSystemInformation(localMachine->getCurrentInstance());
+				test();
+			}
 
-		createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
-		populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
-			
+			createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
+			populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
+
 			RECT rc = { 0 };
 			GetClientRect(hwnd, &rc);
 			SCROLLINFO si = { 0 };
@@ -48,84 +48,86 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			si.nPos = 0;
 			si.nTrackPos = 0;
 			SetScrollInfo(hwnd, SB_VERT, &si, true);
-		
-		
-		EnumChildWindows(hwnd,
-			(WNDENUMPROC)SetFont,
-			(LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
-			toggleIpAddress(hwnd, NULL);
-		return 0;
-	}
-	
-	case WM_COMMAND: {
-		WORD gottenCommand = LOWORD(wParam);
-		switch (gottenCommand) {
-		case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
-			takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL);
-			break;
-		}
-		case ID_FILE_TAKESCREENSHOT_UPLOAD_IMGUR: {
-			takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET);
-			break;
-		}
-		case ID_EXPORT_XML:
-		case ID_EXPORT_TXT:
-		case ID_EXPORT_HTML: {
-			TCHAR *dateTime = new TCHAR[256];
-			//export xml
-			getCurrentDateTimeVerbose(dateTime);
-			wstring dateTimeConv(dateTime);
-			localMachine->
-				getCurrentInstance()->
-				setSnapshotGenDateTime(dateTimeConv);
-			delete dateTime;
-			RESULT_STRUCT resStruct = {};
 
-			saveSpecs::save(gottenCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
-			if (resStruct.result) {
-				displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(gottenCommand));
-				if (displayPromptForAction(actionPromptText[0]) == IDYES) {
-					if (openDefAppForExpData(gottenCommand, &resStruct) != TRUE) {
-						displayMessageGeneric(UI_MESS_RES::FAILURE, L"Unable to open exported data");
-					}
+
+			EnumChildWindows(hwnd,
+				(WNDENUMPROC)SetFont,
+							 (LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
+			toggleIpAddress(hwnd, NULL);
+			return 0;
+		}
+
+		case WM_COMMAND: {
+			WORD gottenCommand = LOWORD(wParam);
+			switch (gottenCommand) {
+				case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
+					takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL);
+					break;
 				}
-				break;
+				case ID_FILE_TAKESCREENSHOT_UPLOAD_IMGUR: {
+
+					//takeScreenShotStub(); //fills link data
+					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET);
+					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG_SCRUPLOAD), hwnd, (DLGPROC)scrDlgProc);
+
+					break;
+				}
+				case ID_EXPORT_XML:
+				case ID_EXPORT_TXT:
+				case ID_EXPORT_HTML: {
+					TCHAR *dateTime = new TCHAR[256];
+					//export xml
+					getCurrentDateTimeVerbose(dateTime);
+					wstring dateTimeConv(dateTime);
+					localMachine->
+						getCurrentInstance()->
+						setSnapshotGenDateTime(dateTimeConv);
+					delete dateTime;
+					RESULT_STRUCT resStruct = {};
+
+					saveSpecs::save(gottenCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
+					if (resStruct.result) {
+						displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(gottenCommand));
+						if (displayPromptForAction(actionPromptText[0]) == IDYES) {
+							if (openDefAppForExpData(gottenCommand, &resStruct) != TRUE) {
+								displayMessageGeneric(UI_MESS_RES::FAILURE, L"Unable to open exported data");
+							}
+						}
+						break;
+					}
+					break;
+				}
+				case ID_IMPORT_FROMXML: {
+					importAsXML(hwnd);
+					break;
+				}
+				case ID_ABOUT: {
+					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)aboutDlgProc);
+					break;
+				}
+				case ID_FILE_EXIT: {
+					PostQuitMessage(WM_QUIT);
+					break;
+				}
+				case AUX_IP_TOGGLE: {
+					toggleIpAddress(hwnd, localMachine);
+					break;
+				}
 			}
-			break;
 		}
-		case ID_IMPORT_FROMXML: {
-			importAsXML(hwnd);
-			break;
-		}
-		case ID_ABOUT: {
-			DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG1), hwnd, (DLGPROC)aboutDlgProc);
-			break;
-		}
-		case ID_FILE_EXIT: {
-			PostQuitMessage(WM_QUIT);
-			break;
-		}
-		case AUX_IP_TOGGLE: {
-			toggleIpAddress(hwnd, localMachine);
-			break;
-		}
-		}
-	}
-	case WM_CTLCOLORSTATIC: {
-		HDC hdcStatic = (HDC)wParam;
-		if (GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
-			if (GetDlgCtrlID((HWND)lParam) == SNAPSHOT_LABEL) {
-				SetTextColor(hdcStatic, RGB(0, 255, 0));
-			}
-			else {
-				SetTextColor(hdcStatic, RGB(125, 207, 246));
-			}	
-		}
-		else {
-			if (GetDlgCtrlID((HWND)lParam) == AUX_IP_TOGGLE){
-				SetTextColor(hdcStatic, RGB(255, 0, 0));
-				
-			}
+		case WM_CTLCOLORSTATIC: {
+			HDC hdcStatic = (HDC)wParam;
+			if (GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
+				if (GetDlgCtrlID((HWND)lParam) == SNAPSHOT_LABEL) {
+					SetTextColor(hdcStatic, RGB(0, 255, 0));
+				} else {
+					SetTextColor(hdcStatic, RGB(125, 207, 246));
+				}
+			} else {
+				if (GetDlgCtrlID((HWND)lParam) == AUX_IP_TOGGLE) {
+					SetTextColor(hdcStatic, RGB(255, 0, 0));
+
+				}
 				SetTextColor(hdcStatic, RGB(255, 255, 255));
 			}
 			SetBkColor(hdcStatic, RGB(81, 81, 81));
@@ -138,7 +140,6 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		}
 		case WM_PAINT: {
 			hdc = BeginPaint(hwnd, &ps);
-			// TODO: Add any drawing code here...
 			EndPaint(hwnd, &ps);
 		}
 		case WM_LBUTTONDOWN:
@@ -149,7 +150,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			si.nPos = 0;
 			si.nTrackPos = 0;
 			GetScrollInfo(hwnd, SB_VERT, &si);
-		
+
 			break;
 		}
 		case WM_VSCROLL:
@@ -159,11 +160,9 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			int pos = -1;
 			if (action == SB_THUMBPOSITION || action == SB_THUMBTRACK) {
 				pos = HIWORD(wParam);
-			}
-			else if (action == SB_LINEDOWN) {
+			} else if (action == SB_LINEDOWN) {
 				pos = g_scrollY + 30;
-			}
-			else if (action == SB_LINEUP) {
+			} else if (action == SB_LINEUP) {
 				pos = g_scrollY - 30;
 			}
 			if (pos == -1)
@@ -188,13 +187,21 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return 0;
 		}
 		case WM_SIZE: {
+		#ifdef _DEBUG
 			int newWidth = LOWORD(lParam);
 			int newHeight = HIWORD(lParam);
 			wchar_t *t = new wchar_t[100];
-			_stprintf(t,L"%dx%d",newWidth,newHeight);
-			#ifdef _DEBUG
-				MessageBox(NULL, t, L"Window size", MB_OK);
-			#endif
+			_stprintf(t, L"%dx%d", newWidth, newHeight);
+			MessageBox(NULL, t, L"Window size", MB_OK);
+		#endif
+			break;
+		}
+		case WM_MOUSEWHEEL: {
+			if (((short)HIWORD(wParam)) / 120 > 0)
+				PostMessage(hwnd, WM_VSCROLL, SB_LINEUP, (LPARAM)0);
+			if (((short)HIWORD(wParam)) / 120 < 0)
+				PostMessage(hwnd, WM_VSCROLL, SB_LINEDOWN, (LPARAM)0);
+			return (0);
 			break;
 		}
 	}
@@ -202,15 +209,15 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 }
 BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 	SendMessage(child, WM_SETFONT, (LPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
-	SendMessage(GetDlgItem(GetParent(child), AUX_IP_TOGGLE), 
-		WM_SETFONT, 
-		(WPARAM)ipToggleBtnFont, MAKELPARAM(true, 0));
+	SendMessage(GetDlgItem(GetParent(child), AUX_IP_TOGGLE),
+				WM_SETFONT,
+				(WPARAM)ipToggleBtnFont, MAKELPARAM(true, 0));
 	return TRUE;
 }
 void loadImages(void) {
-	for (int x = 0;x<totalItemsCount;x++) {
-		HICON newIcon = (HICON)LoadImage(ghInstance, 
-		MAKEINTRESOURCE(ICON_IDS[x]), IMAGE_ICON, 16, 16, NULL);
+	for (int x = 0; x < totalItemsCount; x++) {
+		HICON newIcon = (HICON)LoadImage(ghInstance,
+										 MAKEINTRESOURCE(ICON_IDS[x]), IMAGE_ICON, 16, 16, NULL);
 		iconArr.push_back(newIcon);
 	}
 }
@@ -221,11 +228,11 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 		(
 			0,
 			L"Static",
-			(L"Snapshot as of "+info->getSnapshotGenDateTime()).c_str(),
+			(L"Snapshot as of " + info->getSnapshotGenDateTime()).c_str(),
 			WS_VISIBLE |
 			WS_CHILD |
 			DS_SETFONT | SS_CENTER,
-			mainWindowWidth/2-200,
+			mainWindowWidth / 2 - 200,
 			0,
 			400,
 			ITEM_HEIGHT,
@@ -237,61 +244,61 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	}
 	UINT32 yStartOffSet = 20;
 	int xStartOffSetLabel = 80;
-	int xStartOffSetInformation = xStartOffSetLabel + 25 ;
+	int xStartOffSetInformation = xStartOffSetLabel + 25;
 	//labels + information as a table
-	for (int x = BIOS_LABEL, y = BIOS_INFO,z=BIOS_ICON_LABEL;x<BIOS_INFO;x++,y++,z++) {
+	for (int x = BIOS_LABEL, y = BIOS_INFO, z = BIOS_ICON_LABEL; x < BIOS_INFO; x++, y++, z++) {
 		//icon
 		CreateWindowEx
-			(
-				0,
-				L"Static",
-				NULL,
-				WS_VISIBLE |
-				WS_CHILD |
-				SS_ICON | SS_CENTER,
-				xStartOffSetLabel-28,
-				yStartOffSet,
-				ITEM_WIDTH,
-				ITEM_HEIGHT,
-				parent,
-				(HMENU)z,
-				NULL,
-				NULL
-				);
-		SendDlgItemMessage(parent, z, 
-		STM_SETICON, 
-		(WPARAM)iconArr.at(x), 
-		NULL);
-		
+		(
+			0,
+			L"Static",
+			NULL,
+			WS_VISIBLE |
+			WS_CHILD |
+			SS_ICON | SS_CENTER,
+			xStartOffSetLabel - 28,
+			yStartOffSet,
+			ITEM_WIDTH,
+			ITEM_HEIGHT,
+			parent,
+			(HMENU)z,
+			NULL,
+			NULL
+		);
+		SendDlgItemMessage(parent, z,
+						   STM_SETICON,
+						   (WPARAM)iconArr.at(x),
+						   NULL);
+
 		//text
 		CreateWindowEx
-			(
-				0,
-				L"Static",
-				(LPCTSTR)itemStrings[x].c_str(),
-				WS_VISIBLE |
-				WS_CHILD |
-				DS_SETFONT | SS_LEFT,
-				xStartOffSetLabel, 
-				yStartOffSet,
-				ITEM_WIDTH, 
-				ITEM_HEIGHT,
-				parent,
-				(HMENU)x,
-				NULL,
-				NULL
-				);
+		(
+			0,
+			L"Static",
+			(LPCTSTR)itemStrings[x].c_str(),
+			WS_VISIBLE |
+			WS_CHILD |
+			DS_SETFONT | SS_LEFT,
+			xStartOffSetLabel,
+			yStartOffSet,
+			ITEM_WIDTH,
+			ITEM_HEIGHT,
+			parent,
+			(HMENU)x,
+			NULL,
+			NULL
+		);
 		if (x == 9) {
-			createIPToggleControl(parent, xStartOffSetLabel+140, yStartOffSet);
+			createIPToggleControl(parent, xStartOffSetLabel + 140, yStartOffSet);
 		}
 		//info
 		CreateWindowEx(
 			0,
 			L"Static",
-			(L"Detecting..."+itemStrings[x]).c_str(),
-			WS_VISIBLE | WS_CHILD |SS_LEFT | DS_SETFONT,
+			(L"Detecting..." + itemStrings[x]).c_str(),
+			WS_VISIBLE | WS_CHILD | SS_LEFT | DS_SETFONT,
 			xStartOffSetInformation,
-			yStartOffSet+16,
+			yStartOffSet + 16,
 			ITEM_INFO_WIDTH,
 			getInfoBoxItemCount(y, info) * ITEM_INFO_INITIAL_HEIGTH,
 			parent,
@@ -302,7 +309,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 		if (y >= GPU_INFO  && y < AUDIO_INFO) {
 			UINT32 listSize = getInfoBoxItemCount(y, info);
 			//return rec structure
-			if (listSize>=2) {
+			if (listSize >= 2) {
 				yStartOffSet = adjustItemHeight(parent, y, listSize);
 				continue;
 			}
@@ -311,48 +318,47 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	}
 	scrollFullPageHeight = yStartOffSet;
 	wchar_t *t = new wchar_t[100];
-	_stprintf(t,L"%d",scrollFullPageHeight);
+	_stprintf(t, L"%d", scrollFullPageHeight);
 
 }
 void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
-		SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
-		currentMachineInfo->getBIOS().c_str());
-		SetWindowText(GetDlgItem(mainWindowHwnd, OS_INFO),
-			currentMachineInfo->getOS().c_str());
-		SetWindowText(GetDlgItem(mainWindowHwnd, CPU_INFO),
-			currentMachineInfo->getCPU().c_str());
-		SetWindowText(GetDlgItem(mainWindowHwnd, MB_INFO),
-			currentMachineInfo->getMB().c_str());
-		SetWindowText(GetDlgItem(mainWindowHwnd, RAM_INFO),
-			currentMachineInfo->getRAM().c_str());
-	
+	SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
+				  currentMachineInfo->getBIOS().c_str());
+	SetWindowText(GetDlgItem(mainWindowHwnd, OS_INFO),
+				  currentMachineInfo->getOS().c_str());
+	SetWindowText(GetDlgItem(mainWindowHwnd, CPU_INFO),
+				  currentMachineInfo->getCPU().c_str());
+	SetWindowText(GetDlgItem(mainWindowHwnd, MB_INFO),
+				  currentMachineInfo->getMB().c_str());
+	SetWindowText(GetDlgItem(mainWindowHwnd, RAM_INFO),
+				  currentMachineInfo->getRAM().c_str());
+
 	SetWindowText(GetDlgItem(mainWindowHwnd, GPU_INFO),
-		formListString(currentMachineInfo,
-						HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+				  formListString(currentMachineInfo,
+								 HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, MONITOR_INFO),
-		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+				  formListString(currentMachineInfo,
+								 HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, STORAGE_INFO),
-		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+				  formListString(currentMachineInfo,
+								 HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, OPTICAL_INFO),
-		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_CDROM, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+				  formListString(currentMachineInfo,
+								 HARDWARE_VECTOR_TYPE::HARDWARE_CDROM, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
-		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+				  formListString(currentMachineInfo,
+								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
 		//createIPToggleControl(GetDlgItem(mainWindowHwnd, NETWORK_INFO));
 	}
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
-		currentMachineInfo->getAudio().c_str());
+				  currentMachineInfo->getAudio().c_str());
 	if (!PROGRAM_INSTANCE) {
 		DWORD uptimeThreadId;
-		HANDLE threadHandle = (HANDLE) _beginthreadex(0, 0, updateUptime, 0, 0, 0);
-	}
-	else {
+		HANDLE threadHandle = (HANDLE)_beginthreadex(0, 0, updateUptime, 0, 0, 0);
+	} else {
 		SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
-			currentMachineInfo->getUptime().c_str());
+					  currentMachineInfo->getUptime().c_str());
 	}
 }
 
@@ -382,7 +388,7 @@ void createIPToggleControl(HWND parent, int xOff, int yOff) {
 		NULL,
 		NULL
 	);
-	
+
 }
 void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
 	static bool showStatus = 0;
@@ -392,13 +398,12 @@ void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
 
 		if (!showStatus) {
 			info->getNetworkAdaptersTextRef().back().assign(savedIP);
-		}
-		else {
+		} else {
 			savedIP.assign(info->getNetworkAdaptersText().back());
 			//hide ip
 			info->getNetworkAdaptersTextRef().back().clear();
 			info->getNetworkAdaptersTextRef().back().assign(L"Connected to the Internet: (IP hidden by user)");
-			
+
 		}
 		trimWhiteSpace(info->getNetworkAdaptersTextRef().back());
 		updateNetworkAdaptersView(info);
@@ -408,6 +413,6 @@ void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
 
 void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
-		formListString(currentMachineInfo,
-			HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+				  formListString(currentMachineInfo,
+								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 }

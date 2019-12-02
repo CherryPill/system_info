@@ -30,17 +30,14 @@ void getAudio(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbem
 void getNetworkAdapters(SystemInfo *localMachine);
 void getUptime(SystemInfo *localMachine);
 
-void (*getInfoFuncs[])(SystemInfo*,HRESULT, IWbemServices*, IWbemLocator*) = 
-							{getOS, getCPU, getMB, getRAM, getGPU, getMonitor, 
-							getStorage, getCDROM, getAudio};
-
-
+void(*getInfoFuncs[])(SystemInfo*, HRESULT, IWbemServices*, IWbemLocator*) =
+{ getOS, getCPU, getMB, getRAM, getGPU, getMonitor,
+getStorage, getCDROM, getAudio };
 
 
 
 //the actual function that does all the work
-int getSystemInformation(SystemInfo *localMachine)
-{
+int getSystemInformation(SystemInfo *localMachine) {
 	HRESULT hres;
 
 	// Step 1: --------------------------------------------------
@@ -65,10 +62,10 @@ int getSystemInformation(SystemInfo *localMachine)
 		NULL,                        // Authentication info
 		EOAC_NONE,                   // Additional capabilities 
 		NULL                         // Reserved
-		);
+	);
 
 
-	if (FAILED(hres)){
+	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Failed to initialize security"), _T("Fatal Error"), MB_OK);
 		CoUninitialize();
 		return 1;                    // Program has failed.
@@ -85,7 +82,7 @@ int getSystemInformation(SystemInfo *localMachine)
 		CLSCTX_INPROC_SERVER,
 		IID_IWbemLocator, (LPVOID *)&pLoc);
 
-	if (FAILED(hres)){
+	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
 		CoUninitialize();
 		return 1;                 // Program has failed.
@@ -108,7 +105,7 @@ int getSystemInformation(SystemInfo *localMachine)
 		0,                       // Authority (for example, Kerberos)
 		0,                       // Context object 
 		&pSvc                    // pointer to IWbemServices proxy
-		);
+	);
 
 	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Could not connect"), _T("Fatal Error"), MB_OK);
@@ -132,7 +129,7 @@ int getSystemInformation(SystemInfo *localMachine)
 		RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
 		NULL,                        // client identity
 		EOAC_NONE                    // proxy capabilities 
-		);
+	);
 
 	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Could not set proxy blanket"), _T("Fatal Error"), MB_OK);
@@ -150,10 +147,10 @@ int getSystemInformation(SystemInfo *localMachine)
 	//hardware
 	getBIOS(localMachine);
 
-	for (int x = 0;x< sizeof(getInfoFuncs)/sizeof(getInfoFuncs[0]);x++) {
+	for (int x = 0; x < sizeof(getInfoFuncs) / sizeof(getInfoFuncs[0]); x++) {
 		(*getInfoFuncs[x])(localMachine, hres, pSvc, pLoc);
 	}
-	
+
 	getNetworkAdapters(localMachine);
 	getUptime(localMachine);
 	// Cleanup
@@ -167,20 +164,18 @@ int getSystemInformation(SystemInfo *localMachine)
 }
 
 void getCPU(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc) {
+			HRESULT hres, IWbemServices *pSvc,
+			IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -197,18 +192,17 @@ void getCPU(SystemInfo *localMachine,
 		processor = vtProp.bstrVal;
 		trimNullTerminator(processor);
 		trimWhiteSpace(processor);
-		if (processor.find(L"@",0) == string::npos) {
+		if (processor.find(L"@", 0) == string::npos) {
 			hr = pclsObj->Get(L"MaxClockSpeed", 0, &vtProp, 0, 0);
 			maxClockInMhZ = vtProp.uintVal;
 			maxClockInGhZ = (double)maxClockInMhZ / 1000;
 			_stprintf(maxClockBuff, _T("%.1lf"), maxClockInGhZ);
 			maxClock = wstring(maxClockBuff);
 			fullCPUString = processor + L" @ " + maxClock + L" GHz";
-		}
-		else {
+		} else {
 			fullCPUString = processor;
 		}
-	
+
 		localMachine->setCPU(fullCPUString);
 
 		VariantClear(&vtProp);
@@ -219,19 +213,17 @@ void getCPU(SystemInfo *localMachine,
 }
 
 void getRAM(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc) {
+			HRESULT hres, IWbemServices *pSvc,
+			IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_PhysicalMemory"));
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -257,12 +249,12 @@ void getRAM(SystemInfo *localMachine,
 		UINT32 bank;
 		TCHAR bankLabelBuff[100];
 		wstring bankStr;
-		capacityStr = getActualPhysicalMemory(hres, pSvc,pLoc);
-		
+		capacityStr = getActualPhysicalMemory(hres, pSvc, pLoc);
+
 		hr = pclsObj->Get(L"FormFactor", 0, &vtProp, 0, 0);
 		formFactor = vtProp.uintVal;
 		formFactorStr = RAMFormFactors[formFactor];
-		
+
 		hr = pclsObj->Get(L"BankLabel", 0, &vtProp, 0, 0);
 		bank = vtProp.uintVal;
 		_stprintf(bankLabelBuff, _T("%d"), bank);
@@ -271,12 +263,12 @@ void getRAM(SystemInfo *localMachine,
 		hr = pclsObj->Get(L"MemoryType", 0, &vtProp, 0, 0);
 		memoryType = vtProp.uintVal;
 		memoryTypeStr = RAMMemoryTypes[memoryType];
-		hr = pclsObj->Get(L"Speed", 0, &vtProp, 0, 0);	
+		hr = pclsObj->Get(L"Speed", 0, &vtProp, 0, 0);
 		clock = vtProp.uintVal;
 		_stprintf(clockStrBuff, _T("%d"), clock);
 		clockStr = wstring(clockStrBuff);
 		localMachine->setRAM(capacityStr +
-		L" GB " + formFactorStr + L" "+memoryTypeStr+L" "+clockStr+L"MHz");
+							 L" GB " + formFactorStr + L" " + memoryTypeStr + L" " + clockStr + L"MHz");
 
 		VariantClear(&vtProp);
 
@@ -285,21 +277,19 @@ void getRAM(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getOS(SystemInfo *localMachine, 
-			HRESULT hres, IWbemServices *pSvc,
-			IWbemLocator *pLoc) {
+void getOS(SystemInfo *localMachine,
+		   HRESULT hres, IWbemServices *pSvc,
+		   IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_OperatingSystem"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -328,8 +318,8 @@ void getOS(SystemInfo *localMachine,
 }
 
 void getMB(SystemInfo *localMachine,
-		HRESULT hres, IWbemServices *pSvc,
-		IWbemLocator *pLoc) {
+		   HRESULT hres, IWbemServices *pSvc,
+		   IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_BaseBoard"));
 
 	IWbemClassObject *pclsObj = NULL;
@@ -337,10 +327,9 @@ void getMB(SystemInfo *localMachine,
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -356,9 +345,9 @@ void getMB(SystemInfo *localMachine,
 		manufacturer.erase(manufacturer.length());
 		trimWhiteSpace(manufacturer);
 		hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
-		
+
 		product = vtProp.bstrVal;
-		localMachine->setMB(manufacturer + L" " + product + L" (" + getSocket(hres, pSvc, pLoc)+L")");
+		localMachine->setMB(manufacturer + L" " + product + L" (" + getSocket(hres, pSvc, pLoc) + L")");
 
 		VariantClear(&vtProp);
 		pclsObj->Release();
@@ -366,22 +355,20 @@ void getMB(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-wstring getActualPhysicalMemory(HRESULT hres, 
-	IWbemServices *pSvc,
-	IWbemLocator *pLoc){
+wstring getActualPhysicalMemory(HRESULT hres,
+								IWbemServices *pSvc,
+								IWbemLocator *pLoc) {
 	wstring ram;
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_PhysicalMemory"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 	double accumulatedRAM = 0;
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -390,15 +377,15 @@ wstring getActualPhysicalMemory(HRESULT hres,
 		hr = pclsObj->Get(L"Capacity", 0, &vtProp, 0, 0);
 		double cap;
 		double capacity;
-		
+
 		wstring temp;
 		TCHAR tempChar[100];
 		temp = vtProp.bstrVal;
 		_tcscpy(tempChar, temp.c_str());
 		swscanf(tempChar, L"%lf", &cap);
-		
-		cap/= (pow(1024, 3));
-		accumulatedRAM+=cap;
+
+		cap /= (pow(1024, 3));
+		accumulatedRAM += cap;
 		VariantClear(&vtProp);
 
 		pclsObj->Release();
@@ -411,20 +398,18 @@ wstring getActualPhysicalMemory(HRESULT hres,
 }
 
 void getGPU(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc){
+			HRESULT hres, IWbemServices *pSvc,
+			IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_VideoController"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -437,16 +422,16 @@ void getGPU(SystemInfo *localMachine,
 		wstring vrammegabytesStr;
 		TCHAR vRamCharBuff[50];
 		double vRAMmegaBytes;
-		
+
 		vramBytes = vtProp.uintVal;
-		vRAMmegaBytes = (double) vramBytes/pow(1024,2);
+		vRAMmegaBytes = (double)vramBytes / pow(1024, 2);
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
 		name = vtProp.bstrVal;
 		name.erase(name.length());
 		trimNullTerminator(name);
-		_stprintf(vRamCharBuff,_T("%.0lf MB"),vRAMmegaBytes);
+		_stprintf(vRamCharBuff, _T("%.0lf MB"), vRAMmegaBytes);
 		vrammegabytesStr = wstring(vRamCharBuff);
-		finalAdapterString = name+L" "+vrammegabytesStr;
+		finalAdapterString = name + L" " + vrammegabytesStr;
 
 		localMachine->addGPUDevice(finalAdapterString);
 
@@ -458,20 +443,18 @@ void getGPU(SystemInfo *localMachine,
 }
 
 void getMonitor(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc){
+				HRESULT hres, IWbemServices *pSvc,
+				IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DesktopMonitor"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -482,13 +465,13 @@ void getMonitor(SystemInfo *localMachine,
 		wstring resAndFreqStr;
 		TCHAR resAndFreqBuff[50];
 		UINT32 dimensionsAndFrequency[3];
-		getDimensionsAndFrequency(hres, pSvc, pLoc,dimensionsAndFrequency);
+		getDimensionsAndFrequency(hres, pSvc, pLoc, dimensionsAndFrequency);
 		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
 		monitorName = vtProp.bstrVal;
 		trimNullTerminator(monitorName);
 		_stprintf(resAndFreqBuff, L"(%dx%d@%dHz)", dimensionsAndFrequency[0],
-			dimensionsAndFrequency[1],
-			dimensionsAndFrequency[2]);
+				  dimensionsAndFrequency[1],
+				  dimensionsAndFrequency[2]);
 		resAndFreqStr = wstring(resAndFreqBuff);
 		finalMonitorString = monitorName + resAndFreqStr;
 		localMachine->addDisplayDevice(finalMonitorString);
@@ -500,21 +483,18 @@ void getMonitor(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 void getDimensionsAndFrequency(HRESULT hres,
-	IWbemServices *pSvc,
-	IWbemLocator *pLoc, UINT *arr)
-{
+							   IWbemServices *pSvc,
+							   IWbemLocator *pLoc, UINT *arr) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DisplayConfiguration"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 	double accumulatedRAM = 0;
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -525,16 +505,18 @@ void getDimensionsAndFrequency(HRESULT hres,
 		hr = pclsObj->Get(L"DisplayFrequency", 0, &vtProp, 0, 0);
 		arr[2] = vtProp.uintVal;
 
-	
+
 		VariantClear(&vtProp);
 
 		pclsObj->Release();
 	}
 	pEnumerator->Release();
 }
+
+
 void getStorage(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc) {
+				HRESULT hres, IWbemServices *pSvc,
+				IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DiskDrive"));
 
 	IWbemClassObject *pclsObj = NULL;
@@ -542,7 +524,7 @@ void getStorage(SystemInfo *localMachine,
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -569,10 +551,10 @@ void getStorage(SystemInfo *localMachine,
 
 		capacityStr = vtProp.bstrVal;
 		capacityBytes = stoull(capacityStr);
-		capacityGiBDbl = capacityBytes/pow(1024,3);
+		capacityGiBDbl = capacityBytes / pow(1024, 3);
 		capacityGiBStr = convertUIntToString(capacityGiBDbl);
-		
-		storageFullString = capacityGiBStr + L" GB " + manufacturerName + (manufacturerName==L""?L"":L" ")+ modelName;
+
+		storageFullString = capacityGiBStr + L" GB " + manufacturerName + (manufacturerName == L"" ? L"" : L" ") + modelName;
 
 		localMachine->addStorageMedium(storageFullString);
 
@@ -582,23 +564,21 @@ void getStorage(SystemInfo *localMachine,
 	}
 	pEnumerator->Release();
 }
+
 void getCDROM(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc)
-{
+			  HRESULT hres, IWbemServices *pSvc,
+			  IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_CDROMDrive"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -617,23 +597,21 @@ void getCDROM(SystemInfo *localMachine,
 	}
 	pEnumerator->Release();
 }
+
 void getAudio(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc)
-{
+			  HRESULT hres, IWbemServices *pSvc,
+			  IWbemLocator *pLoc) {
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_SoundDevice"));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
@@ -654,14 +632,14 @@ void getAudio(SystemInfo *localMachine,
 }
 
 void getUptime(SystemInfo *localMachine) {
-		
-		wstring uptimeStr;
-		TCHAR formattedTimeString[256] = {0};
 
-		calculateTimeAndFormat(formattedTimeString);
-		
-		uptimeStr = wstring(formattedTimeString);
-		localMachine->setUptime(uptimeStr);
+	wstring uptimeStr;
+	TCHAR formattedTimeString[256] = { 0 };
+
+	calculateTimeAndFormat(formattedTimeString);
+
+	uptimeStr = wstring(formattedTimeString);
+	localMachine->setUptime(uptimeStr);
 }
 
 void getBIOS(SystemInfo *localMachine) {
@@ -677,42 +655,40 @@ void getBIOS(SystemInfo *localMachine) {
 		if (GetSystemFirmwareTable(Signature, 0, pBuff, needBufferSize)) {
 			const PRawSMBIOSData pDMIData = (PRawSMBIOSData)pBuff;
 			DumpSMBIOSStruct(&(pDMIData->SMBIOSTableData), pDMIData->Length, biosData);
-		}
-		else {
+		} else {
 			MessageBox(NULL, _T("Failed to fetch firmware tables"), _T("Fatal Error"), MB_OK);
 		}
-	}
-	else {
+	} else {
 		MessageBox(NULL, _T("Memory allocation failed"), _T("Fatal Error"), MB_OK);
 	}
 	localMachine->setBIOS(biosData);
 }
+
 void getCPUTemp(SystemInfo *localMachine,
-	HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc) {
+				HRESULT hres, IWbemServices *pSvc,
+				IWbemLocator *pLoc) {
 	//stub for now	
 }
+
 wstring getSocket(HRESULT hres, IWbemServices *pSvc,
-	IWbemLocator *pLoc) {
+				  IWbemLocator *pLoc) {
 	wstring socket;
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
-	
+
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
-	while (pEnumerator)
-	{
+	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
+									   &pclsObj, &uReturn);
 
-		if (0 == uReturn)
-		{
+		if (0 == uReturn) {
 			break;
 		}
 
 		VARIANT vtProp;
-		
+
 		// Get the value of the Name property
 		hr = pclsObj->Get(L"SocketDesignation", 0, &vtProp, 0, 0);
 		socket = vtProp.bstrVal;
@@ -723,8 +699,8 @@ wstring getSocket(HRESULT hres, IWbemServices *pSvc,
 	return socket;
 }
 
-IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc, 
-										IWbemServices *pSvc, BSTR stringQuery) {
+IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc,
+									  IWbemServices *pSvc, BSTR stringQuery) {
 	IEnumWbemClassObject* pEnumerator = NULL;
 	hres = pSvc->ExecQuery(
 		bstr_t("WQL"),
@@ -732,157 +708,155 @@ IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc,
 		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
 		NULL,
 		&pEnumerator);
-	if (FAILED(hres)){
-		displayMessageGeneric(UI_MESS_RES::FAILURE, 
-		L"Query for operating system failed");
+	if (FAILED(hres)) {
+		displayMessageGeneric(UI_MESS_RES::FAILURE,
+							  L"Query for operating system failed");
 		pSvc->Release();
 		pLoc->Release();
 		CoUninitialize();
-	}
-	else {
+	} else {
 		return pEnumerator;
 	}
 }
+
 int test() {
 
-    HRESULT hres;
+	HRESULT hres;
 
-    // Step 1: --------------------------------------------------
-    // Initialize COM. ------------------------------------------
+	// Step 1: --------------------------------------------------
+	// Initialize COM. ------------------------------------------
 
-    hres = CoInitializeEx(0, COINIT_MULTITHREADED);
-    if (FAILED(hres)) {
-        MessageBox(NULL, _T("Failed to initialize COM library"), _T("Fatal Error"), MB_OK);
-        return 1;                  // Program has failed.
-    }
+	hres = CoInitializeEx(0, COINIT_MULTITHREADED);
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Failed to initialize COM library"), _T("Fatal Error"), MB_OK);
+		return 1;                  // Program has failed.
+	}
 
-    // Step 2: --------------------------------------------------
-    // Set general COM security levels --------------------------
+	// Step 2: --------------------------------------------------
+	// Set general COM security levels --------------------------
 
-    hres = CoInitializeSecurity(
-        NULL,
-        -1,                          // COM authentication
-        NULL,                        // Authentication services
-        NULL,                        // Reserved
-        RPC_C_AUTHN_LEVEL_DEFAULT,   // Default authentication 
-        RPC_C_IMP_LEVEL_IMPERSONATE, // Default Impersonation  
-        NULL,                        // Authentication info
-        EOAC_NONE,                   // Additional capabilities 
-        NULL                         // Reserved
-    );
-
-
-    if (FAILED(hres)) {
-        MessageBox(NULL, _T("Failed to initialize security"), _T("Fatal Error"), MB_OK);
-        CoUninitialize();
-        return 1;                    // Program has failed.
-    }
-
-    // Step 3: ---------------------------------------------------
-    // Obtain the initial locator to WMI -------------------------
-
-    IWbemLocator *pLoc = NULL;
-
-    hres = CoCreateInstance(
-        CLSID_WbemLocator,
-        0,
-        CLSCTX_INPROC_SERVER,
-        IID_IWbemLocator, (LPVOID *)&pLoc);
-
-    if (FAILED(hres)) {
-        MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
-        CoUninitialize();
-        return 1;                 // Program has failed.
-    }
-
-    // Step 4: -----------------------------------------------------
-    // Connect to WMI through the IWbemLocator::ConnectServer method
-
-    IWbemServices *pSvc = NULL;
-
-    // Connect to the root\cimv2 namespace with
-    // the current user and obtain pointer pSvc
-    // to make IWbemServices calls.
-    hres = pLoc->ConnectServer(
-        _bstr_t(L"ROOT\\WMI"), // Object path of WMI namespace
-        NULL,                    // User name. NULL = current user
-        NULL,                    // User password. NULL = current
-        0,                       // Locale. NULL indicates current
-        NULL,                    // Security flags.
-        0,                       // Authority (for example, Kerberos)
-        0,                       // Context object 
-        &pSvc                    // pointer to IWbemServices proxy
-    );
-
-    if (FAILED(hres)) {
-        MessageBox(NULL, _T("Could not connect"), _T("Fatal Error"), MB_OK);
-        pLoc->Release();
-        CoUninitialize();
-        return 1;                // Program has failed.
-    }
-
-    //cout << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
+	hres = CoInitializeSecurity(
+		NULL,
+		-1,                          // COM authentication
+		NULL,                        // Authentication services
+		NULL,                        // Reserved
+		RPC_C_AUTHN_LEVEL_DEFAULT,   // Default authentication 
+		RPC_C_IMP_LEVEL_IMPERSONATE, // Default Impersonation  
+		NULL,                        // Authentication info
+		EOAC_NONE,                   // Additional capabilities 
+		NULL                         // Reserved
+	);
 
 
-    // Step 5: --------------------------------------------------
-    // Set security levels on the proxy -------------------------
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Failed to initialize security"), _T("Fatal Error"), MB_OK);
+		CoUninitialize();
+		return 1;                    // Program has failed.
+	}
 
-    hres = CoSetProxyBlanket(
-        pSvc,                        // Indicates the proxy to set
-        RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx
-        RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx
-        NULL,                        // Server principal name 
-        RPC_C_AUTHN_LEVEL_CALL,      // RPC_C_AUTHN_LEVEL_xxx 
-        RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
-        NULL,                        // client identity
-        EOAC_NONE                    // proxy capabilities 
-    );
+	// Step 3: ---------------------------------------------------
+	// Obtain the initial locator to WMI -------------------------
 
-    if (FAILED(hres)) {
-        MessageBox(NULL, _T("Could not set proxy blanket"), _T("Fatal Error"), MB_OK);
-        pSvc->Release();
-        pLoc->Release();
-        CoUninitialize();
-        return 1;               // Program has failed.
-    }
+	IWbemLocator *pLoc = NULL;
 
-    // Step 6: --------------------------------------------------
-    // Use the IWbemServices pointer to make requests of WMI ----
+	hres = CoCreateInstance(
+		CLSID_WbemLocator,
+		0,
+		CLSCTX_INPROC_SERVER,
+		IID_IWbemLocator, (LPVOID *)&pLoc);
 
-    
-    IEnumWbemClassObject* pEnumerator = NULL;
-    pEnumerator = executeWQLQuery(hres, pLoc, pSvc, 
-        bstr_t("SELECT * FROM MSAcpi_ThermalZoneTemperature"));
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
+		CoUninitialize();
+		return 1;                 // Program has failed.
+	}
 
-    IWbemClassObject *pclsObj = NULL;
-    ULONG uReturn = 0;
+	// Step 4: -----------------------------------------------------
+	// Connect to WMI through the IWbemLocator::ConnectServer method
 
-    while (pEnumerator)
-    {
-        HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-            &pclsObj, &uReturn);
+	IWbemServices *pSvc = NULL;
 
-        if (0 == uReturn)
-        {
-            break;
-        }
+	// Connect to the root\cimv2 namespace with
+	// the current user and obtain pointer pSvc
+	// to make IWbemServices calls.
+	hres = pLoc->ConnectServer(
+		_bstr_t(L"ROOT\\WMI"), // Object path of WMI namespace
+		NULL,                    // User name. NULL = current user
+		NULL,                    // User password. NULL = current
+		0,                       // Locale. NULL indicates current
+		NULL,                    // Security flags.
+		0,                       // Authority (for example, Kerberos)
+		0,                       // Context object 
+		&pSvc                    // pointer to IWbemServices proxy
+	);
 
-        VARIANT vtProp;
-        VariantInit(&vtProp);
-        // Get the value of the Name property
-        hr = pclsObj->Get(L"CurrentTemperature", 0, &vtProp, 0, 0);
-        wstring socket = vtProp.bstrVal;
-        displayMessageGeneric(UI_MESS_RES::SUCCESS, socket.c_str());
-        VariantClear(&vtProp);
-        pclsObj->Release();
-    }
-    pEnumerator->Release();
-    
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Could not connect"), _T("Fatal Error"), MB_OK);
+		pLoc->Release();
+		CoUninitialize();
+		return 1;                // Program has failed.
+	}
+
+	//cout << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
 
 
-    pSvc->Release();
-    pLoc->Release();
-    CoUninitialize();
+	// Step 5: --------------------------------------------------
+	// Set security levels on the proxy -------------------------
 
-    return 0;   // Program successfully completed.
+	hres = CoSetProxyBlanket(
+		pSvc,                        // Indicates the proxy to set
+		RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx
+		RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx
+		NULL,                        // Server principal name 
+		RPC_C_AUTHN_LEVEL_CALL,      // RPC_C_AUTHN_LEVEL_xxx 
+		RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
+		NULL,                        // client identity
+		EOAC_NONE                    // proxy capabilities 
+	);
+
+	if (FAILED(hres)) {
+		MessageBox(NULL, _T("Could not set proxy blanket"), _T("Fatal Error"), MB_OK);
+		pSvc->Release();
+		pLoc->Release();
+		CoUninitialize();
+		return 1;               // Program has failed.
+	}
+
+	// Step 6: --------------------------------------------------
+	// Use the IWbemServices pointer to make requests of WMI ----
+
+
+	IEnumWbemClassObject* pEnumerator = NULL;
+	pEnumerator = executeWQLQuery(hres, pLoc, pSvc,
+								  bstr_t("SELECT * FROM MSAcpi_ThermalZoneTemperature"));
+
+	IWbemClassObject *pclsObj = NULL;
+	ULONG uReturn = 0;
+
+	while (pEnumerator) {
+		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
+									   &pclsObj, &uReturn);
+
+		if (0 == uReturn) {
+			break;
+		}
+
+		VARIANT vtProp;
+		VariantInit(&vtProp);
+		// Get the value of the Name property
+		hr = pclsObj->Get(L"CurrentTemperature", 0, &vtProp, 0, 0);
+		wstring socket = vtProp.bstrVal;
+		displayMessageGeneric(UI_MESS_RES::SUCCESS, socket.c_str());
+		VariantClear(&vtProp);
+		pclsObj->Release();
+	}
+	pEnumerator->Release();
+
+
+
+	pSvc->Release();
+	pLoc->Release();
+	CoUninitialize();
+
+	return 0;   // Program successfully completed.
 }

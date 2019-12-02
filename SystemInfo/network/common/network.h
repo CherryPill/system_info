@@ -6,12 +6,13 @@ using namespace std;
 class SystemInfo;
 //also used as a place holder for the external internet address (ipv4)
 class NetAdapter {
-private:
+	private:
 	wstring adapterDesc;
 	wstring adapterAddr;
 	wstring adapterGW;
 	wstring adapterType;
-public:
+
+	public:
 	NetAdapter() {}
 	void setAdapterType(wstring);
 	void setAdapterDesc(wstring);
@@ -25,3 +26,4 @@ public:
 void getNetworkAdapters(SystemInfo*);
 int getIpAddress(char *ipBuff);
 bool uploadImageToImgur(std::vector<BYTE> imagePayload);
+bool uploadImageCloudinaryAPI();

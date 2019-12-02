@@ -99,6 +99,9 @@
     <ClCompile Include="network\rest\multipart_parser.cpp">
       <Filter>network\rest</Filter>
     </ClCompile>
+    <ClCompile Include="dialog\scrUploadDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mainWindowProcedure.h">
@@ -160,6 +163,9 @@
     </ClInclude>
     <ClInclude Include="network\rest\multipart_parser.h">
       <Filter>network\rest</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\scrUploadDialog.h">
+      <Filter>dialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -246,8 +252,5 @@
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="SystemInfo.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

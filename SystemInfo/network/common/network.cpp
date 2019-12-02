@@ -62,7 +62,7 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 
 	pAddresses = (IP_ADAPTER_ADDRESSES *)malloc(outBufLen);
 	if (pAddresses == NULL) {
-		printf ("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
+		printf("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
 		exit(1);
 	}
 	dwRetValAddr = GetAdaptersAddresses(AF_INET, GAA_FLAG_INCLUDE_PREFIX, NULL, pAddresses, &outBufLen);
@@ -88,12 +88,11 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 	wstring externalIpAddressDesc;
 	wstring externalIp = L"Unable to fetch IP";
 	wstring type = L"null";
-	char buff[128] = {0};
+	char buff[128] = { 0 };
 	if (getIpAddress(buff)) {
 		externalIpAddressDesc = L"Connected to the Internet";
 		externalIp = fromChToWideStr(buff);
-	}
-	else {
+	} else {
 		externalIpAddressDesc = L"Not connected to the Internet";
 	}
 	extIpPlaceHolder.setAdapterDesc(externalIpAddressDesc);
@@ -105,8 +104,8 @@ void getNetworkAdapters(SystemInfo* localMachine) {
 int getIpAddress(char *ipBuff) {
 
 	int connectionRes = 1;
-	
-	
+
+
 #ifndef _DEBUG
 	HINTERNET hInternet, hFile;
 	DWORD rSize;
@@ -115,27 +114,25 @@ int getIpAddress(char *ipBuff) {
 	hInternet = InternetOpen(NULL, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 
 	if ((hFile =
-		InternetOpenUrl(
-			hInternet,
-			L"https://api.ipify.org",
-			NULL,
-			0,
-			INTERNET_FLAG_RELOAD,
-			0)) != NULL)
-	{
+		 InternetOpenUrl(
+			 hInternet,
+			 L"https://api.ipify.org",
+			 NULL,
+			 0,
+			 INTERNET_FLAG_RELOAD,
+			 0)) != NULL) {
 		InternetReadFile(hFile, buffer, 128, &rSize);
 		buffer[rSize] = '\0';
 		strcpy(ipBuff, buffer);
 		InternetCloseHandle(hFile);
 		connectionRes = 1;
-	}
-	else {
+	} else {
 		connectionRes = 0;
 	}
 	InternetCloseHandle(hInternet);
 	//test fallback
-	#else
-		strcpy(ipBuff, "1.1.1.1.");
+#else
+	strcpy(ipBuff, "1.1.1.1.");
 #endif
 
 	return connectionRes;
@@ -148,7 +145,7 @@ bool uploadImageToImgur(std::vector<BYTE> imagePayload) {
 	WSADATA WsaDat;
 	SOCKET theSocket;
 
-	if (WSAStartup(MAKEWORD(2, 2), &WsaDat) != 0){
+	if (WSAStartup(MAKEWORD(2, 2), &WsaDat) != 0) {
 		std::cout << "Failed To Initialize Winsock\n";
 		return false;
 	}
@@ -161,8 +158,7 @@ bool uploadImageToImgur(std::vector<BYTE> imagePayload) {
 	hints.ai_protocol = IPPROTO_IPV4;
 
 	nret = getaddrinfo(Host.c_str(), nullptr, &hints, &pResult);
-	if (nret != 0)
-	{
+	if (nret != 0) {
 		std::cout << "Failed To Do GetAddrInfo()\n";
 		return false;
 	}
@@ -174,24 +170,22 @@ bool uploadImageToImgur(std::vector<BYTE> imagePayload) {
 	servAddr.sin_port = htons(8080);
 
 	theSocket = socket(AF_INET, SOCK_STREAM, 0);
-	if (theSocket == INVALID_SOCKET)
-	{
+	if (theSocket == INVALID_SOCKET) {
 		std::cout << "Socket Is Invalid, Is Winsock Initialized?\n";
 		return false;
 	}
 
 	nret = connect(theSocket, (struct sockaddr*)&servAddr, sizeof(servAddr));
-	if (nret == SOCKET_ERROR)
-	{
+	if (nret == SOCKET_ERROR) {
 		std::cout << "Failed To Connect To Host\n";
 		return false;
 	}
 
 	// Structure POST Data Properly
 	std::string concatPostData;
-	
-	concatPostData += "image=" +imagePayLoadStr;
-	
+
+	concatPostData += "image=" + imagePayLoadStr;
+
 	// Construct HEADER
 	std::string header;
 	header.append("POST ");
@@ -209,8 +203,7 @@ bool uploadImageToImgur(std::vector<BYTE> imagePayload) {
 	header += "\r\n";
 
 	nret = send(theSocket, header.c_str(), header.length(), 0);
-	if (nret == SOCKET_ERROR)
-	{
+	if (nret == SOCKET_ERROR) {
 		std::cout << "Failed To Send To Host\n";
 		return false;
 	}

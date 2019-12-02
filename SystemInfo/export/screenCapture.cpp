@@ -4,6 +4,8 @@
 #include "atlimage.h"
 #include "../export/screenCapture.h"
 #include "../util/utility.h"
+#include "../dialog/scrUploadDialog.h"
+#include "../network/rest/rest.h"
 
 std::vector<BYTE> convertBitMapToPixels(HBITMAP hBitMap) {
 	BITMAP bmp;
@@ -28,54 +30,57 @@ std::vector<BYTE> convertBitMapToPixels(HBITMAP hBitMap) {
 	size_t bitmapSize = bmp.bmHeight * scanlineSize;
 
 	std::vector<BYTE> pixels(bitmapSize);
-	GetDIBits(NULL,
-		hBitMap,
-		0,
-		bmp.bmHeight,
-		&pixels[0],
-		&info, DIB_RGB_COLORS);
+	if (GetDIBits(NULL,
+				  hBitMap,
+				  0,
+				  bmp.bmHeight,
+				  &pixels[0],
+				  &info, DIB_RGB_COLORS) == 0) {
+		int err = 1;
+	}
 
 	return pixels;
 }
+
 void takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType) {
 	RECT winSize;
-	GetClientRect(hwnd,&winSize);
+	GetClientRect(hwnd, &winSize);
 	INT32 areaWidth = winSize.right - winSize.left;
 	INT32 areaHeight = winSize.bottom - winSize.top;
 	HDC mainWindowDC = GetDC(hwnd);
 	HDC screenCapture = CreateCompatibleDC(mainWindowDC);
 	HBITMAP hCaptureBitmap = CreateCompatibleBitmap(mainWindowDC,
-		areaWidth, areaHeight);
+													areaWidth, areaHeight);
 	SelectObject(screenCapture, hCaptureBitmap);
 	BitBlt(screenCapture, 0, 0, areaWidth, areaHeight,
-		mainWindowDC, 0, 0, SRCCOPY | CAPTUREBLT);
+		   mainWindowDC, 0, 0, SRCCOPY | CAPTUREBLT);
 	CImage screen;
+	
 	screen.Attach(hCaptureBitmap);
 
-
-
-	int res = uploadImageToImgur(convertBitMapToPixels(hCaptureBitmap));
-	if (res != 0) {
-		displayMessageGeneric(UI_MESS_RES::SUCCESS, L"Success");
-	}
-	int x = 0xf;
-	/*
-	if (scrSaveType == SCR_SAVETYPE::LOCAL) {
-		
-	}
-	else if(scrSaveType == SCR_SAVETYPE::INTERNET) {
-		uploadImageToImgur(convertBitMapToPixels(hCaptureBitmap));
-	}
-	
-	
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
 
-	openFileDiag(hwnd, FILE_EXTENSION::PNG, fullSavePath, 1);
+	if (scrSaveType == SCR_SAVETYPE::INTERNET) {
+		_tcscpy(fullSavePath, sysInfoConfigDirectoryPath);
+		TCHAR uuidString[256];
+		generateUUID(uuidString);
+		_tcscat(fullSavePath, L"\\");
+		//_tcscat(fullSavePath, uuidString);
+		_tcscat(fullSavePath, L"_temp.png");
+	} else if (scrSaveType == SCR_SAVETYPE::LOCAL) {
+		openFileDiag(hwnd, FILE_EXTENSION::PNG, fullSavePath, 1);
+	}
+
 	screen.Save(fullSavePath);
 	DeleteObject(hCaptureBitmap);
 	ReleaseDC(hwnd, mainWindowDC);
 	DeleteDC(screenCapture);
-	*/
+
+	if (scrSaveType == SCR_SAVETYPE::INTERNET) {
+		RESULT_STRUCT resStruct = {};
+		uploadImage(&resStruct, fullSavePath);
+		_tcscpy(uploadSrcLinkData.link, resStruct.__src);
+	}
 }

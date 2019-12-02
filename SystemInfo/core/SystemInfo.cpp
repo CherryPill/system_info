@@ -55,7 +55,7 @@ wstring SystemInfo::getOS() {
 	return (*this).OS;
 }
 
-void SystemInfo::setCPU(wstring CPU) {	
+void SystemInfo::setCPU(wstring CPU) {
 	(*this).CPU = CPU;
 }
 

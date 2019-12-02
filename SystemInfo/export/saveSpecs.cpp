@@ -17,11 +17,11 @@ const TCHAR *saveSpecs::CSSCommentEnd = _T("*/\n");
 saveSpecs::saveSpecs() {}
 
 //to do add file write exceptions
-bool saveSpecs::save(WORD command, 
-					RESULT_STRUCT *res, 
-					HWND hwnd, 
-					SystemInfo *localMachine) {
-	
+bool saveSpecs::save(WORD command,
+					 RESULT_STRUCT *res,
+					 HWND hwnd,
+					 SystemInfo *localMachine) {
+
 	switch (command) {
 		case ID_EXPORT_XML: {
 			res->result = saveAsXML(hwnd, localMachine, res);
@@ -66,18 +66,18 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStr
 			htmlOutFile << L"\t</div>\n</div>\n";
 		}
 		htmlOutFile << L"</div>\n</body>\n</html>\n";
+
 		htmlOutFile.close();
 		resultStruct->src.assign(fullSavePath);
 
 		return fileIOCheck(htmlOutFile);
-	}
-	else {
+	} else {
 		return false;
 	}
 }
 bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
-	
+
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
 
 	if (openFileDiag(hwnd, FILE_EXTENSION::XML, fullSavePath, 1) != ACTION::CANCELED_OUT) {
@@ -108,8 +108,7 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStru
 		xmlOutFile.close();
 		resultStruct->src.assign(fullSavePath);
 		return fileIOCheck(xmlOutFile);
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -117,8 +116,8 @@ void importAsXML(HWND hwnd) {
 
 	TCHAR fullOpenPath[256];
 	ZeroMemory(&fullOpenPath, sizeof(fullOpenPath));
-	
-	if (openFileDiag(hwnd, FILE_EXTENSION::XML, fullOpenPath, 0) != ACTION::CANCELED_OUT){
+
+	if (openFileDiag(hwnd, FILE_EXTENSION::XML, fullOpenPath, 0) != ACTION::CANCELED_OUT) {
 		STARTUPINFO si;
 		PROCESS_INFORMATION pi;
 
@@ -131,26 +130,26 @@ void importAsXML(HWND hwnd) {
 		TCHAR fullExecLine[256] = { 0 };
 		_tcscpy(fullExecLine, execName);
 		_tcscat(fullExecLine, fullOpenPath);
-		
-		
+
+
 		DWORD err;
 		DWORD res = 1;
 		LPTSTR szcmdLine = _tcsdup(fullExecLine);
 		if (!CreateProcess(NULL,   // No module name (use command line)
-			szcmdLine,        // Command line
-			NULL,           // Process handle not inheritable
-			NULL,           // Thread handle not inheritable
-			FALSE,          // Set handle inheritance to FALSE
-			0,              // No creation flags
-			NULL,           // Use parent's environment block
-			NULL,           // Use parent's starting directory 
-			&si,            // Pointer to STARTUPINFO structure
-			&pi)) {
+						   szcmdLine,        // Command line
+						   NULL,           // Process handle not inheritable
+						   NULL,           // Thread handle not inheritable
+						   FALSE,          // Set handle inheritance to FALSE
+						   0,              // No creation flags
+						   NULL,           // Use parent's environment block
+						   NULL,           // Use parent's starting directory 
+						   &si,            // Pointer to STARTUPINFO structure
+						   &pi)) {
 			MessageBox(NULL, L"Unable to create process", L"Something happened", MB_OK | MB_ICONERROR);
 		}
 	}
 }
-bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info, RESULT_STRUCT *resultStruct) {
+bool saveSpecs::saveAsText(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
@@ -175,14 +174,12 @@ bool saveSpecs::saveAsText(HWND hwnd,SystemInfo *info, RESULT_STRUCT *resultStru
 		txtOutFile.close();
 		resultStruct->src.assign(fullSavePath);
 		return fileIOCheck(txtOutFile);
-	}
-	else {
+	} else {
 		return false;
 	}
-	
+
 }
-saveSpecs::~saveSpecs() {
-}
+saveSpecs::~saveSpecs() {}
 const TCHAR *saveSpecs::htmlStartPoint = _T("\
 	<!DOCTYPE html>\n\
 	<html>\n\
@@ -204,6 +201,10 @@ const TCHAR *saveSpecs::htmlStartPoint = _T("\
 \t\tpadding: 0px;\n\
 \t\tmargin-top: 10px;\n\
 \t}\n\
+\t.item.author{\n\
+\t\ttext - align: center;\
+\t\tpadding: 10px;\
+\t}\
 \t.header{\n\
 \t\tbackground-color: purple;\n\
 \t\tcolor: #fff;\n\

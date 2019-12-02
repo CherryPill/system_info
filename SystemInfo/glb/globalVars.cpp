@@ -3,15 +3,17 @@
 #include <tchar.h>
 #include <vector>
 #include "globalVars.h"
+
 HINSTANCE ghInstance = NULL;
 HWND mainWindowHwnd = NULL;
 int PROGRAM_INSTANCE = 0;
-TCHAR PROGRAM_DATA_IMPORT_LOCATION[256] = {0};
+TCHAR PROGRAM_DATA_IMPORT_LOCATION[256] = { 0 };
 TCHAR execName[256] = { 0 };
 int mainWindowWidth = 600;
-int mainWindowHeight = 660; //660
+int mainWindowHeight = 660; //default 660
 int scrollY = 0;
 int scrollFullPageHeight = 0;
+WNDPROC lpfnScrEditProc;
 HBRUSH grayBrush = CreateSolidBrush(RGB(81, 81, 81));
 TCHAR *fontFamilies[] = {
 	_T("Arial"),
@@ -44,3 +46,5 @@ TCHAR *timeVerboseDaysOfWeek[] = {
 	_T("Friday"),
 	_T("Saturday")
 };
+
+TCHAR sysInfoConfigDirectoryPath[256] = {};

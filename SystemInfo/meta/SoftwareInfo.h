@@ -5,14 +5,14 @@
 #include <tchar.h>
 #include "../const/appconst.h"
 using namespace std;
-class SoftwareInfo
-{
-private:
+class SoftwareInfo {
+	private:
 	TCHAR softwareName[STR_MAX];
 	TCHAR softwareDescription[STR_MAX];
 	TCHAR softwareVersion[STR_MAX];
 	TCHAR softwareRepo[STR_MAX];
-public:
+
+	public:
 	SoftwareInfo();
 	~SoftwareInfo();
 	TCHAR* getSoftwareName();

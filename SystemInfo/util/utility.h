@@ -83,6 +83,7 @@ static std::wstring storageMediumManufacturers[20] {
 typedef struct RESULT_STRUCT{
 	bool result;
 	std::wstring src;
+	TCHAR __src[256];
 };
 
 static std::wstring actionPromptText[]{
@@ -118,4 +119,7 @@ void displayMessageGeneric(enum class UI_MESS_RES, const TCHAR*);
 UI_MESS_ACTION getUIMessByCommand(WORD);
 int displayPromptForAction(std::wstring);
 BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res);
+void configAppData();
+bool dirExists(LPCTSTR);
+void generateUUID(TCHAR*);
 #endif
