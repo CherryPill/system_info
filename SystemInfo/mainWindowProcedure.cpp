@@ -20,6 +20,7 @@
 #include "dialog/scrUploadDialog.h"
 #include "import/binImport.h"
 int g_scrollY = 0;
+//todo subclass the scrolling
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	PAINTSTRUCT ps;
@@ -142,8 +143,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			hdc = BeginPaint(hwnd, &ps);
 			EndPaint(hwnd, &ps);
 		}
-		case WM_LBUTTONDOWN:
-		{
+		case WM_LBUTTONDOWN: {
 			SCROLLINFO si = { 0 };
 			si.cbSize = sizeof(SCROLLINFO);
 			si.fMask = SIF_POS;
@@ -153,8 +153,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 			break;
 		}
-		case WM_VSCROLL:
-		{
+		case WM_VSCROLL: {
 			auto action = LOWORD(wParam);
 			HWND hScroll = (HWND)lParam;
 			int pos = -1;
@@ -187,13 +186,34 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return 0;
 		}
 		case WM_SIZE: {
-		#ifdef _DEBUG
-			int newWidth = LOWORD(lParam);
-			int newHeight = HIWORD(lParam);
-			wchar_t *t = new wchar_t[100];
-			_stprintf(t, L"%dx%d", newWidth, newHeight);
-			MessageBox(NULL, t, L"Window size", MB_OK);
-		#endif
+
+			if (wParam != SIZE_RESTORED && wParam != SIZE_MAXIMIZED)
+				break;
+
+			SCROLLINFO si = {};
+			si.cbSize = sizeof(SCROLLINFO);
+
+			const int bar[] = { SB_HORZ, SB_VERT };
+			const int page[] = { LOWORD(lParam), HIWORD(lParam) };
+
+			for (size_t i = 0; i < ARRAYSIZE(bar); ++i) {
+				si.fMask = SIF_PAGE;
+				si.nPage = page[i];
+				SetScrollInfo(hwnd, bar[i], &si, TRUE);
+
+				si.fMask = SIF_RANGE | SIF_POS;
+				GetScrollInfo(hwnd, bar[i], &si);
+
+				const int maxScrollPos = si.nMax - (page[i] - 1);
+
+				const bool scrollRequired =
+					(si.nPos != si.nMin && si.nPos == maxScrollPos) ||
+					(wParam == SIZE_MAXIMIZED);
+
+				if (scrollRequired) {
+					scrollClientWindow(hwnd, bar[i], si.nPos);
+				}
+			}
 			break;
 		}
 		case WM_MOUSEWHEEL: {
@@ -217,7 +237,11 @@ BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 void loadImages(void) {
 	for (int x = 0; x < totalItemsCount; x++) {
 		HICON newIcon = (HICON)LoadImage(ghInstance,
-										 MAKEINTRESOURCE(ICON_IDS[x]), IMAGE_ICON, 16, 16, NULL);
+										 MAKEINTRESOURCE(ICON_IDS[x]), 
+										 IMAGE_ICON, 
+										 16, 
+										 16, 
+										 NULL);
 		iconArr.push_back(newIcon);
 	}
 }
@@ -335,19 +359,24 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 
 	SetWindowText(GetDlgItem(mainWindowHwnd, GPU_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+								 HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER, 
+								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, MONITOR_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+								 HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY, 
+								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, STORAGE_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+								 HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE, 
+								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, OPTICAL_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_CDROM, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+								 HARDWARE_VECTOR_TYPE::HARDWARE_CDROM, 
+								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, 
+								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
 		//createIPToggleControl(GetDlgItem(mainWindowHwnd, NETWORK_INFO));
 	}
@@ -415,4 +444,22 @@ void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 				  formListString(currentMachineInfo,
 								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+}
+
+void scrollClientWindow(HWND hwnd, int bar, int pos) {
+	static int s_prevx = 1;
+	static int s_prevy = 1;
+
+	int cx = 0;
+	int cy = 0;
+
+	int& delta = (bar == SB_HORZ ? cx : cy);
+	int& prev = (bar == SB_HORZ ? s_prevx : s_prevy);
+
+	delta = prev - pos;
+	prev = pos;
+
+	if (cx || cy) {
+		ScrollWindow(hwnd, cx, cy, NULL, NULL);
+	}
 }

@@ -11,4 +11,5 @@
 	void toggleIpAddress(HWND, SystemInfo*);
 	void updateNetworkAdaptersView(SystemInfo*);
 	unsigned int __stdcall updateUptime(void*);
+	void scrollClientWindow(HWND hwnd, int bar, int pos);
 #endif
