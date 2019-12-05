@@ -96,9 +96,6 @@
     <ClCompile Include="network\rest\rest.cpp">
       <Filter>network\rest</Filter>
     </ClCompile>
-    <ClCompile Include="network\rest\multipart_parser.cpp">
-      <Filter>network\rest</Filter>
-    </ClCompile>
     <ClCompile Include="dialog\scrUploadDialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -159,9 +156,6 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="network\rest\rest.h">
-      <Filter>network\rest</Filter>
-    </ClInclude>
-    <ClInclude Include="network\rest\multipart_parser.h">
       <Filter>network\rest</Filter>
     </ClInclude>
     <ClInclude Include="dialog\scrUploadDialog.h">

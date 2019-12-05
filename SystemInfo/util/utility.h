@@ -21,11 +21,11 @@ enum class FILE_IO_OPERATION {
 };
 
 static wstring ipToggleText[]{
-		L"Hide IP",
-		L"Show IP"
+	L"Hide IP",
+	L"Show IP"
 };
 
-static wstring writeOutPrefix[] {
+static wstring writeOutPrefix[]{
 	L"",
 	L"",
 	L"",
@@ -47,11 +47,11 @@ enum class WRITE_OUT_TYPE {
 };
 
 enum class HARDWARE_VECTOR_TYPE {
-	HARDWARE_VIDEO_ADAPTER=0,
-	HARDWARE_DISPLAY=1,
-	HARDWARE_STORAGE=2,
-	HARDWARE_CDROM=3,
-	HARDWARE_NETWORK=4
+	HARDWARE_VIDEO_ADAPTER = 0,
+	HARDWARE_DISPLAY = 1,
+	HARDWARE_STORAGE = 2,
+	HARDWARE_CDROM = 3,
+	HARDWARE_NETWORK = 4
 };
 
 enum class WINDOW_CENTER_TYPE {
@@ -71,7 +71,7 @@ enum class SCR_SAVETYPE {
 	LOCAL,
 	INTERNET
 };
-static std::wstring storageMediumManufacturers[20] {
+static std::wstring storageMediumManufacturers[20]{
 	L"Western Digital",
 	L"Seagate",
 	L"Fujitsu",
@@ -80,7 +80,7 @@ static std::wstring storageMediumManufacturers[20] {
 	L"IMB"
 };
 
-typedef struct RESULT_STRUCT{
+typedef struct RESULT_STRUCT {
 	bool result;
 	std::wstring src;
 	TCHAR __src[256];
@@ -98,12 +98,12 @@ std::wstring parseDiskStorageName(std::wstring);
 std::wstring convertUIntToString(UINT64);
 void trimWhiteSpace(std::wstring&);
 void generateFileName(TCHAR*, FILE_EXTENSION);
-UINT32 getInfoBoxItemCount(UINT32,SystemInfo*);
+UINT32 getInfoBoxItemCount(UINT32, SystemInfo*);
 UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
 void getCurrentDateTimeVerbose(TCHAR *);
-std::wstring formListString(SystemInfo*,HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
-enum class ACTION openFileDiag(HWND,FILE_EXTENSION,TCHAR*, int);
+std::wstring formListString(SystemInfo*, HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
+enum class ACTION openFileDiag(HWND, FILE_EXTENSION, TCHAR*, int);
 void writeToFile(wofstream&, SystemInfo*, int, WRITE_OUT_TYPE);
 wstring fromChToWideStr(char *value);
 wstring fromIntToWideStr(int);
@@ -121,5 +121,4 @@ int displayPromptForAction(std::wstring);
 BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res);
 void configAppData();
 bool dirExists(LPCTSTR);
-void generateUUID(TCHAR*);
 #endif

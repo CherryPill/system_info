@@ -96,7 +96,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>W:\Projects\SI\v1.4\packages\curl-vc141-dynamic-x86_64.7.59.0\build\native\lib\Win32\dynamic;W:\Projects\SI\v1.4\packages\curl-vc141-dynamic-x86_64.7.59.0\build\native\lib\Win32\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;bcrypt.lib;winhttp.lib;Rpcrt4.lib;gdiplus.lib;winhttp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -165,7 +165,6 @@
     <ClCompile Include="mainWindowProcedure.cpp" />
     <ClCompile Include="meta\SoftwareInfo.cpp" />
     <ClCompile Include="network\common\network.cpp" />
-    <ClCompile Include="network\rest\multipart_parser.cpp" />
     <ClCompile Include="network\rest\rest.cpp" />
     <ClCompile Include="pugi\pugixml.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
@@ -186,7 +185,6 @@
     <ClInclude Include="mainWindowProcedure.h" />
     <ClInclude Include="meta\SoftwareInfo.h" />
     <ClInclude Include="network\common\network.h" />
-    <ClInclude Include="network\rest\multipart_parser.h" />
     <ClInclude Include="network\rest\rest.h" />
     <ClInclude Include="pugi\pugiconfig.hpp" />
     <ClInclude Include="pugi\pugixml.hpp" />

@@ -38,6 +38,7 @@ bool saveSpecs::save(WORD command,
 	}
 	return res->result;
 }
+
 bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
@@ -75,6 +76,7 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStr
 		return false;
 	}
 }
+
 bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
@@ -112,6 +114,7 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStru
 		return false;
 	}
 }
+
 void importAsXML(HWND hwnd) {
 
 	TCHAR fullOpenPath[256];
@@ -149,6 +152,7 @@ void importAsXML(HWND hwnd) {
 		}
 	}
 }
+
 bool saveSpecs::saveAsText(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
@@ -179,6 +183,7 @@ bool saveSpecs::saveAsText(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStr
 	}
 
 }
+
 saveSpecs::~saveSpecs() {}
 const TCHAR *saveSpecs::htmlStartPoint = _T("\
 	<!DOCTYPE html>\n\

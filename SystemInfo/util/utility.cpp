@@ -173,6 +173,7 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + 5;
 	return adjustedYAxisOffset;
 }
+
 UINT32 getInfoBoxItemCount(UINT32 ITEM_ID, SystemInfo *info) {
 	UINT32 hardwareListSize = 0;
 	switch (ITEM_ID) {
@@ -206,6 +207,7 @@ UINT32 getInfoBoxItemCount(UINT32 ITEM_ID, SystemInfo *info) {
 	}
 	return hardwareListSize;
 }
+
 //this function forms a single string to display within the program window
 //make HARDWARE_TYPE instead of harware_vector_type to process strings and vectors
 wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WRITE_OUT_TYPE wType) {
@@ -241,6 +243,7 @@ wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WR
 		return finalString;
 	}
 }
+
 ACTION openFileDiag(HWND mainWindow,
 					FILE_EXTENSION extension,
 					TCHAR *fullOpenSavePath, int mode) {
@@ -387,7 +390,7 @@ wstring netAdapterStringWrapper(NetAdapter adapter) {
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
 	TCHAR fullPathTempBuff[256] = { 0 };
 	_tcscpy(fullPathTempBuff, fullPath);
-	#define fullPath fullPathTempBuff
+#define fullPath fullPathTempBuff
 	TCHAR *ptr = _tcstok(fullPath, _T("\\"));
 	TCHAR *prevInstance;
 	while (ptr != NULL) {
@@ -395,7 +398,7 @@ void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
 		ptr = _tcstok(NULL, _T("\\"));
 	}
 	_tcscpy(fileName, prevInstance);
-	#undef fullPath
+#undef fullPath
 }
 
 bool fileIOCheck(wofstream &stream) {
@@ -537,9 +540,4 @@ bool dirExists(LPCTSTR dirPath) {
 
 bool createSimpleDirectory(TCHAR *path) {
 	return CreateDirectoryW(path, NULL);
-}
-
-void generateUUID(TCHAR *UUIDString) {
-	UUID uuid;
-	UuidCreate(&uuid);
 }

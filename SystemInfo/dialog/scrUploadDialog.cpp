@@ -1,6 +1,7 @@
 #include "scrUploadDialog.h"
 #include "../util/utility.h"
 #include "../glb/globalVars.h"
+
 UPLOAD_SRC_LINK_DATA uploadSrcLinkData = {};
 BOOL CALLBACK scrDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lParam) {
 	switch (message) {
@@ -31,23 +32,28 @@ BOOL CALLBACK scrDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lPa
 
 LRESULT CALLBACK editCtrlProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	switch (msg) {
-		case WM_LBUTTONDBLCLK: {
-			//MessageBox(NULL, NULL, NULL, MB_OK);
-			copyLinkToClipboard();
-			return 0;
+		case WM_LBUTTONDOWN: {
+			SetWindowText(GetDlgItem(GetParent(hwnd), IDC_STATIC_SCRCOPYDONE),
+						  copyLinkToClipboard() ?
+						  UI_messagesTxt[2].c_str() :
+						  UI_messagesTxt[3].c_str());
+			break;
 		}
 	}
 	return CallWindowProc(lpfnScrEditProc, hwnd, msg, wParam, lParam);
 }
-bool copyLinkToClipboard() {
 
+bool copyLinkToClipboard() {
 	const size_t linkLen = _tcslen(uploadSrcLinkData.link) * sizeof(TCHAR) + 1;
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, linkLen);
 	memcpy(GlobalLock(hMem), uploadSrcLinkData.link, linkLen);
 	GlobalUnlock(hMem);
-	OpenClipboard(mainWindowHwnd);
-	EmptyClipboard();
-	SetClipboardData(CF_UNICODETEXT, hMem);
-	CloseClipboard();
-	return true;
+	if (OpenClipboard(mainWindowHwnd)) {
+		EmptyClipboard();
+		SetClipboardData(CF_UNICODETEXT, hMem);
+		CloseClipboard();
+		return true;
+	} else {
+		return false;
+	}
 }

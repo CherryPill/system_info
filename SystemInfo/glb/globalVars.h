@@ -6,6 +6,7 @@
 #include <tchar.h>
 #include "../meta/SoftwareInfo.h"	
 #include "../resource.h"
+
 using namespace std;
 extern int PROGRAM_INSTANCE; //0 - parent, 1 - child
 extern TCHAR PROGRAM_DATA_IMPORT_LOCATION[256]; //path to the xml file to import data from if the process is spawned by parent
@@ -40,7 +41,9 @@ static WORD ICON_IDS[totalItemsCount]{
 
 static wstring UI_messagesTxt[] = {
 	L"Successfully written to ",
-	L"Error writing to "
+	L"Error writing to ",
+	L"Link successfully copied to clipboard",
+	L"There's been a problem copying link to clipboard"
 };
 
 static wstring UI_messagesCapt[] = {

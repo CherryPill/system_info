@@ -16,18 +16,14 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 	const TCHAR* szTitle = L"Gyazo";
 
 	const char*  sBoundary = "----BOUNDARYBOUNDARY----";		// boundary
-	const char   sCrLf[] = { 0xd, 0xa, 0x0 };					// 改行(CR+LF)
+	const char   sCrLf[] = { 0xd, 0xa, 0x0 };
 	const TCHAR* szHeader =
 		_T("Content-type: multipart/form-data; boundary=----BOUNDARYBOUNDARY----");
 
-	std::ostringstream buf;	// 送信メッセージ
+	std::ostringstream buf;
 	std::string	idStr;	// ID
 
-								// ID を取得
-	//idStr = getId();
 
-	// メッセージの構成
-	// -- "id" part
 	buf << "--";
 	buf << sBoundary;
 	buf << sCrLf;
@@ -37,38 +33,34 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 	buf << idStr;
 	buf << sCrLf;
 
-	// -- "imagedata" part
+	// -- imagedata part
 	buf << "--";
 	buf << sBoundary;
 	buf << sCrLf;
 	buf << "content-disposition: form-data; name=\"imagedata\"; filename=\"gyazo.com\"";
 	buf << sCrLf;
-	//buf << "Content-type: image/png";	// 一応
+	//buf << "Content-type: image/png";
 	//buf << sCrLf;
 	buf << sCrLf;
 
-	// 本文: PNG ファイルを読み込む
 	std::ifstream png;
 	png.open(fileName, std::ios::binary);
 	if (png.fail()) {
-		MessageBox(NULL, _T("PNG open failed"), NULL, MB_ICONERROR | MB_OK);
+		MessageBox(NULL, _T("Could not open PNG file"), NULL, MB_ICONERROR | MB_OK);
 		png.close();
 		return FALSE;
 	}
-	buf << png.rdbuf();		// read all & append to buffer
+	buf << png.rdbuf();	//read all & append to buffer
 	png.close();
 
-	// 最後
 	buf << sCrLf;
 	buf << "--";
 	buf << sBoundary;
 	buf << "--";
 	buf << sCrLf;
 
-	// メッセージ完成
 	std::string oMsg(buf.str());
 
-	// WinInet を準備 (proxy は 規定の設定を利用)
 	HINTERNET hSession = InternetOpen(szTitle,
 									  INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 	if (NULL == hSession) {
@@ -77,7 +69,6 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 		return FALSE;
 	}
 
-	// 接続先
 	HINTERNET hConnection = InternetConnect(hSession,
 											UPLOAD_SERVER, INTERNET_DEFAULT_HTTP_PORT,
 											NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
@@ -87,7 +78,6 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 		return FALSE;
 	}
 
-	// 要求先の設定
 	HINTERNET hRequest = HttpOpenRequest(hConnection,
 										 _T("POST"), UPLOAD_PATH, NULL,
 										 NULL, NULL, INTERNET_FLAG_DONT_CACHE | INTERNET_FLAG_RELOAD, NULL);
@@ -97,7 +87,7 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 		return FALSE;
 	}
 
-	// User-Agentを指定
+	// Setting user-Agent
 	const TCHAR* ua = _T("User-Agent: Gyazowin/1.0\r\n");
 	BOOL bResult = HttpAddRequestHeaders(
 		hRequest, ua, _tcslen(ua),
@@ -108,28 +98,22 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 		return FALSE;
 	}
 
-	// 要求を送信
 	if (HttpSendRequest(hRequest,
 						szHeader,
 						lstrlen(szHeader),
 						(LPVOID)oMsg.c_str(),
 						(DWORD)oMsg.length())) {
-		// 要求は成功
-
 		DWORD resLen = 8;
 		TCHAR resCode[4];
 
-		// status code を取得
+		// status code
 		HttpQueryInfo(hRequest, HTTP_QUERY_STATUS_CODE, resCode, &resLen, 0);
 		int ress = _tcscmp(resCode, L"200\0");
 		if (ress) {
-			// upload 失敗 (status error)
+			// upload (status error)
 			MessageBox(NULL, _T("Failed to upload (unexpected result code, under maintainance?)"),
 					   szTitle, MB_ICONERROR | MB_OK);
 		} else {
-			// upload succeeded
-
-			// get new id
 			DWORD idLen = 100;
 			TCHAR newid[100];
 
@@ -138,25 +122,22 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 
 			HttpQueryInfo(hRequest, HTTP_QUERY_CUSTOM, newid, &idLen, 0);
 			if (GetLastError() != ERROR_HTTP_HEADER_NOT_FOUND && idLen != 0) {
-				//save new id
-				//saveId(newid);
+
 			}
 
-			
+
 			DWORD len;
 			char  resbuf[1024];
 			ZeroMemory(&resbuf, sizeof(resbuf));
 			InternetReadFile(hRequest, (LPVOID)resbuf, 1024, &len);
 			USES_CONVERSION;
 			_tcscpy(res->__src, A2T(resbuf));
-	
+
 			return TRUE;
 		}
 	} else {
-		// アップロード失敗...
-		MessageBox(NULL, _T("Failed to upload"), szTitle, MB_ICONERROR | MB_OK);
+		return false;
 	}
-
 	return FALSE;
 }
 

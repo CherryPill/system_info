@@ -28,4 +28,7 @@
 	#define END_INFO 24
 
 	#define AUX_IP_TOGGLE 720
+
+	#define INFO_ID_OFFSET 12
+	#define ICON_ID_OFFSET 60
 #endif

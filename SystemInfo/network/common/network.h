@@ -25,5 +25,3 @@ class NetAdapter {
 };
 void getNetworkAdapters(SystemInfo*);
 int getIpAddress(char *ipBuff);
-bool uploadImageToImgur(std::vector<BYTE> imagePayload);
-bool uploadImageCloudinaryAPI();

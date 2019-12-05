@@ -19,12 +19,14 @@
 #include "dialog/aboutDialog.h"
 #include "dialog/scrUploadDialog.h"
 #include "import/binImport.h"
+
 int g_scrollY = 0;
-//todo subclass the scrolling
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	PAINTSTRUCT ps;
 	HDC hdc;
+	SCROLLINFO si;
+	LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
 	switch (msg) {
 		case WM_CREATE: {
 			loadImages();
@@ -32,42 +34,21 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				importData(localMachine->getCurrentInstance());
 			} else {
 				getSystemInformation(localMachine->getCurrentInstance());
-				test();
+				//test();
 			}
-
-			createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance());
-			populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
-
-			RECT rc = { 0 };
-			GetClientRect(hwnd, &rc);
-			SCROLLINFO si = { 0 };
-			si.cbSize = sizeof(SCROLLINFO);
-			si.fMask = SIF_ALL;
-			si.nMin = 0;
-			si.nMax = scrollFullPageHeight;
-			si.nPage = (rc.bottom - rc.top);
-			si.nPos = 0;
-			si.nTrackPos = 0;
-			SetScrollInfo(hwnd, SB_VERT, &si, true);
-
-
-			EnumChildWindows(hwnd,
-				(WNDENUMPROC)SetFont,
-							 (LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
+			fillGUI(hwnd, localMachine, 0);
 			toggleIpAddress(hwnd, NULL);
 			return 0;
 		}
 
 		case WM_COMMAND: {
-			WORD gottenCommand = LOWORD(wParam);
-			switch (gottenCommand) {
+			WORD receivedCommand = LOWORD(wParam);
+			switch (receivedCommand) {
 				case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
 					takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL);
 					break;
 				}
-				case ID_FILE_TAKESCREENSHOT_UPLOAD_IMGUR: {
-
-					//takeScreenShotStub(); //fills link data
+				case ID_FILE_TAKESCREENSHOT_UPLOAD: {
 					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET);
 					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG_SCRUPLOAD), hwnd, (DLGPROC)scrDlgProc);
 
@@ -86,11 +67,11 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					delete dateTime;
 					RESULT_STRUCT resStruct = {};
 
-					saveSpecs::save(gottenCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
+					saveSpecs::save(receivedCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
 					if (resStruct.result) {
-						displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(gottenCommand));
+						displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(receivedCommand));
 						if (displayPromptForAction(actionPromptText[0]) == IDYES) {
-							if (openDefAppForExpData(gottenCommand, &resStruct) != TRUE) {
+							if (openDefAppForExpData(receivedCommand, &resStruct) != TRUE) {
 								displayMessageGeneric(UI_MESS_RES::FAILURE, L"Unable to open exported data");
 							}
 						}
@@ -116,6 +97,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 			}
 		}
+		//to do put hardcoded color values in external constants
 		case WM_CTLCOLORSTATIC: {
 			HDC hdcStatic = (HDC)wParam;
 			if (GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
@@ -186,9 +168,12 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return 0;
 		}
 		case WM_SIZE: {
-
+			int yClient = HIWORD(lParam);
+			int xClient = LOWORD(lParam);
 			if (wParam != SIZE_RESTORED && wParam != SIZE_MAXIMIZED)
 				break;
+
+			int x = GetScrollPos(hwnd, SB_VERT);
 
 			SCROLLINFO si = {};
 			si.cbSize = sizeof(SCROLLINFO);
@@ -224,9 +209,35 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return (0);
 			break;
 		}
+		case WM_GETMINMAXINFO: {
+			lpMMI->ptMinTrackSize.x = mainWindowWidth;
+			lpMMI->ptMinTrackSize.y = mainWindowHeight;
+		}
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
+void fillGUI(HWND hwnd, SystemInfo *localMachine, int indexOffset) {
+	createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance(), indexOffset);
+	populateInfoHolders(localMachine->getCurrentInstance(), hwnd);
+
+	RECT rc = { 0 };
+	GetClientRect(hwnd, &rc);
+	SCROLLINFO si = { 0 };
+	si.cbSize = sizeof(SCROLLINFO);
+	si.fMask = SIF_ALL;
+	si.nMin = 0;
+	si.nMax = scrollFullPageHeight;
+	si.nPage = (rc.bottom - rc.top);
+	si.nPos = 0;
+	si.nTrackPos = 0;
+	SetScrollInfo(hwnd, SB_VERT, &si, true);
+
+	EnumChildWindows(hwnd,
+		(WNDENUMPROC)SetFont,
+					 (LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the font
+}
+
 BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 	SendMessage(child, WM_SETFONT, (LPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
 	SendMessage(GetDlgItem(GetParent(child), AUX_IP_TOGGLE),
@@ -234,19 +245,20 @@ BOOL CALLBACK SetFont(HWND child, LPARAM font) {
 				(WPARAM)ipToggleBtnFont, MAKELPARAM(true, 0));
 	return TRUE;
 }
+
 void loadImages(void) {
 	for (int x = 0; x < totalItemsCount; x++) {
 		HICON newIcon = (HICON)LoadImage(ghInstance,
-										 MAKEINTRESOURCE(ICON_IDS[x]), 
-										 IMAGE_ICON, 
-										 16, 
-										 16, 
+										 MAKEINTRESOURCE(ICON_IDS[x]),
+										 IMAGE_ICON,
+										 ITEM_ICON_SIZE,
+										 ITEM_ICON_SIZE,
 										 NULL);
 		iconArr.push_back(newIcon);
 	}
 }
 
-void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
+void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 	if (PROGRAM_INSTANCE == 1) {
 		CreateWindowEx
 		(
@@ -270,7 +282,9 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 	int xStartOffSetLabel = 80;
 	int xStartOffSetInformation = xStartOffSetLabel + 25;
 	//labels + information as a table
-	for (int x = BIOS_LABEL, y = BIOS_INFO, z = BIOS_ICON_LABEL; x < BIOS_INFO; x++, y++, z++) {
+	for (int x = offsetIndex, y = offsetIndex + INFO_ID_OFFSET, z = offsetIndex + ICON_ID_OFFSET;
+		 x < BIOS_INFO;
+		 x++, y++, z++) {
 		//icon
 		CreateWindowEx
 		(
@@ -341,10 +355,9 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info) {
 		yStartOffSet += (ITEM_HEIGHT + 2);
 	}
 	scrollFullPageHeight = yStartOffSet;
-	wchar_t *t = new wchar_t[100];
-	_stprintf(t, L"%d", scrollFullPageHeight);
 
 }
+
 void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
 				  currentMachineInfo->getBIOS().c_str());
@@ -359,23 +372,23 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 
 	SetWindowText(GetDlgItem(mainWindowHwnd, GPU_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER, 
+								 HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, MONITOR_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY, 
+								 HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, STORAGE_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE, 
+								 HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, OPTICAL_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_CDROM, 
+								 HARDWARE_VECTOR_TYPE::HARDWARE_CDROM,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, 
+								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
 		//createIPToggleControl(GetDlgItem(mainWindowHwnd, NETWORK_INFO));
@@ -417,8 +430,8 @@ void createIPToggleControl(HWND parent, int xOff, int yOff) {
 		NULL,
 		NULL
 	);
-
 }
+
 void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
 	static bool showStatus = 0;
 	static wstring savedIP;
