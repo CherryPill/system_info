@@ -10,7 +10,7 @@ bld/
 [Ll]og/
 *.VC.db
 *.VC.VC.opendb
-*.sdf
+**/*.sdf 
 packages/
 *.vcxproj
 *.vcxproj.filters
