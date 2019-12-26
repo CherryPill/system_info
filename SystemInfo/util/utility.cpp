@@ -210,23 +210,23 @@ UINT32 getInfoBoxItemCount(UINT32 ITEM_ID, SystemInfo *info) {
 
 //this function forms a single string to display within the program window
 //make HARDWARE_TYPE instead of harware_vector_type to process strings and vectors
-wstring formListString(SystemInfo *currentMachine, HARDWARE_VECTOR_TYPE type, WRITE_OUT_TYPE wType) {
+wstring formListString(SystemInfo *currentMachine, OS_INFO_TYPES type, WRITE_OUT_TYPE wType) {
 	wstring finalString = L"";
 	vector<wstring> values;
 	wstring emptyValue;
-	if (type == HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER) {
+	if (type == OS_INFO_TYPES::HARDWARE_VIDEO_ADAPTER) {
 		values = currentMachine->getGPUDevices();
 		emptyValue = itemStrings[5];
-	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY) {
+	} else if (type == OS_INFO_TYPES::HARDWARE_DISPLAY) {
 		values = currentMachine->getDisplayDevices();
 		emptyValue = itemStrings[6];
-	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE) {
+	} else if (type == OS_INFO_TYPES::HARDWARE_STORAGE) {
 		values = currentMachine->getStorageMediums();
 		emptyValue = itemStrings[7];
-	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_CDROM) {
+	} else if (type == OS_INFO_TYPES::HARDWARE_CDROM) {
 		values = currentMachine->getCDROMDevices();
 		emptyValue = itemStrings[8];
-	} else if (type == HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK) {
+	} else if (type == OS_INFO_TYPES::HARDWARE_NETWORK) {
 		values = currentMachine->getNetworkAdaptersText();
 		emptyValue = itemStrings[9];
 	}
@@ -294,7 +294,7 @@ ACTION openFileDiag(HWND mainWindow,
 
 void writeToFile(wofstream &fileStream, SystemInfo *info, int counter, WRITE_OUT_TYPE woType) {
 	if (counter >= 5 && counter <= 9) {
-		fileStream << formListString(info, static_cast<HARDWARE_VECTOR_TYPE>(counter % 5), woType).c_str();
+		fileStream << formListString(info, static_cast<OS_INFO_TYPES>(counter), woType).c_str();
 	} else {
 		switch (counter) {
 			case 0: {
@@ -540,4 +540,19 @@ bool dirExists(LPCTSTR dirPath) {
 
 bool createSimpleDirectory(TCHAR *path) {
 	return CreateDirectoryW(path, NULL);
+}
+
+std::wstring convertWmiCapacityToGB(wstring val) {
+	TCHAR tempChar[100];
+	double cap;
+	double capacity;
+	double accumulatedRAM = 0;
+	_tcscpy(tempChar, val.c_str());
+	swscanf(tempChar, L"%lf", &cap);
+
+	cap /= (pow(1024, 3));
+	accumulatedRAM += cap;
+	TCHAR capacityStrBuff[100];
+	_stprintf(capacityStrBuff, _T("%.2lf"), accumulatedRAM);
+	return wstring(capacityStrBuff);
 }

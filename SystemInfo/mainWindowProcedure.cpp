@@ -372,23 +372,23 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 
 	SetWindowText(GetDlgItem(mainWindowHwnd, GPU_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_VIDEO_ADAPTER,
+								 OS_INFO_TYPES::HARDWARE_VIDEO_ADAPTER,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, MONITOR_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_DISPLAY,
+								 OS_INFO_TYPES::HARDWARE_DISPLAY,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, STORAGE_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_STORAGE,
+								 OS_INFO_TYPES::HARDWARE_STORAGE,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, OPTICAL_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_CDROM,
+								 OS_INFO_TYPES::HARDWARE_CDROM,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK,
+								 OS_INFO_TYPES::HARDWARE_NETWORK,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
 		//createIPToggleControl(GetDlgItem(mainWindowHwnd, NETWORK_INFO));
@@ -456,7 +456,7 @@ void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
 void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 				  formListString(currentMachineInfo,
-								 HARDWARE_VECTOR_TYPE::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
+								 OS_INFO_TYPES::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());
 }
 
 void scrollClientWindow(HWND hwnd, int bar, int pos) {

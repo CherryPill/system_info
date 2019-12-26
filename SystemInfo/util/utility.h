@@ -46,12 +46,16 @@ enum class WRITE_OUT_TYPE {
 	FILE_XML
 };
 
-enum class HARDWARE_VECTOR_TYPE {
-	HARDWARE_VIDEO_ADAPTER = 0,
-	HARDWARE_DISPLAY = 1,
-	HARDWARE_STORAGE = 2,
-	HARDWARE_CDROM = 3,
-	HARDWARE_NETWORK = 4
+enum class OS_INFO_TYPES {
+	MIDDLEWARE_BIOS = 1,
+	SOFTWARE_OS,
+	HARDWARE_MB,
+	HARDWARE_RAM,
+	HARDWARE_VIDEO_ADAPTER,
+	HARDWARE_DISPLAY,
+	HARDWARE_STORAGE,
+	HARDWARE_CDROM,
+	HARDWARE_NETWORK
 };
 
 enum class WINDOW_CENTER_TYPE {
@@ -102,7 +106,7 @@ UINT32 getInfoBoxItemCount(UINT32, SystemInfo*);
 UINT32 adjustItemHeight(HWND, UINT32, UINT32);
 void getCurrentDateTime(TCHAR *);
 void getCurrentDateTimeVerbose(TCHAR *);
-std::wstring formListString(SystemInfo*, HARDWARE_VECTOR_TYPE, WRITE_OUT_TYPE);
+std::wstring formListString(SystemInfo*, OS_INFO_TYPES, WRITE_OUT_TYPE);
 enum class ACTION openFileDiag(HWND, FILE_EXTENSION, TCHAR*, int);
 void writeToFile(wofstream&, SystemInfo*, int, WRITE_OUT_TYPE);
 wstring fromChToWideStr(char *value);
@@ -121,4 +125,5 @@ int displayPromptForAction(std::wstring);
 BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res);
 void configAppData();
 bool dirExists(LPCTSTR);
+std::wstring convertWmiCapacityToGB(std::wstring);
 #endif

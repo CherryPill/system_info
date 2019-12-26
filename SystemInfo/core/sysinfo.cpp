@@ -14,7 +14,7 @@
 #include "../mainWindowProcedure.h"
 
 #pragma comment(lib, "wbemuuid.lib")
-
+//TODO: Conflate getMB and getCPU into one procedure since MB uses socket info available on Win32_Processor
 void getCPUTemp(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
 //hardware
 void getBIOS(SystemInfo *localMachine);
@@ -153,21 +153,21 @@ int getSystemInformation(SystemInfo *localMachine) {
 
 	getNetworkAdapters(localMachine);
 	getUptime(localMachine);
-	// Cleanup
-	// ========
 
 	pSvc->Release();
 	pLoc->Release();
 	CoUninitialize();
 
-	return 0;   // Program successfully completed.
+	return 0; 
 }
 
 void getCPU(SystemInfo *localMachine,
 			HRESULT hres, IWbemServices *pSvc,
 			IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
 
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_Processor");
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery
+	(hres, pLoc, pSvc, buildQueryString(L"Win32_Processor", queryAttrs));
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -182,7 +182,7 @@ void getCPU(SystemInfo *localMachine,
 		VARIANT vtProp;
 
 		// Get the value of the Name property
-		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_CPU::NAME), 0, &vtProp, 0, 0);
 		wstring fullCPUString; //name + @clock
 		wstring maxClock;
 		double maxClockInGhZ;
@@ -193,7 +193,7 @@ void getCPU(SystemInfo *localMachine,
 		trimNullTerminator(processor);
 		trimWhiteSpace(processor);
 		if (processor.find(L"@", 0) == string::npos) {
-			hr = pclsObj->Get(L"MaxClockSpeed", 0, &vtProp, 0, 0);
+			hr = pclsObj->Get(queryAttrs.at((int)WMI_CPU::MAXCLOCK), 0, &vtProp, 0, 0);
 			maxClockInMhZ = vtProp.uintVal;
 			maxClockInGhZ = (double)maxClockInMhZ / 1000;
 			_stprintf(maxClockBuff, _T("%.1lf"), maxClockInGhZ);
@@ -215,7 +215,10 @@ void getCPU(SystemInfo *localMachine,
 void getRAM(SystemInfo *localMachine,
 			HRESULT hres, IWbemServices *pSvc,
 			IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_PhysicalMemory"));
+
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_PhysicalMemory");
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery
+	(hres, pLoc, pSvc, buildQueryString(L"Win32_PhysicalMemory", queryAttrs));
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
 
@@ -229,9 +232,7 @@ void getRAM(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 
-		// Get the value of the Name property
-		//format
-		//gb channel ddr @ mhz (no timings yet)
+		// format: gb channel ddr @ mhz (no timings yet)
 
 		wstring clockStr;
 		UINT32 clock;
@@ -249,21 +250,24 @@ void getRAM(SystemInfo *localMachine,
 		UINT32 bank;
 		TCHAR bankLabelBuff[100];
 		wstring bankStr;
-		capacityStr = getActualPhysicalMemory(hres, pSvc, pLoc);
 
-		hr = pclsObj->Get(L"FormFactor", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::CAPACITY), 0, &vtProp, 0, 0);
+		capacityStr = convertWmiCapacityToGB(vtProp.bstrVal);
+
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::FORMFACTOR), 0, &vtProp, 0, 0);
 		formFactor = vtProp.uintVal;
 		formFactorStr = RAMFormFactors[formFactor];
 
-		hr = pclsObj->Get(L"BankLabel", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::BANKLABEL), 0, &vtProp, 0, 0);
 		bank = vtProp.uintVal;
 		_stprintf(bankLabelBuff, _T("%d"), bank);
 		bankStr = wstring(bankLabelBuff);
 
-		hr = pclsObj->Get(L"MemoryType", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::MEMTYPE), 0, &vtProp, 0, 0);
 		memoryType = vtProp.uintVal;
 		memoryTypeStr = RAMMemoryTypes[memoryType];
-		hr = pclsObj->Get(L"Speed", 0, &vtProp, 0, 0);
+
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::SPEED), 0, &vtProp, 0, 0);
 		clock = vtProp.uintVal;
 		_stprintf(clockStrBuff, _T("%d"), clock);
 		clockStr = wstring(clockStrBuff);
@@ -320,7 +324,10 @@ void getOS(SystemInfo *localMachine,
 void getMB(SystemInfo *localMachine,
 		   HRESULT hres, IWbemServices *pSvc,
 		   IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_BaseBoard"));
+
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_BaseBoard");
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery
+	(hres, pLoc, pSvc, buildQueryString(L"Win32_BaseBoard", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -336,7 +343,7 @@ void getMB(SystemInfo *localMachine,
 		VARIANT vtProp;
 
 		// Get the value of the Name property
-		hr = pclsObj->Get(L"Manufacturer", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_MB::MANUFACTURER), 0, &vtProp, 0, 0);
 
 		wstring manufacturer;
 		wstring product;
@@ -344,7 +351,7 @@ void getMB(SystemInfo *localMachine,
 		manufacturer = vtProp.bstrVal;
 		manufacturer.erase(manufacturer.length());
 		trimWhiteSpace(manufacturer);
-		hr = pclsObj->Get(L"Product", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_MB::PRODUCT), 0, &vtProp, 0, 0);
 
 		product = vtProp.bstrVal;
 		localMachine->setMB(manufacturer + L" " + product + L" (" + getSocket(hres, pSvc, pLoc) + L")");
@@ -353,48 +360,6 @@ void getMB(SystemInfo *localMachine,
 		pclsObj->Release();
 	}
 	pEnumerator->Release();
-}
-
-wstring getActualPhysicalMemory(HRESULT hres,
-								IWbemServices *pSvc,
-								IWbemLocator *pLoc) {
-	wstring ram;
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_PhysicalMemory"));
-
-	IWbemClassObject *pclsObj = NULL;
-	ULONG uReturn = 0;
-	double accumulatedRAM = 0;
-	while (pEnumerator) {
-		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
-
-		if (0 == uReturn) {
-			break;
-		}
-
-		VARIANT vtProp;
-
-		hr = pclsObj->Get(L"Capacity", 0, &vtProp, 0, 0);
-		double cap;
-		double capacity;
-
-		wstring temp;
-		TCHAR tempChar[100];
-		temp = vtProp.bstrVal;
-		_tcscpy(tempChar, temp.c_str());
-		swscanf(tempChar, L"%lf", &cap);
-
-		cap /= (pow(1024, 3));
-		accumulatedRAM += cap;
-		VariantClear(&vtProp);
-
-		pclsObj->Release();
-	}
-	TCHAR capacityStrBuff[100];
-	_stprintf(capacityStrBuff, _T("%.2lf"), accumulatedRAM);
-	ram = wstring(capacityStrBuff);
-	pEnumerator->Release();
-	return ram;
 }
 
 void getGPU(SystemInfo *localMachine,
@@ -710,7 +675,7 @@ IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc,
 		&pEnumerator);
 	if (FAILED(hres)) {
 		displayMessageGeneric(UI_MESS_RES::FAILURE,
-							  L"Query for operating system failed");
+							  L"Query to operating system failed");
 		pSvc->Release();
 		pLoc->Release();
 		CoUninitialize();
@@ -852,11 +817,25 @@ int test() {
 	}
 	pEnumerator->Release();
 
-
-
 	pSvc->Release();
 	pLoc->Release();
 	CoUninitialize();
 
-	return 0;   // Program successfully completed.
+	return 0; 
+}
+
+bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs) {
+	WCHAR queryString[256] = { 0 };
+	wcscpy(queryString, L"SELECT ");
+	auto it = attrs.begin();
+	for (auto it = attrs.begin(); it != attrs.end(); it++) {
+		wcscat(queryString, *it);
+		if (!((attrs.end() - it == 1))) {
+			wcscat(queryString, L", ");
+		}
+	}
+	wcscat(queryString, L" FROM ");
+	wcscat(queryString, wmiClass);
+	int x = 0;
+	return bstr_t(queryString);
 }
