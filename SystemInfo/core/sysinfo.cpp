@@ -5,6 +5,7 @@
 #include <Wbemidl.h>
 #include <sstream>
 #include <atlconv.h>
+#include <powerbase.h>
 #include "../network/common/network.h"
 #include "../glb/globalVars.h"
 #include "../core/sysinfo.h"
@@ -14,30 +15,32 @@
 #include "../mainWindowProcedure.h"
 
 #pragma comment(lib, "wbemuuid.lib")
-//TODO: Conflate getMB and getCPU into one procedure since MB uses socket info available on Win32_Processor
-void getCPUTemp(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+#pragma comment(lib, "PowrProf.lib")
+//TODO: Conflate fillMB and fillCPU into one procedure since MB uses socket info available on Win32_Processor
+void fillCPUTemp(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
 //hardware
-void getBIOS(SystemInfo *localMachine);
-void getOS(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getCPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getMB(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getRAM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getGPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getMonitor(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getStorage(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getCDROM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getAudio(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void getNetworkAdapters(SystemInfo *localMachine);
-void getUptime(SystemInfo *localMachine);
+void fillComputerType(SystemInfo *localMachine);
+void fillBIOS(SystemInfo *localMachine);
+void fillOS(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillCPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillMB(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillRAM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillGPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillMonitor(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillStorage(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillCDROM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillAudio(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+void fillNetworkAdapters(SystemInfo *localMachine);
+void fillUptime(SystemInfo *localMachine);
 
-void(*getInfoFuncs[])(SystemInfo*, HRESULT, IWbemServices*, IWbemLocator*) =
-{ getOS, getCPU, getMB, getRAM, getGPU, getMonitor,
-getStorage, getCDROM, getAudio };
+void(*fillInfoFuncs[])(SystemInfo*, HRESULT, IWbemServices*, IWbemLocator*) =
+{ fillOS, fillCPU, fillMB, fillRAM, fillGPU, fillMonitor,
+fillStorage, fillCDROM, fillAudio };
 
 
 
-//the actual function that does all the work
-int getSystemInformation(SystemInfo *localMachine) {
+//the actual function that does all the heavy work
+int fillSystemInformation(SystemInfo *localMachine) {
 	HRESULT hres;
 
 	// Step 1: --------------------------------------------------
@@ -46,7 +49,7 @@ int getSystemInformation(SystemInfo *localMachine) {
 	hres = CoInitializeEx(0, COINIT_MULTITHREADED);
 	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Failed to initialize COM library"), _T("Fatal Error"), MB_OK);
-		return 1;                  // Program has failed.
+		return 1;
 	}
 
 	// Step 2: --------------------------------------------------
@@ -68,11 +71,10 @@ int getSystemInformation(SystemInfo *localMachine) {
 	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Failed to initialize security"), _T("Fatal Error"), MB_OK);
 		CoUninitialize();
-		return 1;                    // Program has failed.
+		return 1;
 	}
 
-	// Step 3: ---------------------------------------------------
-	// Obtain the initial locator to WMI -------------------------
+	//obtain the initial locator to WMI
 
 	IWbemLocator *pLoc = NULL;
 
@@ -111,10 +113,8 @@ int getSystemInformation(SystemInfo *localMachine) {
 		MessageBox(NULL, _T("Could not connect"), _T("Fatal Error"), MB_OK);
 		pLoc->Release();
 		CoUninitialize();
-		return 1;                // Program has failed.
+		return 1;
 	}
-
-	//cout << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
 
 
 	// Step 5: --------------------------------------------------
@@ -136,34 +136,33 @@ int getSystemInformation(SystemInfo *localMachine) {
 		pSvc->Release();
 		pLoc->Release();
 		CoUninitialize();
-		return 1;               // Program has failed.
+		return 1;
 	}
 
-	// Step 6: --------------------------------------------------
-	// Use the IWbemServices pointer to make requests of WMI ----
+	//use the IWbemServices pointer to make requests of WMI
 
 	//temp
-	getCPUTemp(localMachine, hres, pSvc, pLoc);
+	fillCPUTemp(localMachine, hres, pSvc, pLoc);
 	//hardware
-	getBIOS(localMachine);
-
-	for (int x = 0; x < sizeof(getInfoFuncs) / sizeof(getInfoFuncs[0]); x++) {
-		(*getInfoFuncs[x])(localMachine, hres, pSvc, pLoc);
+	fillBIOS(localMachine);
+	fillComputerType(localMachine);
+	for (int x = 0; x < sizeof(fillInfoFuncs) / sizeof(fillInfoFuncs[0]); x++) {
+		(*fillInfoFuncs[x])(localMachine, hres, pSvc, pLoc);
 	}
 
-	getNetworkAdapters(localMachine);
-	getUptime(localMachine);
+	fillNetworkAdapters(localMachine);
+	fillUptime(localMachine);
 
 	pSvc->Release();
 	pLoc->Release();
 	CoUninitialize();
 
-	return 0; 
+	return 0;
 }
 
-void getCPU(SystemInfo *localMachine,
-			HRESULT hres, IWbemServices *pSvc,
-			IWbemLocator *pLoc) {
+void fillCPU(SystemInfo *localMachine,
+			 HRESULT hres, IWbemServices *pSvc,
+			 IWbemLocator *pLoc) {
 
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_Processor");
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery
@@ -212,9 +211,9 @@ void getCPU(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getRAM(SystemInfo *localMachine,
-			HRESULT hres, IWbemServices *pSvc,
-			IWbemLocator *pLoc) {
+void fillRAM(SystemInfo *localMachine,
+			 HRESULT hres, IWbemServices *pSvc,
+			 IWbemLocator *pLoc) {
 
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_PhysicalMemory");
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery
@@ -281,10 +280,12 @@ void getRAM(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getOS(SystemInfo *localMachine,
-		   HRESULT hres, IWbemServices *pSvc,
-		   IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_OperatingSystem"));
+void fillOS(SystemInfo *localMachine,
+			HRESULT hres, IWbemServices *pSvc,
+			IWbemLocator *pLoc) {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_OperatingSystem");
+	IEnumWbemClassObject* pEnumerator =
+		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_OperatingSystem", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -299,14 +300,14 @@ void getOS(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 
-		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_OS::NAME), 0, &vtProp, 0, 0);
 		wstring fullOSstring;
 		string OSName;
 		wstring OSArchitecture;
 		wstring OSNameWide;
 
 		OSNameWide = vtProp.bstrVal;
-		hr = pclsObj->Get(L"OSArchitecture", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_OS::ARCHITECTURE), 0, &vtProp, 0, 0);
 		OSArchitecture = vtProp.bstrVal;
 		int garbageIndex = OSNameWide.find(L"|");
 		OSNameWide = OSNameWide.erase(garbageIndex, OSNameWide.length() - garbageIndex);
@@ -321,9 +322,9 @@ void getOS(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getMB(SystemInfo *localMachine,
-		   HRESULT hres, IWbemServices *pSvc,
-		   IWbemLocator *pLoc) {
+void fillMB(SystemInfo *localMachine,
+			HRESULT hres, IWbemServices *pSvc,
+			IWbemLocator *pLoc) {
 
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_BaseBoard");
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery
@@ -362,10 +363,12 @@ void getMB(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getGPU(SystemInfo *localMachine,
-			HRESULT hres, IWbemServices *pSvc,
-			IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_VideoController"));
+void fillGPU(SystemInfo *localMachine,
+			 HRESULT hres, IWbemServices *pSvc,
+			 IWbemLocator *pLoc) {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_VideoController");
+	IEnumWbemClassObject* pEnumerator =
+		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_VideoController", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -380,7 +383,7 @@ void getGPU(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 
-		hr = pclsObj->Get(L"AdapterRAM", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_GPU::ADAPTER_RAM), 0, &vtProp, 0, 0);
 		wstring finalAdapterString;
 		wstring name;
 		UINT32 vramBytes;
@@ -390,7 +393,7 @@ void getGPU(SystemInfo *localMachine,
 
 		vramBytes = vtProp.uintVal;
 		vRAMmegaBytes = (double)vramBytes / pow(1024, 2);
-		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_GPU::NAME), 0, &vtProp, 0, 0);
 		name = vtProp.bstrVal;
 		name.erase(name.length());
 		trimNullTerminator(name);
@@ -407,10 +410,12 @@ void getGPU(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getMonitor(SystemInfo *localMachine,
-				HRESULT hres, IWbemServices *pSvc,
-				IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DesktopMonitor"));
+void fillMonitor(SystemInfo *localMachine,
+				 HRESULT hres, IWbemServices *pSvc,
+				 IWbemLocator *pLoc) {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_DesktopMonitor");
+	IEnumWbemClassObject* pEnumerator =
+		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_DesktopMonitor", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -424,14 +429,15 @@ void getMonitor(SystemInfo *localMachine,
 		}
 
 		VARIANT vtProp;
-		//DELL P2014H(DP) (1600x900@60Hz)
+		//Output format:
+		//<Monitor name> (widthxheight@<hertzCount>Hz)
 		wstring finalMonitorString;
 		wstring monitorName;
 		wstring resAndFreqStr;
 		TCHAR resAndFreqBuff[50];
 		UINT32 dimensionsAndFrequency[3];
-		getDimensionsAndFrequency(hres, pSvc, pLoc, dimensionsAndFrequency);
-		hr = pclsObj->Get(L"Name", 0, &vtProp, 0, 0);
+		fillDimensionsAndFrequency(hres, pSvc, pLoc, dimensionsAndFrequency);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_MONITOR::NAME), 0, &vtProp, 0, 0);
 		monitorName = vtProp.bstrVal;
 		trimNullTerminator(monitorName);
 		_stprintf(resAndFreqBuff, L"(%dx%d@%dHz)", dimensionsAndFrequency[0],
@@ -447,10 +453,13 @@ void getMonitor(SystemInfo *localMachine,
 	}
 	pEnumerator->Release();
 }
-void getDimensionsAndFrequency(HRESULT hres,
-							   IWbemServices *pSvc,
-							   IWbemLocator *pLoc, UINT *arr) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DisplayConfiguration"));
+void fillDimensionsAndFrequency(HRESULT hres,
+								IWbemServices *pSvc,
+								IWbemLocator *pLoc, UINT *arr) {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_DisplayConfiguration");
+
+	IEnumWbemClassObject* pEnumerator =
+		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_DisplayConfiguration", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -467,7 +476,7 @@ void getDimensionsAndFrequency(HRESULT hres,
 
 		arr[0] = GetSystemMetrics(SM_CXSCREEN);
 		arr[1] = GetSystemMetrics(SM_CYSCREEN);
-		hr = pclsObj->Get(L"DisplayFrequency", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_DISPLAYCONFIG::NAME), 0, &vtProp, 0, 0);
 		arr[2] = vtProp.uintVal;
 
 
@@ -479,10 +488,13 @@ void getDimensionsAndFrequency(HRESULT hres,
 }
 
 
-void getStorage(SystemInfo *localMachine,
+void fillStorage(SystemInfo *localMachine,
 				HRESULT hres, IWbemServices *pSvc,
 				IWbemLocator *pLoc) {
-	IEnumWbemClassObject* pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_DiskDrive"));
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_DiskDrive");
+
+	IEnumWbemClassObject* pEnumerator =
+		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_DiskDrive", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -504,15 +516,14 @@ void getStorage(SystemInfo *localMachine,
 		wstring capacityGiBStr;
 		UINT64 capacityGiBDbl;
 		TCHAR capacity[256];
-		// Get the value of the Name property
-		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_DISKDRIVE::CAPTION), 0, &vtProp, 0, 0);
 
-		//product - m5a97 r2.0
+		//product name
 		modelName = vtProp.bstrVal;
 		manufacturerName = parseDiskStorageName(modelName);
 		trimNullTerminator(modelName);
 		trimWhiteSpace(manufacturerName);
-		hr = pclsObj->Get(L"Size", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_DISKDRIVE::SIZE), 0, &vtProp, 0, 0);
 
 		capacityStr = vtProp.bstrVal;
 		capacityBytes = stoull(capacityStr);
@@ -530,11 +541,14 @@ void getStorage(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getCDROM(SystemInfo *localMachine,
-			  HRESULT hres, IWbemServices *pSvc,
-			  IWbemLocator *pLoc) {
+void fillCDROM(SystemInfo *localMachine,
+			   HRESULT hres, IWbemServices *pSvc,
+			   IWbemLocator *pLoc) {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_CDROMDrive");
+
 	IEnumWbemClassObject* pEnumerator = NULL;
-	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_CDROMDrive"));
+	pEnumerator = executeWQLQuery(hres, pLoc, pSvc,
+								  buildQueryString(L"Win32_CDROMDrive", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -549,11 +563,11 @@ void getCDROM(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 		wstring cdRomCaption;
-		// Get the value of the Name property
-		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_OPTICALDISK::CAPTION), 0, &vtProp, 0, 0);
 
 		cdRomCaption = vtProp.bstrVal;
 		trimNullTerminator(cdRomCaption);
+		condenseSpaces(cdRomCaption);
 		localMachine->addCDROMDevice(cdRomCaption);
 
 		VariantClear(&vtProp);
@@ -563,11 +577,14 @@ void getCDROM(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getAudio(SystemInfo *localMachine,
-			  HRESULT hres, IWbemServices *pSvc,
-			  IWbemLocator *pLoc) {
+void fillAudio(SystemInfo *localMachine,
+			   HRESULT hres, IWbemServices *pSvc,
+			   IWbemLocator *pLoc) {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_SoundDevice");
+
 	IEnumWbemClassObject* pEnumerator = NULL;
-	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_SoundDevice"));
+	pEnumerator =
+		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_SoundDevice", queryAttrs));
 
 	IWbemClassObject *pclsObj = NULL;
 	ULONG uReturn = 0;
@@ -582,8 +599,7 @@ void getAudio(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 		wstring soundCaption;
-		// Get the value of the Name property
-		hr = pclsObj->Get(L"Caption", 0, &vtProp, 0, 0);
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_SOUND::CAPTION), 0, &vtProp, 0, 0);
 
 		soundCaption = vtProp.bstrVal;
 		trimNullTerminator(soundCaption);
@@ -596,7 +612,7 @@ void getAudio(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void getUptime(SystemInfo *localMachine) {
+void fillUptime(SystemInfo *localMachine) {
 
 	wstring uptimeStr;
 	TCHAR formattedTimeString[256] = { 0 };
@@ -607,7 +623,7 @@ void getUptime(SystemInfo *localMachine) {
 	localMachine->setUptime(uptimeStr);
 }
 
-void getBIOS(SystemInfo *localMachine) {
+void fillBIOS(SystemInfo *localMachine) {
 	DWORD needBufferSize = 0;
 	TCHAR biosData[256];
 	SecureZeroMemory(&biosData, sizeof(biosData));
@@ -629,14 +645,14 @@ void getBIOS(SystemInfo *localMachine) {
 	localMachine->setBIOS(biosData);
 }
 
-void getCPUTemp(SystemInfo *localMachine,
-				HRESULT hres, IWbemServices *pSvc,
-				IWbemLocator *pLoc) {
+void fillCPUTemp(SystemInfo *localMachine,
+				 HRESULT hres, IWbemServices *pSvc,
+				 IWbemLocator *pLoc) {
 	//stub for now	
 }
 
 wstring getSocket(HRESULT hres, IWbemServices *pSvc,
-				  IWbemLocator *pLoc) {
+				   IWbemLocator *pLoc) {
 	wstring socket;
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
@@ -654,7 +670,6 @@ wstring getSocket(HRESULT hres, IWbemServices *pSvc,
 
 		VARIANT vtProp;
 
-		// Get the value of the Name property
 		hr = pclsObj->Get(L"SocketDesignation", 0, &vtProp, 0, 0);
 		socket = vtProp.bstrVal;
 		VariantClear(&vtProp);
@@ -673,9 +688,10 @@ IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc,
 		WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
 		NULL,
 		&pEnumerator);
+	//test this behavior
 	if (FAILED(hres)) {
 		displayMessageGeneric(UI_MESS_RES::FAILURE,
-							  L"Query to operating system failed");
+							  L"Fatal error: Query to operating system failed");
 		pSvc->Release();
 		pLoc->Release();
 		CoUninitialize();
@@ -821,7 +837,7 @@ int test() {
 	pLoc->Release();
 	CoUninitialize();
 
-	return 0; 
+	return 0;
 }
 
 bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs) {
@@ -838,4 +854,15 @@ bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs) {
 	wcscat(queryString, wmiClass);
 	int x = 0;
 	return bstr_t(queryString);
+}
+
+void fillComputerType(SystemInfo *localMachine) {
+	SYSTEM_POWER_CAPABILITIES systemPowerCapabilities;
+	ZeroMemory(&systemPowerCapabilities, sizeof(systemPowerCapabilities));
+	GetPwrCapabilities(&systemPowerCapabilities);
+	systemPowerCapabilities.LidPresent
+		?
+		localMachine->setComputerType(PCType[0])
+		:
+		localMachine->setComputerType(PCType[1]);
 }

@@ -23,5 +23,5 @@ class NetAdapter {
 	wstring getAdapterAdr(void);
 	wstring getAdapterGW(void);
 };
-void getNetworkAdapters(SystemInfo*);
+void fillNetworkAdapters(SystemInfo*);
 int getIpAddress(char *ipBuff);

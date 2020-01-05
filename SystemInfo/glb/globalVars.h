@@ -137,6 +137,11 @@ static wstring RAMMemoryTypes[26]{
 	L"FBD2"
 };
 
+static wstring PCType[2]{
+	L" (Laptop) ",
+	L" (Desktop) "
+};
+
 //time functions
 extern TCHAR *timeVerboseMonths[];
 extern TCHAR *timeVerboseDaysOfWeek[];

@@ -52,7 +52,7 @@ wstring NetAdapter::getAdapterType(void) {
 	return (*this).adapterType;
 }
 
-void getNetworkAdapters(SystemInfo* localMachine) {
+void fillNetworkAdapters(SystemInfo* localMachine) {
 
 	PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
 	PIP_ADAPTER_ADDRESSES pAddresses = NULL;

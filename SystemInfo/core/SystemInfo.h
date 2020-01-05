@@ -19,6 +19,7 @@ class SystemInfo {
 		this->uptime = L"Uptime not set";
 	}
 	wstring BIOS;
+	wstring computerType;
 	wstring OS;
 	wstring CPU;
 	wstring MB;
@@ -38,13 +39,14 @@ class SystemInfo {
 		static SystemInfo *currentInstance = new SystemInfo();
 		return currentInstance;
 	}
+
 	vector<wstring> getCDROMDevices(void);
-	wstring  getBIOS(void);
-	wstring  getUptime(void);
-	wstring  getCPU(void);
-	wstring  getRAM(void);
-	wstring  getMB(void);
-	wstring  getAudio(void);
+	wstring getBIOS(void);
+	wstring getUptime(void);
+	wstring getCPU(void);
+	wstring getRAM(void);
+	wstring getMB(void);
+	wstring getAudio(void);
 	vector<wstring> getGPUDevices(void);
 	vector<wstring> getStorageMediums(void);
 	vector<wstring> getDisplayDevices(void);
@@ -55,6 +57,7 @@ class SystemInfo {
 	}
 	wstring getOS(void);
 	wstring getSnapshotGenDateTime();
+	wstring getComputerType();
 	void setBIOS(wstring bios);
 	void setUptime(wstring uptime);
 	void setCPU(wstring CPU);
@@ -69,4 +72,5 @@ class SystemInfo {
 	void setAudio(wstring audio);
 	void addCDROMDevice(wstring CDROM);
 	void setSnapshotGenDateTime(wstring dt);
+	void setComputerType(wstring computerType);
 };

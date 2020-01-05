@@ -126,4 +126,6 @@ BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res);
 void configAppData();
 bool dirExists(LPCTSTR);
 std::wstring convertWmiCapacityToGB(std::wstring);
+void removeTabulation(std::wstring&);
+void condenseSpaces(std::wstring&);
 #endif

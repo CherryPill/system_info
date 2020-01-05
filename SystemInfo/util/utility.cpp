@@ -2,7 +2,7 @@
 #include <tchar.h>
 #include <vector>
 #include <ShlObj.h>
-#include <rpc.h>
+#include <algorithm>
 #include "../glb/globalVars.h"
 #include "../util/utility.h"
 #include "../const/itemIDs.h"
@@ -108,6 +108,8 @@ void trimWhiteSpace(wstring &str) {
 		str.erase(str.begin(), str.end() - (str.length() - whiteSpaceStartBeginning));
 	}
 }
+
+
 
 //Generates string in the following format: "sysinfo capture @ YYYY-MM-DD-HH:MM.required_extension"
 void generateFileName(TCHAR *completeFileName, FILE_EXTENSION requiredExtension) {
@@ -555,4 +557,18 @@ std::wstring convertWmiCapacityToGB(wstring val) {
 	TCHAR capacityStrBuff[100];
 	_stprintf(capacityStrBuff, _T("%.2lf"), accumulatedRAM);
 	return wstring(capacityStrBuff);
+}
+
+void removeTabulation(std::wstring &str) {
+	str.erase(std::remove(str.begin(), str.end(), L'\t'), str.end());
+}
+
+bool wcharEqualsPredicate(wchar_t a, wchar_t b) {
+	return a == b && a == ' ';
+}
+
+void condenseSpaces(std::wstring &str) {
+	std::wstring::iterator new_end = 
+		std::unique(str.begin(), str.end(), wcharEqualsPredicate);
+	str.erase(new_end, str.end());
 }

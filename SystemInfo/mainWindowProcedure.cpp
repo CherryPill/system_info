@@ -33,7 +33,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			if (PROGRAM_INSTANCE == 1) {
 				importData(localMachine->getCurrentInstance());
 			} else {
-				getSystemInformation(localMachine->getCurrentInstance());
+				fillSystemInformation(localMachine->getCurrentInstance());
 				//test();
 			}
 			fillGUI(hwnd, localMachine, 0);
@@ -97,7 +97,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 			}
 		}
-		//to do put hardcoded color values in external constants
+						 //to do put hardcoded color values in external constants
 		case WM_CTLCOLORSTATIC: {
 			HDC hdcStatic = (HDC)wParam;
 			if (GetDlgCtrlID((HWND)lParam) < BIOS_INFO) {
@@ -359,8 +359,12 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 }
 
 void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
+	TCHAR biosInfo[256] = { 0 };
+	_tcscat(biosInfo, currentMachineInfo->getBIOS().c_str());
+	_tcscat(biosInfo, currentMachineInfo->getComputerType().c_str());
+
 	SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
-				  currentMachineInfo->getBIOS().c_str());
+				  biosInfo);
 	SetWindowText(GetDlgItem(mainWindowHwnd, OS_INFO),
 				  currentMachineInfo->getOS().c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, CPU_INFO),

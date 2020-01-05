@@ -30,6 +30,26 @@
 		MANUFACTURER,
 		PRODUCT
 	};
+	enum class WMI_GPU {
+		ADAPTER_RAM,
+		NAME
+	};
+	enum class WMI_MONITOR {
+		NAME
+	};
+	enum class WMI_DISPLAYCONFIG {
+		NAME
+	};
+	enum class WMI_DISKDRIVE {
+		CAPTION,
+		SIZE
+	};
+	enum class WMI_OPTICALDISK {
+		CAPTION
+	};
+	enum class WMI_SOUND {
+		CAPTION
+	};
 	static unordered_map <wchar_t*, std::vector<LPCWSTR>> wmiClassStringsMap = {
 		{ L"Win32_OperatingSystem", {L"Name", L"OSArchitecture"}},
 		{ L"Win32_Processor", { L"Name", L"MaxClockSpeed", L"SocketDesignation"} },
@@ -42,23 +62,25 @@
 		{ L"Win32_CDROMDrive", { L"Caption" } },
 		{ L"Win32_SoundDevice", { L"Caption"} },
 	};
-	int getSystemInformation(SystemInfo *localMachine);
+	int fillSystemInformation(SystemInfo *localMachine);
 	int test();
-	void getBIOS(SystemInfo *localMachine);
-	void getCPUInfo(void);
-	void getCPUTemp(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getCPU(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getRAM(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getOS(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getMB(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getGPU(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getMonitor(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getStorage(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getCDROM(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
-	void getUptime(SystemInfo *localMachine);
+	void fillCPUTemp(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	//hardware
+	void fillComputerType(SystemInfo *localMachine);
+	void fillBIOS(SystemInfo *localMachine);
+	void fillOS(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillCPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillMB(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillRAM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillGPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillMonitor(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillStorage(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillCDROM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillAudio(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
+	void fillNetworkAdapters(SystemInfo *localMachine);
+	void fillUptime(SystemInfo *localMachine);
+	void fillDimensionsAndFrequency(HRESULT, IWbemServices*, IWbemLocator*, UINT*);
 	wstring getSocket(HRESULT, IWbemServices*, IWbemLocator*);
-	void getDimensionsAndFrequency(HRESULT, IWbemServices*, IWbemLocator*, UINT*);
-	void getAudio(SystemInfo *localMachine, HRESULT, IWbemServices*, IWbemLocator*);
 	IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc, IWbemServices *pSvc, BSTR stringQuery);
 	bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs);
 #endif
