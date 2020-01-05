@@ -17,21 +17,6 @@
 #pragma comment(lib, "wbemuuid.lib")
 #pragma comment(lib, "PowrProf.lib")
 //TODO: Conflate fillMB and fillCPU into one procedure since MB uses socket info available on Win32_Processor
-void fillCPUTemp(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-//hardware
-void fillComputerType(SystemInfo *localMachine);
-void fillBIOS(SystemInfo *localMachine);
-void fillOS(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillCPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillMB(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillRAM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillGPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillMonitor(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillStorage(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillCDROM(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillAudio(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
-void fillNetworkAdapters(SystemInfo *localMachine);
-void fillUptime(SystemInfo *localMachine);
 
 void(*fillInfoFuncs[])(SystemInfo*, HRESULT, IWbemServices*, IWbemLocator*) =
 { fillOS, fillCPU, fillMB, fillRAM, fillGPU, fillMonitor,
