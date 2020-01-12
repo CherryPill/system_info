@@ -44,16 +44,16 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_COMMAND: {
 			WORD receivedCommand = LOWORD(wParam);
 			switch (receivedCommand) {
-				case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
+				/*case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
 					takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL);
 					break;
-				}
+				}*/
 				case ID_FILE_TAKESCREENSHOT_UPLOAD: {
-					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET);
+					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET, NULL);
 					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG_SCRUPLOAD), hwnd, (DLGPROC)scrDlgProc);
-
 					break;
 				}
+				case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY:
 				case ID_EXPORT_XML:
 				case ID_EXPORT_TXT:
 				case ID_EXPORT_HTML: {
@@ -68,7 +68,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					RESULT_STRUCT resStruct = {};
 
 					saveSpecs::save(receivedCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
-					if (resStruct.result) {
+					if (resStruct.result == ACTION::ACCEPTED) {
 						displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(receivedCommand));
 						if (displayPromptForAction(actionPromptText[0]) == IDYES) {
 							if (openDefAppForExpData(receivedCommand, &resStruct) != TRUE) {
@@ -76,6 +76,12 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 							}
 						}
 						break;
+					}
+					else if(resStruct.result == ACTION::__ERROR) {
+						displayMessageGeneric(UI_MESS_RES::FAILURE, L"Error while writing to file");
+					}
+					else {
+						//user canceled the save window out
 					}
 					break;
 				}

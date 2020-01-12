@@ -4,6 +4,7 @@
 #include <fstream>
 #include <tchar.h>
 #include "../core/SystemInfo.h"
+#include "../glb/globalVars.h"
 enum class UI_MESS_RES {
 	SUCCESS,
 	FAILURE
@@ -12,7 +13,8 @@ enum class UI_MESS_RES {
 enum class UI_MESS_ACTION {
 	WRITE_OUT_TXT,
 	WRITE_OUT_XML,
-	WRITE_OUT_HTML
+	WRITE_OUT_HTML,
+	WRITE_OUT_IMG
 };
 
 enum class FILE_IO_OPERATION {
@@ -67,7 +69,6 @@ enum class FILE_EXTENSION {
 	TXT,
 	XML,
 	HTML,
-	BIN,
 	PNG
 };
 
@@ -85,7 +86,7 @@ static std::wstring storageMediumManufacturers[20]{
 };
 
 typedef struct RESULT_STRUCT {
-	bool result;
+	ACTION result;
 	std::wstring src;
 	TCHAR __src[256];
 };
@@ -116,7 +117,7 @@ void prependMinuteStr(WORD min, TCHAR *minBuff);
 vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter);
 std::wstring netAdapterStringWrapper(NetAdapter);
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
-bool fileIOCheck(wofstream&);
+ACTION fileIOCheck(wofstream&);
 void calculateTimeAndFormat(TCHAR*);
 void displayExportMessage(enum class UI_MESS_RES, enum class UI_MESS_ACTION);
 void displayMessageGeneric(enum class UI_MESS_RES, const TCHAR*);

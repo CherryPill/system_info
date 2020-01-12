@@ -12,10 +12,10 @@ class saveSpecs {
 	static const TCHAR *CSSCommentStart;
 	static const TCHAR *CSSCommentEnd;
 	public:
-	static bool saveAsXML(HWND, SystemInfo*, RESULT_STRUCT*);
-	static bool saveAsHTML(HWND, SystemInfo*, RESULT_STRUCT*);
-	static bool saveAsText(HWND, SystemInfo*, RESULT_STRUCT*);
-	static bool save(WORD command,
+	static ACTION saveAsXML(HWND, SystemInfo*, RESULT_STRUCT*);
+	static ACTION saveAsHTML(HWND, SystemInfo*, RESULT_STRUCT*);
+	static ACTION saveAsText(HWND, SystemInfo*, RESULT_STRUCT*);
+	static ACTION save(WORD command,
 					 RESULT_STRUCT *res,
 					 HWND hwnd,
 					 SystemInfo *localMachine);

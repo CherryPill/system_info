@@ -71,7 +71,6 @@ static TCHAR *savefileExtensions[5] = {
 	_T(".txt"),
 	_T(".xml"),
 	_T(".html"),
-	_T(".sysinfo"),
 	_T(".png")
 };
 
@@ -79,7 +78,6 @@ static TCHAR *savefileExtensionsLong[5] = {
 	_T(".txt files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0"),
 	_T(".xml files (*.xml)\0*.xml\0All Files (*.*)\0*.*\0"),
 	_T(".html files (*.html)\0*.html\0All Files (*.*)\0*.*\0"),
-	_T(".sysinfo files (*.sysinfo)\0*.sysinfo\0All Files (*.*)\0*.*\0"), //not used
 	_T(".png images (*.png)\0*.png\0All Files (*.*)\0*.*\0")
 };
 
@@ -150,7 +148,8 @@ extern HFONT ipToggleBtnFont;
 
 enum class ACTION {
 	ACCEPTED,
-	CANCELED_OUT
+	CANCELED_OUT,
+	__ERROR
 };
 
 extern WNDPROC lpfnScrEditProc;

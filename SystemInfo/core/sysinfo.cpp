@@ -165,7 +165,6 @@ void fillCPU(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 
-		// Get the value of the Name property
 		hr = pclsObj->Get(queryAttrs.at((int)WMI_CPU::NAME), 0, &vtProp, 0, 0);
 		wstring fullCPUString; //name + @clock
 		wstring maxClock;
@@ -328,7 +327,6 @@ void fillMB(SystemInfo *localMachine,
 
 		VARIANT vtProp;
 
-		// Get the value of the Name property
 		hr = pclsObj->Get(queryAttrs.at((int)WMI_MB::MANUFACTURER), 0, &vtProp, 0, 0);
 
 		wstring manufacturer;
@@ -763,9 +761,6 @@ int test() {
 		return 1;                // Program has failed.
 	}
 
-	//cout << "Connected to ROOT\\CIMV2 WMI namespace" << endl;
-
-
 	// Step 5: --------------------------------------------------
 	// Set security levels on the proxy -------------------------
 
@@ -809,7 +804,6 @@ int test() {
 
 		VARIANT vtProp;
 		VariantInit(&vtProp);
-		// Get the value of the Name property
 		hr = pclsObj->Get(L"CurrentTemperature", 0, &vtProp, 0, 0);
 		wstring socket = vtProp.bstrVal;
 		displayMessageGeneric(UI_MESS_RES::SUCCESS, socket.c_str());

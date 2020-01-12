@@ -6,6 +6,7 @@
 #include "../export/saveSpecs.h"
 #include "../core/SystemInfo.h"
 #include "../util/utility.h"
+#include "screenCapture.h"
 
 using namespace std;
 const TCHAR *saveSpecs::xmlDTD = _T("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n");
@@ -17,7 +18,7 @@ const TCHAR *saveSpecs::CSSCommentEnd = _T("*/\n");
 saveSpecs::saveSpecs() {}
 
 //to do add file write exceptions
-bool saveSpecs::save(WORD command,
+ACTION saveSpecs::save(WORD command,
 					 RESULT_STRUCT *res,
 					 HWND hwnd,
 					 SystemInfo *localMachine) {
@@ -35,16 +36,21 @@ bool saveSpecs::save(WORD command,
 			res->result = saveAsHTML(hwnd, localMachine, res);
 			break;
 		}
+		case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
+			res->result = takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL, res);
+			break;
+		}
 	}
 	return res->result;
 }
 
-bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
+ACTION saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
 
-	if (openFileDiag(hwnd, FILE_EXTENSION::HTML, fullSavePath, 1) != ACTION::CANCELED_OUT) {
+	if (openFileDiag(hwnd, FILE_EXTENSION::HTML, fullSavePath, 1) 
+		!= ACTION::CANCELED_OUT) {
 		std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>); //this line is necessary to output non-ascii text
 		wofstream htmlOutFile;
 		htmlOutFile.open(fullSavePath, wofstream::out);
@@ -73,11 +79,11 @@ bool saveSpecs::saveAsHTML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStr
 
 		return fileIOCheck(htmlOutFile);
 	} else {
-		return false;
+		return ACTION::CANCELED_OUT;
 	}
 }
 
-bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
+ACTION saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
@@ -111,7 +117,7 @@ bool saveSpecs::saveAsXML(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStru
 		resultStruct->src.assign(fullSavePath);
 		return fileIOCheck(xmlOutFile);
 	} else {
-		return false;
+		return ACTION::CANCELED_OUT;
 	}
 }
 
@@ -153,7 +159,7 @@ void importAsXML(HWND hwnd) {
 	}
 }
 
-bool saveSpecs::saveAsText(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
+ACTION saveSpecs::saveAsText(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStruct) {
 	TCHAR fullSavePath[256];
 
 	ZeroMemory(&fullSavePath, sizeof(fullSavePath));
@@ -179,7 +185,7 @@ bool saveSpecs::saveAsText(HWND hwnd, SystemInfo *info, RESULT_STRUCT *resultStr
 		resultStruct->src.assign(fullSavePath);
 		return fileIOCheck(txtOutFile);
 	} else {
-		return false;
+		return ACTION::CANCELED_OUT;
 	}
 
 }

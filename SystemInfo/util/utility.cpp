@@ -125,15 +125,18 @@ void getCurrentDateTime(TCHAR *buffer) {
 	SYSTEMTIME currentTime;
 	GetLocalTime(&currentTime);
 	TCHAR finalTimeString[256];
-	TCHAR minBuff[16];
-	prependMinuteStr(currentTime.wMinute, minBuff);
-	_stprintf(buffer, _T("%d-%d-%d_@_%d.%s"),
+	TCHAR strMinBuff[16];
+	TCHAR strSecBuff[16];
+
+	prependMinuteStr(currentTime.wMinute, strMinBuff);
+	prependMinuteStr(currentTime.wSecond, strSecBuff);
+	_stprintf(buffer, _T("%d-%d-%d_@_%d.%s.%s"),
 			  currentTime.wYear,
 			  currentTime.wMonth,
 			  currentTime.wDay,
 			  currentTime.wHour,
-			  minBuff,
-			  currentTime.wSecond);
+			  strMinBuff,
+			  strSecBuff);
 }
 
 void prependMinuteStr(WORD val, TCHAR *valBuff) {
@@ -276,9 +279,9 @@ ACTION openFileDiag(HWND mainWindow,
 		fileName.lpstrFile = buffer;
 		if (GetSaveFileName(&fileName)) {
 			_tcscpy(fullOpenSavePath, fileName.lpstrFile);
-			//success
+			return ACTION::ACCEPTED;
 		} else {
-			//failure
+			return ACTION::CANCELED_OUT;
 		}
 	} else {
 
@@ -403,11 +406,11 @@ void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName) {
 #undef fullPath
 }
 
-bool fileIOCheck(wofstream &stream) {
+ACTION fileIOCheck(wofstream &stream) {
 	if (stream) {
-		return true;
+		return ACTION::ACCEPTED;
 	} else {
-		return false;
+		return ACTION::__ERROR;
 	}
 }
 
@@ -501,6 +504,10 @@ UI_MESS_ACTION getUIMessByCommand(WORD command) {
 		}
 		case (ID_EXPORT_HTML): {
 			return UI_MESS_ACTION::WRITE_OUT_HTML;
+			break;
+		}
+		case(ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY): {
+			return UI_MESS_ACTION::WRITE_OUT_IMG;
 			break;
 		}
 	}

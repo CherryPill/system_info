@@ -2,5 +2,5 @@
 #define SCREENCAPTURE_H
 #include <Windows.h>
 #include "../util/utility.h"
-void takeScreenshot(HWND, SCR_SAVETYPE);
+ACTION takeScreenshot(HWND, SCR_SAVETYPE, RESULT_STRUCT*);
 #endif // !SCREENCAPTURE_H
