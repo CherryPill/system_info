@@ -44,10 +44,6 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_COMMAND: {
 			WORD receivedCommand = LOWORD(wParam);
 			switch (receivedCommand) {
-				/*case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
-					takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL);
-					break;
-				}*/
 				case ID_FILE_TAKESCREENSHOT_UPLOAD: {
 					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET, NULL);
 					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG_SCRUPLOAD), hwnd, (DLGPROC)scrDlgProc);
