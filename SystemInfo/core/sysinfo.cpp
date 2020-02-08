@@ -239,21 +239,12 @@ void fillRAM(SystemInfo *localMachine,
 		formFactor = vtProp.uintVal;
 		formFactorStr = RAMFormFactors[formFactor];
 
-		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::BANKLABEL), 0, &vtProp, 0, 0);
-		bank = vtProp.uintVal;
-		_stprintf(bankLabelBuff, _T("%d"), bank);
-		bankStr = wstring(bankLabelBuff);
-
-		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::MEMTYPE), 0, &vtProp, 0, 0);
-		memoryType = vtProp.uintVal;
-		memoryTypeStr = RAMMemoryTypes[memoryType];
-
 		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::SPEED), 0, &vtProp, 0, 0);
 		clock = vtProp.uintVal;
 		_stprintf(clockStrBuff, _T("%d"), clock);
 		clockStr = wstring(clockStrBuff);
 		localMachine->setRAM(capacityStr +
-							 L" GB " + formFactorStr + L" " + memoryTypeStr + L" " + clockStr + L"MHz");
+							 L" GB " + formFactorStr + L" " + clockStr + L"MHz");
 
 		VariantClear(&vtProp);
 
