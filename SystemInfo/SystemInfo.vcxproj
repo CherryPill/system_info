@@ -34,8 +34,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140_xp</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -96,7 +96,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>W:\Projects\SI\v1.4\packages\curl-vc141-dynamic-x86_64.7.59.0\build\native\lib\Win32\dynamic;W:\Projects\SI\v1.4\packages\curl-vc141-dynamic-x86_64.7.59.0\build\native\lib\Win32\static;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;gdiplus.lib;wbemuuid.lib;powrprof.lib;IPHLPAPI.lib;wininet.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,15 +123,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>W:\Projects\SI\v1.4\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\include;W:\Projects\SI\v1.4\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;gdiplus.lib;wbemuuid.lib;powrprof.lib;IPHLPAPI.lib;wininet.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -196,17 +196,6 @@
     <ResourceCompile Include="SystemInfo.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\cpu.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\GPU.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\mainIcon.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\mb.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\monitor.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\optical.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\os.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\RAM.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\sound.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\storage.ico" />
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\uptime.ico" />
     <Image Include="Icons\bios.ico" />
     <Image Include="Icons\cpu.ico" />
     <Image Include="Icons\GPU.ico" />

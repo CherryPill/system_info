@@ -14,8 +14,6 @@
 #include "../SMBIOS.h"
 #include "../mainWindowProcedure.h"
 
-#pragma comment(lib, "wbemuuid.lib")
-#pragma comment(lib, "PowrProf.lib")
 //TODO: Conflate fillMB and fillCPU into one procedure since MB uses socket info available on Win32_Processor
 
 void(*fillInfoFuncs[])(SystemInfo*, HRESULT, IWbemServices*, IWbemLocator*) =

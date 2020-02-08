@@ -8,9 +8,6 @@
 #include "network.h"
 #include "../../util/utility.h"
 
-#pragma comment(lib, "IPHLPAPI.lib")
-#pragma comment(lib, "wininet")
-#pragma comment (lib, "ws2_32.lib")
 
 char *getUniCastIP(PIP_ADAPTER_UNICAST_ADDRESS pUnicast) {
 	SOCKET_ADDRESS actualAddress = pUnicast->Address;

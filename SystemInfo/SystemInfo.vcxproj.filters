@@ -168,39 +168,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\mainIcon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\os.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\cpu.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\mb.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\RAM.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\GPU.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\monitor.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\storage.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\optical.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\sound.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\uptime.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Icons\mainIcon.ico">
       <Filter>Resource Files</Filter>
     </Image>

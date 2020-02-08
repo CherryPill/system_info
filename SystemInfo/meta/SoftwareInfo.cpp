@@ -5,7 +5,7 @@ SoftwareInfo::SoftwareInfo() {
 	this->setSoftwareName(_T("SystemInfo"));
 	this->setSoftwareDesc(_T("Hardware information tool for windows"));
 	this->setSoftwareRepo(_T("<a href=\"https://github.com/CherryPill/system_info\">https://github.com/CherryPill/system_info</a>"));
-	this->setSoftwareVer(_T("1.3.0 [32-bit]"));
+	this->setSoftwareVer(_T("1.4.0 [32-bit]"));
 }
 
 SoftwareInfo::~SoftwareInfo() {}
