@@ -13,105 +13,153 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="glb">
+      <UniqueIdentifier>{e0a14077-3b19-44c8-aef5-4bba2985e1d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="const">
+      <UniqueIdentifier>{6ab82245-1eeb-44b8-a735-fdc5bbe7d78c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{a400d830-f3e3-4670-8498-e27d75f3159f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog">
+      <UniqueIdentifier>{13e4bee5-132d-4557-963f-7426e1670b77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="export">
+      <UniqueIdentifier>{26c4324f-baea-453d-b54f-5bdc6d53cea1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="import">
+      <UniqueIdentifier>{fbdb2ee1-5039-4a1a-8178-b77f5a8b9ad8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="meta">
+      <UniqueIdentifier>{52c41785-2de7-4492-82fa-342804b4107b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network">
+      <UniqueIdentifier>{2a8c2d79-13a7-44ff-9944-37755bc037db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network\common">
+      <UniqueIdentifier>{fadfb506-963d-4d63-9545-8fdfa6b1a3e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network\rest">
+      <UniqueIdentifier>{4904ea02-d1f1-4343-99b5-acf54f7be4e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pugi">
+      <UniqueIdentifier>{1d66ddd0-610b-4d4e-8f4d-c0646241279b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{6978f6a2-6a74-4303-8e45-40d49674e069}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="globalVars.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mainWindowProcedure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sysinfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="utility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SystemInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="screenCapture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="saveSpecs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="aboutDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SoftwareInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SMBIOS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="network.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="glb\globalVars.cpp">
+      <Filter>glb</Filter>
     </ClCompile>
-    <ClCompile Include="binImport.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="core\sysinfo.cpp">
+      <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="pugixml.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="core\SystemInfo.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\aboutDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="export\saveSpecs.cpp">
+      <Filter>export</Filter>
+    </ClCompile>
+    <ClCompile Include="export\screenCapture.cpp">
+      <Filter>export</Filter>
+    </ClCompile>
+    <ClCompile Include="import\binImport.cpp">
+      <Filter>import</Filter>
+    </ClCompile>
+    <ClCompile Include="meta\SoftwareInfo.cpp">
+      <Filter>meta</Filter>
+    </ClCompile>
+    <ClCompile Include="network\common\network.cpp">
+      <Filter>network\common</Filter>
+    </ClCompile>
+    <ClCompile Include="pugi\pugixml.cpp">
+      <Filter>pugi</Filter>
+    </ClCompile>
+    <ClCompile Include="util\utility.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="network\rest\rest.cpp">
+      <Filter>network\rest</Filter>
+    </ClCompile>
+    <ClCompile Include="dialog\scrUploadDialog.cpp">
+      <Filter>dialog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="globalVars.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="appconst.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mainWindowProcedure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="itemIDs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sysinfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="iconLabelIDs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="screenCapture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="saveSpecs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="aboutDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SoftwareInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SMBIOS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="network.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="glb\globalVars.h">
+      <Filter>glb</Filter>
     </ClInclude>
-    <ClInclude Include="binImport.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="const\appconst.h">
+      <Filter>const</Filter>
     </ClInclude>
-    <ClInclude Include="pugixml.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="const\iconLabelIDs.h">
+      <Filter>const</Filter>
     </ClInclude>
-    <ClInclude Include="pugiconfig.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="const\itemIDs.h">
+      <Filter>const</Filter>
+    </ClInclude>
+    <ClInclude Include="core\sysinfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\SystemInfo.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\aboutDialog.h">
+      <Filter>dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="export\saveSpecs.h">
+      <Filter>export</Filter>
+    </ClInclude>
+    <ClInclude Include="export\screenCapture.h">
+      <Filter>export</Filter>
+    </ClInclude>
+    <ClInclude Include="import\binImport.h">
+      <Filter>import</Filter>
+    </ClInclude>
+    <ClInclude Include="meta\SoftwareInfo.h">
+      <Filter>meta</Filter>
+    </ClInclude>
+    <ClInclude Include="network\common\network.h">
+      <Filter>network\common</Filter>
+    </ClInclude>
+    <ClInclude Include="pugi\pugiconfig.hpp">
+      <Filter>pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="pugi\pugixml.hpp">
+      <Filter>pugi</Filter>
+    </ClInclude>
+    <ClInclude Include="util\utility.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="network\rest\rest.h">
+      <Filter>network\rest</Filter>
+    </ClInclude>
+    <ClInclude Include="dialog\scrUploadDialog.h">
+      <Filter>dialog</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -120,39 +168,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\mainIcon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\os.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\cpu.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\mb.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\RAM.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\GPU.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\monitor.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\storage.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\optical.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\sound.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="C:\Users\Theta1\Desktop\speccy]\uptime.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Icons\mainIcon.ico">
       <Filter>Resource Files</Filter>
     </Image>

@@ -1,0 +1,9 @@
+#pragma once
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <codecvt>
+#include "../pugi/pugixml.hpp"
+#include "../core/SystemInfo.h"
+#include "../glb/globalVars.h"
+void importData(SystemInfo*);
