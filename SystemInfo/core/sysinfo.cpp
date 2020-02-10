@@ -172,6 +172,8 @@ void fillCPU(SystemInfo *localMachine,
 		processor = vtProp.bstrVal;
 		trimNullTerminator(processor);
 		trimWhiteSpace(processor);
+		removeTabulation(processor);
+		condenseSpaces(processor);
 		if (processor.find(L"@", 0) == string::npos) {
 			hr = pclsObj->Get(queryAttrs.at((int)WMI_CPU::MAXCLOCK), 0, &vtProp, 0, 0);
 			maxClockInMhZ = vtProp.uintVal;
