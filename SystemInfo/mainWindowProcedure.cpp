@@ -363,8 +363,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 	TCHAR biosInfo[256] = { 0 };
 	_tcscat(biosInfo, currentMachineInfo->getBIOS().c_str());
-	_tcscat(biosInfo, currentMachineInfo->getComputerType().c_str());
-
+	
 	SetWindowText(GetDlgItem(mainWindowHwnd, BIOS_INFO),
 				  biosInfo);
 	SetWindowText(GetDlgItem(mainWindowHwnd, OS_INFO),

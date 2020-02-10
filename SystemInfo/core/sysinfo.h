@@ -66,7 +66,7 @@
 	int test();
 	void fillCPUTemp(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
 	//hardware
-	void fillComputerType(SystemInfo *localMachine);
+	wstring getComputerType(void);
 	void fillBIOS(SystemInfo *localMachine);
 	void fillOS(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
 	void fillCPU(SystemInfo *localMachine, HRESULT hres, IWbemServices *pSvc, IWbemLocator *pLoc);
