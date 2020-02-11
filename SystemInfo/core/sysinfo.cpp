@@ -125,10 +125,9 @@ int fillSystemInformation(SystemInfo *localMachine) {
 	//use the IWbemServices pointer to make requests of WMI
 
 	//temp
-	fillCPUTemp(localMachine, hres, pSvc, pLoc);
+	//fillCPUTemp(localMachine, hres, pSvc, pLoc);
 	//hardware
 	fillBIOS(localMachine);
-	fillComputerType(localMachine);
 	for (int x = 0; x < sizeof(fillInfoFuncs) / sizeof(fillInfoFuncs[0]); x++) {
 		(*fillInfoFuncs[x])(localMachine, hres, pSvc, pLoc);
 	}
@@ -173,6 +172,8 @@ void fillCPU(SystemInfo *localMachine,
 		processor = vtProp.bstrVal;
 		trimNullTerminator(processor);
 		trimWhiteSpace(processor);
+		removeTabulation(processor);
+		condenseSpaces(processor);
 		if (processor.find(L"@", 0) == string::npos) {
 			hr = pclsObj->Get(queryAttrs.at((int)WMI_CPU::MAXCLOCK), 0, &vtProp, 0, 0);
 			maxClockInMhZ = vtProp.uintVal;
@@ -461,8 +462,8 @@ void fillDimensionsAndFrequency(HRESULT hres,
 
 
 void fillStorage(SystemInfo *localMachine,
-				HRESULT hres, IWbemServices *pSvc,
-				IWbemLocator *pLoc) {
+				 HRESULT hres, IWbemServices *pSvc,
+				 IWbemLocator *pLoc) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_DiskDrive");
 
 	IEnumWbemClassObject* pEnumerator =
@@ -614,6 +615,7 @@ void fillBIOS(SystemInfo *localMachine) {
 	} else {
 		MessageBox(NULL, _T("Memory allocation failed"), _T("Fatal Error"), MB_OK);
 	}
+	_tcscat(biosData, (wchar_t*)getComputerType().c_str());
 	localMachine->setBIOS(biosData);
 }
 
@@ -624,7 +626,7 @@ void fillCPUTemp(SystemInfo *localMachine,
 }
 
 wstring getSocket(HRESULT hres, IWbemServices *pSvc,
-				   IWbemLocator *pLoc) {
+				  IWbemLocator *pLoc) {
 	wstring socket;
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
@@ -824,13 +826,13 @@ bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs) {
 	return bstr_t(queryString);
 }
 
-void fillComputerType(SystemInfo *localMachine) {
+wstring getComputerType() {
 	SYSTEM_POWER_CAPABILITIES systemPowerCapabilities;
 	ZeroMemory(&systemPowerCapabilities, sizeof(systemPowerCapabilities));
 	GetPwrCapabilities(&systemPowerCapabilities);
-	systemPowerCapabilities.LidPresent
+	return systemPowerCapabilities.LidPresent
 		?
-		localMachine->setComputerType(PCType[0])
+		PCType[0]
 		:
-		localMachine->setComputerType(PCType[1]);
+		PCType[1];
 }

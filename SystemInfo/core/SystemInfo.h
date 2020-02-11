@@ -19,7 +19,6 @@ class SystemInfo {
 		this->uptime = L"Uptime not set";
 	}
 	wstring BIOS;
-	wstring computerType;
 	wstring OS;
 	wstring CPU;
 	wstring MB;
@@ -57,7 +56,6 @@ class SystemInfo {
 	}
 	wstring getOS(void);
 	wstring getSnapshotGenDateTime();
-	wstring getComputerType();
 	void setBIOS(wstring bios);
 	void setUptime(wstring uptime);
 	void setCPU(wstring CPU);
@@ -72,5 +70,4 @@ class SystemInfo {
 	void setAudio(wstring audio);
 	void addCDROMDevice(wstring CDROM);
 	void setSnapshotGenDateTime(wstring dt);
-	void setComputerType(wstring computerType);
 };

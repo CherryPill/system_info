@@ -110,11 +110,3 @@ void SystemInfo::setSnapshotGenDateTime(wstring snapshotGenDateTime) {
 wstring SystemInfo::getSnapshotGenDateTime(void) {
 	return (*this).snapshotGenDateTime;
 }
-
-wstring SystemInfo::getComputerType() {
-	return (*this).computerType;
-}
-
-void SystemInfo::setComputerType(wstring computerType) {
-	(*this).computerType = computerType;
-}
