@@ -23,7 +23,7 @@ fillStorage, fillCDROM, fillAudio };
 
 
 //the actual function that does all the heavy work
-int fillSystemInformation(SystemInfo *localMachine) {
+int fillSystemInformation(SystemInfo* localMachine) {
 	HRESULT hres;
 
 	// Step 1: --------------------------------------------------
@@ -59,13 +59,13 @@ int fillSystemInformation(SystemInfo *localMachine) {
 
 	//obtain the initial locator to WMI
 
-	IWbemLocator *pLoc = NULL;
+	IWbemLocator* pLoc = NULL;
 
 	hres = CoCreateInstance(
 		CLSID_WbemLocator,
 		0,
 		CLSCTX_INPROC_SERVER,
-		IID_IWbemLocator, (LPVOID *)&pLoc);
+		IID_IWbemLocator, (LPVOID*)& pLoc);
 
 	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
@@ -76,7 +76,7 @@ int fillSystemInformation(SystemInfo *localMachine) {
 	// Step 4: -----------------------------------------------------
 	// Connect to WMI through the IWbemLocator::ConnectServer method
 
-	IWbemServices *pSvc = NULL;
+	IWbemServices* pSvc = NULL;
 
 	// Connect to the root\cimv2 namespace with
 	// the current user and obtain pointer pSvc
@@ -142,19 +142,19 @@ int fillSystemInformation(SystemInfo *localMachine) {
 	return 0;
 }
 
-void fillCPU(SystemInfo *localMachine,
-			 HRESULT hres, IWbemServices *pSvc,
-			 IWbemLocator *pLoc) {
+void fillCPU(SystemInfo* localMachine,
+	HRESULT hres, IWbemServices* pSvc,
+	IWbemLocator* pLoc) {
 
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_Processor");
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery
 	(hres, pLoc, pSvc, buildQueryString(L"Win32_Processor", queryAttrs));
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -181,7 +181,8 @@ void fillCPU(SystemInfo *localMachine,
 			_stprintf(maxClockBuff, _T("%.1lf"), maxClockInGhZ);
 			maxClock = wstring(maxClockBuff);
 			fullCPUString = processor + L" @ " + maxClock + L" GHz";
-		} else {
+		}
+		else {
 			fullCPUString = processor;
 		}
 
@@ -194,19 +195,19 @@ void fillCPU(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillRAM(SystemInfo *localMachine,
-			 HRESULT hres, IWbemServices *pSvc,
-			 IWbemLocator *pLoc) {
+void fillRAM(SystemInfo* localMachine,
+	HRESULT hres, IWbemServices* pSvc,
+	IWbemLocator* pLoc) {
 
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_PhysicalMemory");
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery
 	(hres, pLoc, pSvc, buildQueryString(L"Win32_PhysicalMemory", queryAttrs));
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -228,24 +229,26 @@ void fillRAM(SystemInfo *localMachine,
 		double capacityDouble;
 		TCHAR capacityStrBuff[10];
 		TCHAR clockStrBuff[10];
-		wstring bankLabel;
-		UINT32 bank;
-		TCHAR bankLabelBuff[100];
-		wstring bankStr;
 
-		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::CAPACITY), 0, &vtProp, 0, 0);
-		capacityStr = convertWmiCapacityToGB(vtProp.bstrVal);
+		capacityStr = getRamBySlot(hres, pSvc, pLoc, queryAttrs);
 
 		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::FORMFACTOR), 0, &vtProp, 0, 0);
 		formFactor = vtProp.uintVal;
 		formFactorStr = RAMFormFactors[formFactor];
 
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::MEMTYPE), 0, &vtProp, 0, 0);
+		memoryType = vtProp.uintVal;
+		memoryTypeStr = RAMMemoryTypes[memoryType];
+
 		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::SPEED), 0, &vtProp, 0, 0);
 		clock = vtProp.uintVal;
 		_stprintf(clockStrBuff, _T("%d"), clock);
 		clockStr = wstring(clockStrBuff);
-		localMachine->setRAM(capacityStr +
-							 L" GB " + formFactorStr + L" " + clockStr + L"MHz");
+		localMachine->setRAM(
+			capacityStr +
+			L" GB " + formFactorStr + L" " + 
+			(memoryTypeStr.length() == 0 ? L"" : memoryTypeStr + L" ") +
+			clockStr + L"MHz");
 
 		VariantClear(&vtProp);
 
@@ -254,19 +257,19 @@ void fillRAM(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillOS(SystemInfo *localMachine,
-			HRESULT hres, IWbemServices *pSvc,
-			IWbemLocator *pLoc) {
+void fillOS(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_OperatingSystem");
 	IEnumWbemClassObject* pEnumerator =
 		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_OperatingSystem", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -296,20 +299,20 @@ void fillOS(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillMB(SystemInfo *localMachine,
-			HRESULT hres, IWbemServices *pSvc,
-			IWbemLocator *pLoc) {
+void fillMB(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_BaseBoard");
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery
 	(hres, pLoc, pSvc, buildQueryString(L"Win32_BaseBoard", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -336,19 +339,19 @@ void fillMB(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillGPU(SystemInfo *localMachine,
-			 HRESULT hres, IWbemServices *pSvc,
-			 IWbemLocator *pLoc) {
+void fillGPU(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_VideoController");
 	IEnumWbemClassObject* pEnumerator =
 		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_VideoController", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -383,19 +386,19 @@ void fillGPU(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillMonitor(SystemInfo *localMachine,
-				 HRESULT hres, IWbemServices *pSvc,
-				 IWbemLocator *pLoc) {
+void fillMonitor(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_DesktopMonitor");
 	IEnumWbemClassObject* pEnumerator =
 		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_DesktopMonitor", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -414,8 +417,8 @@ void fillMonitor(SystemInfo *localMachine,
 		monitorName = vtProp.bstrVal;
 		trimNullTerminator(monitorName);
 		_stprintf(resAndFreqBuff, L"(%dx%d@%dHz)", dimensionsAndFrequency[0],
-				  dimensionsAndFrequency[1],
-				  dimensionsAndFrequency[2]);
+			dimensionsAndFrequency[1],
+			dimensionsAndFrequency[2]);
 		resAndFreqStr = wstring(resAndFreqBuff);
 		finalMonitorString = monitorName + resAndFreqStr;
 		localMachine->addDisplayDevice(finalMonitorString);
@@ -427,19 +430,19 @@ void fillMonitor(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 void fillDimensionsAndFrequency(HRESULT hres,
-								IWbemServices *pSvc,
-								IWbemLocator *pLoc, UINT *arr) {
+	IWbemServices * pSvc,
+	IWbemLocator * pLoc, UINT * arr) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_DisplayConfiguration");
 
 	IEnumWbemClassObject* pEnumerator =
 		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_DisplayConfiguration", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 	double accumulatedRAM = 0;
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -461,20 +464,20 @@ void fillDimensionsAndFrequency(HRESULT hres,
 }
 
 
-void fillStorage(SystemInfo *localMachine,
-				 HRESULT hres, IWbemServices *pSvc,
-				 IWbemLocator *pLoc) {
+void fillStorage(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_DiskDrive");
 
 	IEnumWbemClassObject* pEnumerator =
 		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_DiskDrive", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -514,21 +517,21 @@ void fillStorage(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillCDROM(SystemInfo *localMachine,
-			   HRESULT hres, IWbemServices *pSvc,
-			   IWbemLocator *pLoc) {
+void fillCDROM(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_CDROMDrive");
 
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc,
-								  buildQueryString(L"Win32_CDROMDrive", queryAttrs));
+		buildQueryString(L"Win32_CDROMDrive", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -550,21 +553,21 @@ void fillCDROM(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillAudio(SystemInfo *localMachine,
-			   HRESULT hres, IWbemServices *pSvc,
-			   IWbemLocator *pLoc) {
+void fillAudio(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_SoundDevice");
 
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator =
 		executeWQLQuery(hres, pLoc, pSvc, buildQueryString(L"Win32_SoundDevice", queryAttrs));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -585,7 +588,7 @@ void fillAudio(SystemInfo *localMachine,
 	pEnumerator->Release();
 }
 
-void fillUptime(SystemInfo *localMachine) {
+void fillUptime(SystemInfo * localMachine) {
 
 	wstring uptimeStr;
 	TCHAR formattedTimeString[256] = { 0 };
@@ -596,7 +599,7 @@ void fillUptime(SystemInfo *localMachine) {
 	localMachine->setUptime(uptimeStr);
 }
 
-void fillBIOS(SystemInfo *localMachine) {
+void fillBIOS(SystemInfo * localMachine) {
 	DWORD needBufferSize = 0;
 	TCHAR biosData[256];
 	SecureZeroMemory(&biosData, sizeof(biosData));
@@ -609,34 +612,36 @@ void fillBIOS(SystemInfo *localMachine) {
 		if (GetSystemFirmwareTable(Signature, 0, pBuff, needBufferSize)) {
 			const PRawSMBIOSData pDMIData = (PRawSMBIOSData)pBuff;
 			DumpSMBIOSStruct(&(pDMIData->SMBIOSTableData), pDMIData->Length, biosData);
-		} else {
+		}
+		else {
 			MessageBox(NULL, _T("Failed to fetch firmware tables"), _T("Fatal Error"), MB_OK);
 		}
-	} else {
+	}
+	else {
 		MessageBox(NULL, _T("Memory allocation failed"), _T("Fatal Error"), MB_OK);
 	}
 	_tcscat(biosData, (wchar_t*)getComputerType().c_str());
 	localMachine->setBIOS(biosData);
 }
 
-void fillCPUTemp(SystemInfo *localMachine,
-				 HRESULT hres, IWbemServices *pSvc,
-				 IWbemLocator *pLoc) {
+void fillCPUTemp(SystemInfo * localMachine,
+	HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	//stub for now	
 }
 
-wstring getSocket(HRESULT hres, IWbemServices *pSvc,
-				  IWbemLocator *pLoc) {
+wstring getSocket(HRESULT hres, IWbemServices * pSvc,
+	IWbemLocator * pLoc) {
 	wstring socket;
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc, bstr_t("SELECT * FROM Win32_Processor"));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -653,8 +658,8 @@ wstring getSocket(HRESULT hres, IWbemServices *pSvc,
 	return socket;
 }
 
-IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc,
-									  IWbemServices *pSvc, BSTR stringQuery) {
+IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator * pLoc,
+	IWbemServices * pSvc, BSTR stringQuery) {
 	IEnumWbemClassObject* pEnumerator = NULL;
 	hres = pSvc->ExecQuery(
 		bstr_t("WQL"),
@@ -665,11 +670,12 @@ IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc,
 	//test this behavior
 	if (FAILED(hres)) {
 		displayMessageGeneric(UI_MESS_RES::FAILURE,
-							  L"Fatal error: Query to operating system failed");
+			L"Fatal error: Query to operating system failed");
 		pSvc->Release();
 		pLoc->Release();
 		CoUninitialize();
-	} else {
+	}
+	else {
 		return pEnumerator;
 	}
 }
@@ -712,13 +718,13 @@ int test() {
 	// Step 3: ---------------------------------------------------
 	// Obtain the initial locator to WMI -------------------------
 
-	IWbemLocator *pLoc = NULL;
+	IWbemLocator* pLoc = NULL;
 
 	hres = CoCreateInstance(
 		CLSID_WbemLocator,
 		0,
 		CLSCTX_INPROC_SERVER,
-		IID_IWbemLocator, (LPVOID *)&pLoc);
+		IID_IWbemLocator, (LPVOID*)& pLoc);
 
 	if (FAILED(hres)) {
 		MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
@@ -729,7 +735,7 @@ int test() {
 	// Step 4: -----------------------------------------------------
 	// Connect to WMI through the IWbemLocator::ConnectServer method
 
-	IWbemServices *pSvc = NULL;
+	IWbemServices* pSvc = NULL;
 
 	// Connect to the root\cimv2 namespace with
 	// the current user and obtain pointer pSvc
@@ -780,14 +786,14 @@ int test() {
 
 	IEnumWbemClassObject* pEnumerator = NULL;
 	pEnumerator = executeWQLQuery(hres, pLoc, pSvc,
-								  bstr_t("SELECT * FROM MSAcpi_ThermalZoneTemperature"));
+		bstr_t("SELECT * FROM MSAcpi_ThermalZoneTemperature"));
 
-	IWbemClassObject *pclsObj = NULL;
+	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
 
 	while (pEnumerator) {
 		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-									   &pclsObj, &uReturn);
+			&pclsObj, &uReturn);
 
 		if (0 == uReturn) {
 			break;
@@ -810,7 +816,7 @@ int test() {
 	return 0;
 }
 
-bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs) {
+bstr_t buildQueryString(const wchar_t* wmiClass, vector<LPCWSTR> attrs) {
 	WCHAR queryString[256] = { 0 };
 	wcscpy(queryString, L"SELECT ");
 	auto it = attrs.begin();
@@ -836,3 +842,44 @@ wstring getComputerType() {
 		:
 		PCType[1];
 }
+
+wstring getRamBySlot(HRESULT hres,
+	IWbemServices *pSvc,
+	IWbemLocator *pLoc,
+	const vector<LPCWSTR> &queryAttrs) {
+
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery
+	(hres, pLoc, pSvc, buildQueryString(L"Win32_PhysicalMemory", queryAttrs));
+
+	IWbemClassObject* pclsObj = NULL;
+	ULONG uReturn = 0;
+
+	double accumulatedRAM = 0;
+	while (pEnumerator) {
+		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
+			&pclsObj, &uReturn);
+
+		if (0 == uReturn) {
+			break;
+		}
+		VARIANT vtProp;
+		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::CAPACITY), 0, &vtProp, 0, 0);
+
+		double cap;
+		double capacity;
+
+		wstring temp;
+		TCHAR tempChar[100];
+		temp = vtProp.bstrVal;
+		_tcscpy(tempChar, temp.c_str());
+		swscanf(tempChar, L"%lf", &cap);
+
+		cap /= (pow(1024, 3));
+		accumulatedRAM += cap;
+		VariantClear(&vtProp);
+	}
+	TCHAR capacityStrBuff[100];
+	_stprintf(capacityStrBuff, _T("%.2lf"), accumulatedRAM);
+	return wstring(capacityStrBuff);
+}
+
