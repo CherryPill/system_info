@@ -21,7 +21,6 @@
 	enum class WMI_RAM  {
 		CAPACITY,
 		FORMFACTOR,
-		BANKLABEL,
 		MEMTYPE,
 		SPEED
 	};
@@ -54,7 +53,7 @@
 		{ L"Win32_OperatingSystem", {L"Name", L"OSArchitecture"}},
 		{ L"Win32_Processor", { L"Name", L"MaxClockSpeed", L"SocketDesignation"} },
 		{ L"Win32_BaseBoard",{ L"Manufacturer", L"Product" } },
-		{ L"Win32_PhysicalMemory", { L"Capacity", L"FormFactor", L"BankLabel", L"MemoryType", L"Speed" } },
+		{ L"Win32_PhysicalMemory", { L"Capacity", L"FormFactor", L"MemoryType", L"Speed" } },
 		{ L"Win32_VideoController", { L"AdapterRAM", L"Name" } },
 		{ L"Win32_DesktopMonitor", { L"Name"} },
 		{ L"Win32_DisplayConfiguration", { L"DisplayFrequency"} },
@@ -83,4 +82,5 @@
 	wstring getSocket(HRESULT, IWbemServices*, IWbemLocator*);
 	IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc, IWbemServices *pSvc, BSTR stringQuery);
 	bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs);
+	wstring getRamBySlot(HRESULT hres, IWbemServices*, IWbemLocator*, const vector<LPCWSTR>&);
 #endif
