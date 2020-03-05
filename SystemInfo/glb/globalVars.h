@@ -108,10 +108,11 @@ static wstring RAMFormFactors[24]{
 	L"LGA"
 };
 
-static wstring RAMMemoryTypes[26]{
-	L"DDR3",
-	L"",
-	L"SDRAM",
+static wstring RAMMemoryTypes[] = {
+	L"Unknown",
+	L"Other",
+	L"DRAM",
+	L"Synchronous DRAM",
 	L"Cache DRAM",
 	L"EDO",
 	L"EDRAM",
@@ -122,6 +123,7 @@ static wstring RAMMemoryTypes[26]{
 	L"Flash",
 	L"EEPROM",
 	L"FEPROM",
+	L"EPROM",
 	L"CDRAM",
 	L"3DRAM",
 	L"SDRAM",
@@ -130,9 +132,17 @@ static wstring RAMMemoryTypes[26]{
 	L"DDR",
 	L"DDR2",
 	L"DDR2 FB-DIMM",
-	L"DDR2",
+	L"",
 	L"DDR3",
-	L"FBD2"
+	L"FBD2",
+	L"DDR4",
+	L"LPDDR",
+	L"LPDDR2",
+	L"LPDDR3",
+	L"LPDDR4",
+	L"Logical non-volatile device",
+	L"HBM",
+	L"HBM2"
 };
 
 static wstring PCType[2]{
