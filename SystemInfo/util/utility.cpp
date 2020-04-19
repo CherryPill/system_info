@@ -493,24 +493,7 @@ void displayMessageGeneric(UI_MESS_RES res, const TCHAR *message) {
 
 //gets the appropriate format message 
 UI_MESS_ACTION getUIMessByCommand(WORD command) {
-	switch (command) {
-		case (ID_EXPORT_XML): {
-			return UI_MESS_ACTION::WRITE_OUT_XML;
-			break;
-		}
-		case (ID_EXPORT_TXT): {
-			return UI_MESS_ACTION::WRITE_OUT_TXT;
-			break;
-		}
-		case (ID_EXPORT_HTML): {
-			return UI_MESS_ACTION::WRITE_OUT_HTML;
-			break;
-		}
-		case(ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY): {
-			return UI_MESS_ACTION::WRITE_OUT_IMG;
-			break;
-		}
-	}
+	return menuChoiceToMessageTextMap.at(command);
 }
 
 int displayPromptForAction(std::wstring promptMessage) {
@@ -554,7 +537,6 @@ bool createSimpleDirectory(TCHAR *path) {
 std::wstring convertWmiCapacityToGB(wstring val) {
 	TCHAR tempChar[100];
 	double cap;
-	double capacity;
 	double accumulatedRAM = 0;
 	_tcscpy(tempChar, val.c_str());
 	swscanf(tempChar, L"%lf", &cap);

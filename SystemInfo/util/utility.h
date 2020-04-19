@@ -3,6 +3,7 @@
 #include <string>
 #include <fstream>
 #include <tchar.h>
+#include <map>
 #include "../core/SystemInfo.h"
 #include "../glb/globalVars.h"
 enum class UI_MESS_RES {
@@ -93,6 +94,13 @@ typedef struct RESULT_STRUCT {
 
 static std::wstring actionPromptText[]{
 	L"Open exported file?"
+};
+
+static std::map<WORD, UI_MESS_ACTION> menuChoiceToMessageTextMap = {
+	{ID_EXPORT_XML, UI_MESS_ACTION::WRITE_OUT_XML},
+	{ID_EXPORT_TXT, UI_MESS_ACTION::WRITE_OUT_TXT},
+	{ID_EXPORT_HTML, UI_MESS_ACTION::WRITE_OUT_HTML},
+	{ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY, UI_MESS_ACTION::WRITE_OUT_IMG}
 };
 
 void centerWindow(POINT*);
