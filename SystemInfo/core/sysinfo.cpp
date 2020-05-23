@@ -13,6 +13,7 @@
 #include "../util/utility.h"
 #include "../SMBIOS.h"
 #include "../mainWindowProcedure.h"
+#include "../core/WMIWBEMINFO.h"
 
 //TODO: Conflate fillMB and fillCPU into one procedure since MB uses socket info available on Win32_Processor
 
@@ -21,123 +22,17 @@ void(*fillInfoFuncs[])(SystemInfo*, HRESULT, IWbemServices*, IWbemLocator*) =
 fillStorage, fillCDROM, fillAudio };
 
 
-
+WMIWBEMINFO* wmiWbemInfo = wmiWbemInfo->getWMIWBEMINFOInstance();
 //the actual function that does all the heavy work
 int fillSystemInformation(SystemInfo* localMachine) {
-	HRESULT hres;
-
-	// Step 1: --------------------------------------------------
-	// Initialize COM. ------------------------------------------
-
-	hres = CoInitializeEx(0, COINIT_MULTITHREADED);
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Failed to initialize COM library"), _T("Fatal Error"), MB_OK);
-		return 1;
-	}
-
-	// Step 2: --------------------------------------------------
-	// Set general COM security levels --------------------------
-
-	hres = CoInitializeSecurity(
-		NULL,
-		-1,                          // COM authentication
-		NULL,                        // Authentication services
-		NULL,                        // Reserved
-		RPC_C_AUTHN_LEVEL_DEFAULT,   // Default authentication 
-		RPC_C_IMP_LEVEL_IMPERSONATE, // Default Impersonation  
-		NULL,                        // Authentication info
-		EOAC_NONE,                   // Additional capabilities 
-		NULL                         // Reserved
-	);
-
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Failed to initialize security"), _T("Fatal Error"), MB_OK);
-		CoUninitialize();
-		return 1;
-	}
-
-	//obtain the initial locator to WMI
-
-	IWbemLocator* pLoc = NULL;
-
-	hres = CoCreateInstance(
-		CLSID_WbemLocator,
-		0,
-		CLSCTX_INPROC_SERVER,
-		IID_IWbemLocator, (LPVOID*)& pLoc);
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
-		CoUninitialize();
-		return 1;                 // Program has failed.
-	}
-
-	// Step 4: -----------------------------------------------------
-	// Connect to WMI through the IWbemLocator::ConnectServer method
-
-	IWbemServices* pSvc = NULL;
-
-	// Connect to the root\cimv2 namespace with
-	// the current user and obtain pointer pSvc
-	// to make IWbemServices calls.
-	hres = pLoc->ConnectServer(
-		_bstr_t(L"ROOT\\CIMV2"), // Object path of WMI namespace
-		NULL,                    // User name. NULL = current user
-		NULL,                    // User password. NULL = current
-		0,                       // Locale. NULL indicates current
-		NULL,                    // Security flags.
-		0,                       // Authority (for example, Kerberos)
-		0,                       // Context object 
-		&pSvc                    // pointer to IWbemServices proxy
-	);
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Could not connect"), _T("Fatal Error"), MB_OK);
-		pLoc->Release();
-		CoUninitialize();
-		return 1;
-	}
-
-
-	// Step 5: --------------------------------------------------
-	// Set security levels on the proxy -------------------------
-
-	hres = CoSetProxyBlanket(
-		pSvc,                        // Indicates the proxy to set
-		RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx
-		RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx
-		NULL,                        // Server principal name 
-		RPC_C_AUTHN_LEVEL_CALL,      // RPC_C_AUTHN_LEVEL_xxx 
-		RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
-		NULL,                        // client identity
-		EOAC_NONE                    // proxy capabilities 
-	);
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Could not set proxy blanket"), _T("Fatal Error"), MB_OK);
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		return 1;
-	}
-
-	//use the IWbemServices pointer to make requests of WMI
-
-	//temp
-	//fillCPUTemp(localMachine, hres, pSvc, pLoc);
-	//hardware
 	fillBIOS(localMachine);
 	for (int x = 0; x < sizeof(fillInfoFuncs) / sizeof(fillInfoFuncs[0]); x++) {
-		(*fillInfoFuncs[x])(localMachine, hres, pSvc, pLoc);
+		(*fillInfoFuncs[x])(localMachine, wmiWbemInfo->getHres(), 
+			wmiWbemInfo->getWbemServices(), wmiWbemInfo->getWbemLocator());
 	}
 
 	fillNetworkAdapters(localMachine);
 	fillUptime(localMachine);
-
-	pSvc->Release();
-	pLoc->Release();
-	CoUninitialize();
 
 	return 0;
 }
@@ -680,143 +575,8 @@ IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator * pLoc,
 	}
 }
 
-int test() {
-
-	HRESULT hres;
-
-	// Step 1: --------------------------------------------------
-	// Initialize COM. ------------------------------------------
-
-	hres = CoInitializeEx(0, COINIT_MULTITHREADED);
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Failed to initialize COM library"), _T("Fatal Error"), MB_OK);
-		return 1;                  // Program has failed.
-	}
-
-	// Step 2: --------------------------------------------------
-	// Set general COM security levels --------------------------
-
-	hres = CoInitializeSecurity(
-		NULL,
-		-1,                          // COM authentication
-		NULL,                        // Authentication services
-		NULL,                        // Reserved
-		RPC_C_AUTHN_LEVEL_DEFAULT,   // Default authentication 
-		RPC_C_IMP_LEVEL_IMPERSONATE, // Default Impersonation  
-		NULL,                        // Authentication info
-		EOAC_NONE,                   // Additional capabilities 
-		NULL                         // Reserved
-	);
-
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Failed to initialize security"), _T("Fatal Error"), MB_OK);
-		CoUninitialize();
-		return 1;                    // Program has failed.
-	}
-
-	// Step 3: ---------------------------------------------------
-	// Obtain the initial locator to WMI -------------------------
-
-	IWbemLocator* pLoc = NULL;
-
-	hres = CoCreateInstance(
-		CLSID_WbemLocator,
-		0,
-		CLSCTX_INPROC_SERVER,
-		IID_IWbemLocator, (LPVOID*)& pLoc);
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Failed to create IWbemLocator object"), _T("Fatal Error"), MB_OK);
-		CoUninitialize();
-		return 1;                 // Program has failed.
-	}
-
-	// Step 4: -----------------------------------------------------
-	// Connect to WMI through the IWbemLocator::ConnectServer method
-
-	IWbemServices* pSvc = NULL;
-
-	// Connect to the root\cimv2 namespace with
-	// the current user and obtain pointer pSvc
-	// to make IWbemServices calls.
-	hres = pLoc->ConnectServer(
-		_bstr_t(L"ROOT\\WMI"), // Object path of WMI namespace
-		NULL,                    // User name. NULL = current user
-		NULL,                    // User password. NULL = current
-		0,                       // Locale. NULL indicates current
-		NULL,                    // Security flags.
-		0,                       // Authority (for example, Kerberos)
-		0,                       // Context object 
-		&pSvc                    // pointer to IWbemServices proxy
-	);
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Could not connect"), _T("Fatal Error"), MB_OK);
-		pLoc->Release();
-		CoUninitialize();
-		return 1;                // Program has failed.
-	}
-
-	// Step 5: --------------------------------------------------
-	// Set security levels on the proxy -------------------------
-
-	hres = CoSetProxyBlanket(
-		pSvc,                        // Indicates the proxy to set
-		RPC_C_AUTHN_WINNT,           // RPC_C_AUTHN_xxx
-		RPC_C_AUTHZ_NONE,            // RPC_C_AUTHZ_xxx
-		NULL,                        // Server principal name 
-		RPC_C_AUTHN_LEVEL_CALL,      // RPC_C_AUTHN_LEVEL_xxx 
-		RPC_C_IMP_LEVEL_IMPERSONATE, // RPC_C_IMP_LEVEL_xxx
-		NULL,                        // client identity
-		EOAC_NONE                    // proxy capabilities 
-	);
-
-	if (FAILED(hres)) {
-		MessageBox(NULL, _T("Could not set proxy blanket"), _T("Fatal Error"), MB_OK);
-		pSvc->Release();
-		pLoc->Release();
-		CoUninitialize();
-		return 1;               // Program has failed.
-	}
-
-	// Step 6: --------------------------------------------------
-	// Use the IWbemServices pointer to make requests of WMI ----
-
-
-	IEnumWbemClassObject* pEnumerator = NULL;
-	pEnumerator = executeWQLQuery(hres, pLoc, pSvc,
-		bstr_t("SELECT * FROM MSAcpi_ThermalZoneTemperature"));
-
-	IWbemClassObject* pclsObj = NULL;
-	ULONG uReturn = 0;
-
-	while (pEnumerator) {
-		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
-			&pclsObj, &uReturn);
-
-		if (0 == uReturn) {
-			break;
-		}
-
-		VARIANT vtProp;
-		VariantInit(&vtProp);
-		hr = pclsObj->Get(L"CurrentTemperature", 0, &vtProp, 0, 0);
-		wstring socket = vtProp.bstrVal;
-		displayMessageGeneric(UI_MESS_RES::SUCCESS, socket.c_str());
-		VariantClear(&vtProp);
-		pclsObj->Release();
-	}
-	pEnumerator->Release();
-
-	pSvc->Release();
-	pLoc->Release();
-	CoUninitialize();
-
-	return 0;
-}
-
 bstr_t buildQueryString(const wchar_t* wmiClass, vector<LPCWSTR> attrs) {
+
 	WCHAR queryString[256] = { 0 };
 	wcscpy(queryString, L"SELECT ");
 	auto it = attrs.begin();
@@ -828,8 +588,19 @@ bstr_t buildQueryString(const wchar_t* wmiClass, vector<LPCWSTR> attrs) {
 	}
 	wcscat(queryString, L" FROM ");
 	wcscat(queryString, wmiClass);
-	int x = 0;
 	return bstr_t(queryString);
+}
+
+bstr_t buildQueryString(const wchar_t* wmiClass,
+	vector<LPCWSTR> attrs,
+	const wchar_t* whereClause) {
+	bstr_t mainQuery = buildQueryString(wmiClass, attrs);
+	bstr_t mainQueryWithWhereClause = mainQuery;
+	if (whereClause != NULL) {
+		mainQueryWithWhereClause += SysAllocString(L" WHERE ");
+		mainQueryWithWhereClause += SysAllocString(whereClause);
+	}
+	return mainQueryWithWhereClause;
 }
 
 wstring getComputerType() {
@@ -881,5 +652,45 @@ wstring getRamBySlot(HRESULT hres,
 	TCHAR capacityStrBuff[100];
 	_stprintf(capacityStrBuff, _T("%.2lf"), accumulatedRAM);
 	return wstring(capacityStrBuff);
+}
+
+int getCpuUsagePercentage() {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_PerfFormattedData_PerfOS_Processor");
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery
+	(wmiWbemInfo->getHres(), 
+		wmiWbemInfo->getWbemLocator(), 
+		wmiWbemInfo->getWbemServices(), 
+		buildQueryString(L"Win32_PerfFormattedData_PerfOS_Processor", queryAttrs, L"Name='_Total'"));
+
+	IWbemClassObject* pclsObj = NULL;
+	ULONG uReturn = 0;
+
+	int cpuUsage = 0;
+		while (pEnumerator) {
+			HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
+				&pclsObj, &uReturn);
+
+			if (0 == uReturn){
+				break;
+			}
+
+			VARIANT vtProp;
+
+			hr = pclsObj->Get(queryAttrs.at((int)WMI_CPU_PERF::PROC_TIME_PERCENTAGE), 0, &vtProp, 0, 0);
+
+			if (WBEM_S_NO_ERROR != hr) {
+				if (pclsObj) {
+					VariantClear(&vtProp);
+					pclsObj->Release(); pclsObj = NULL;
+				}
+				break;
+			}
+			cpuUsage = std::stoi(vtProp.bstrVal);
+
+			VariantClear(&vtProp);
+
+			pclsObj->Release(); pclsObj = NULL;
+		}
+	return cpuUsage;
 }
 

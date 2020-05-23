@@ -7,10 +7,12 @@
 	void createHardwareInfoHolders(HWND, SystemInfo*, int);
 	void populateInfoHolders(SystemInfo *machine, HWND);
 	void createIPToggleControl(HWND, int, int);
+	void createCpuUtiliazationInfoHolder(HWND, int, int);
 	void loadImages(void);
 	void toggleIpAddress(HWND, SystemInfo*);
 	void updateNetworkAdaptersView(SystemInfo*);
 	unsigned int __stdcall updateUptime(void*);
+	unsigned int __stdcall updateCpuUtilizationPercentage(void*);
 	void scrollClientWindow(HWND hwnd, int bar, int pos);
 	void fillGUI(HWND hwnd, SystemInfo *localMachine, int);
 #endif

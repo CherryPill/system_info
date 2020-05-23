@@ -19,6 +19,8 @@
 #include "dialog/aboutDialog.h"
 #include "dialog/scrUploadDialog.h"
 #include "import/binImport.h"
+#include "core/WMIWBEMINFO.h"
+#include "core/sysinfo.h"
 
 int g_scrollY = 0;
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -108,10 +110,21 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				} else {
 					SetTextColor(hdcStatic, RGB(125, 207, 246));
 				}
-			} else {
+			}
+			else if (GetDlgCtrlID((HWND)lParam) == AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING) {
+				if (currentCpuUsageGlobal <= 33) {
+					SetTextColor(hdcStatic, RGB(0, 255, 0));
+				}
+				else if (currentCpuUsageGlobal > 33 && currentCpuUsageGlobal <= 66) {
+					SetTextColor(hdcStatic, RGB(255, 255, 0));
+				}
+				else {
+					SetTextColor(hdcStatic, RGB(255, 0, 0));
+				}
+			}
+			else {
 				if (GetDlgCtrlID((HWND)lParam) == AUX_IP_TOGGLE) {
 					SetTextColor(hdcStatic, RGB(255, 0, 0));
-
 				}
 				SetTextColor(hdcStatic, RGB(255, 255, 255));
 			}
@@ -258,6 +271,16 @@ void loadImages(void) {
 										 NULL);
 		iconArr.push_back(newIcon);
 	}
+	for (int x = 0; x < iconArrCpuUtilizationIconsSize; x++) {
+		HICON newIcon = (HICON)LoadImage(ghInstance,
+			MAKEINTRESOURCE(UTIL_iCON_IDS[x]),
+			IMAGE_ICON,
+			ITEM_UTIL_ICON_RENDER_SIZE_WIDTH,
+			ITEM_UTIL_ICON_RENDER_SIZE_HEIGHT,
+			NULL);
+		iconArrCpuUtilizationIcons.push_back(newIcon);
+	}
+	int s = 0;
 }
 
 void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
@@ -328,7 +351,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			NULL,
 			NULL
 		);
-		if (x == 9) {
+		if (x == NETWORK_LABEL) {
 			createIPToggleControl(parent, xStartOffSetLabel + 140, yStartOffSet);
 		}
 		//info
@@ -346,6 +369,10 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			NULL,
 			NULL
 		);
+		if (y == CPU_INFO) {
+			cpuInfoHolderXoffset = xStartOffSetInformation;
+			cpuInfoHolderYoffset = yStartOffSet + 16;
+		}
 		if (y >= GPU_INFO  && y < AUDIO_INFO) {
 			UINT32 listSize = getInfoBoxItemCount(y, info);
 			//return rec structure
@@ -354,6 +381,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 				continue;
 			}
 		}
+	
 		yStartOffSet += (ITEM_HEIGHT + 2);
 	}
 	scrollFullPageHeight = yStartOffSet;
@@ -370,6 +398,11 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 				  currentMachineInfo->getOS().c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, CPU_INFO),
 				  currentMachineInfo->getCPU().c_str());
+
+	HWND cpuInfoHolderHandle = GetDlgItem(mainWindowHwnd, CPU_INFO);
+	int charLen = GetWindowTextLength(cpuInfoHolderHandle);
+	createCpuUtiliazationInfoHolder(mainWindowHwnd, cpuInfoHolderXoffset + charLen * 6, cpuInfoHolderYoffset);
+	
 	SetWindowText(GetDlgItem(mainWindowHwnd, MB_INFO),
 				  currentMachineInfo->getMB().c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, RAM_INFO),
@@ -395,14 +428,12 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 				  formListString(currentMachineInfo,
 								 OS_INFO_TYPES::HARDWARE_NETWORK,
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
-	if (currentMachineInfo->getNetworkAdaptersText().back().find(L"Unable") == string::npos) {
-		//createIPToggleControl(GetDlgItem(mainWindowHwnd, NETWORK_INFO));
-	}
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
 				  currentMachineInfo->getAudio().c_str());
 	if (!PROGRAM_INSTANCE) {
-		DWORD uptimeThreadId;
 		HANDLE threadHandle = (HANDLE)_beginthreadex(0, 0, updateUptime, 0, 0, 0);
+		HANDLE cpuUtilThreadHandle = (HANDLE)_beginthreadex(0, 0, 
+			updateCpuUtilizationPercentage, 0, 0, 0);
 	} else {
 		SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
 					  currentMachineInfo->getUptime().c_str());
@@ -416,6 +447,30 @@ unsigned int __stdcall updateUptime(void *t) {
 		calculateTimeAndFormat(timeBuff);
 		BOOL res = SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO), timeBuff);
 		Sleep(500);
+	}
+	_endthreadex(0);
+}
+
+unsigned int __stdcall updateCpuUtilizationPercentage(void *t) {
+
+	while (true) {
+		int cpuPercentage = getCpuUsagePercentage();
+		currentCpuUsageGlobal = cpuPercentage;
+		if (cpuPercentage == 0) {
+			SetWindowText(GetDlgItem(mainWindowHwnd,
+				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING), L"IDLE");
+		}
+		else {
+			SetWindowText(GetDlgItem(mainWindowHwnd,
+				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING),
+				std::to_wstring(cpuPercentage).append(L"%").c_str());
+		}
+		SendDlgItemMessage(mainWindowHwnd,
+			AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
+			STM_SETICON,
+			(WPARAM)iconArrCpuUtilizationIcons.at((int)(cpuPercentage / 20)),
+			NULL);
+		Sleep(1000);
 	}
 	_endthreadex(0);
 }
@@ -435,6 +490,44 @@ void createIPToggleControl(HWND parent, int xOff, int yOff) {
 		NULL,
 		NULL
 	);
+}
+
+void createCpuUtiliazationInfoHolder(HWND parent, int xOff, int yOff) {
+	CreateWindowEx(
+		0,
+		L"Static",
+		L"",
+		WS_VISIBLE | WS_CHILD | SS_LEFT | DS_SETFONT,
+		xOff,
+		yOff,
+		80,
+		15,
+		parent,
+		(HMENU)AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING,
+		NULL,
+		NULL
+	);
+	CreateWindowEx(
+		0,
+		L"Static",
+		NULL,
+		WS_VISIBLE |
+		WS_CHILD |
+		SS_ICON | SS_CENTER,
+		xOff + 28,
+		yOff,
+		ITEM_UTIL_ICON_RENDER_SIZE_WIDTH,
+		ITEM_UTIL_ICON_RENDER_SIZE_HEIGHT,
+		parent,
+		(HMENU)AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
+		NULL,
+		NULL
+	);
+	SendDlgItemMessage(parent, 
+		AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
+		STM_SETICON,
+		(WPARAM)iconArrCpuUtilizationIcons.at(0),
+		NULL);
 }
 
 void toggleIpAddress(HWND mainWindow, SystemInfo *info) {

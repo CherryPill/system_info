@@ -48,3 +48,9 @@ TCHAR *timeVerboseDaysOfWeek[] = {
 };
 
 TCHAR sysInfoConfigDirectoryPath[256] = {};
+
+int currentCpuUsageGlobal = 0;
+
+
+int cpuInfoHolderXoffset = 0;
+int cpuInfoHolderYoffset = 0;

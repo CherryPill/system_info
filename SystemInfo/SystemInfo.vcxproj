@@ -169,6 +169,7 @@
     <ClCompile Include="pugi\pugixml.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
     <ClCompile Include="util\utility.cpp" />
+    <ClCompile Include="WMIWBEMINFO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="const\appconst.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SMBIOS.h" />
     <ClInclude Include="util\utility.h" />
+    <ClInclude Include="WMIWBEMINFO.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SystemInfo.rc" />
@@ -210,6 +212,18 @@
     <Image Include="Icons\sound.ico" />
     <Image Include="Icons\storage.ico" />
     <Image Include="Icons\uptime.ico" />
+    <Image Include="Icons\utilization\utilization_0.ico" />
+    <Image Include="Icons\utilization\utilization_0.png" />
+    <Image Include="Icons\utilization\utilization_1.ico" />
+    <Image Include="Icons\utilization\utilization_1.png" />
+    <Image Include="Icons\utilization\utilization_2.ico" />
+    <Image Include="Icons\utilization\utilization_2.png" />
+    <Image Include="Icons\utilization\utilization_3.ico" />
+    <Image Include="Icons\utilization\utilization_3.png" />
+    <Image Include="Icons\utilization\utilization_4.ico" />
+    <Image Include="Icons\utilization\utilization_4.png" />
+    <Image Include="Icons\utilization\utilization_5.ico" />
+    <Image Include="Icons\utilization\utilization_5.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="SystemInfo.manifest">

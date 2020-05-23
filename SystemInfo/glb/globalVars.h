@@ -21,7 +21,8 @@ extern int scrollFullPageHeight;
 extern HBRUSH grayBrush;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
-
+static vector<HICON> iconArrCpuUtilizationIcons;
+const static int iconArrCpuUtilizationIconsSize = 6;
 const static int totalItemsCount = 13;
 
 static WORD ICON_IDS[totalItemsCount]{
@@ -37,6 +38,15 @@ static WORD ICON_IDS[totalItemsCount]{
 	NETWORK_ICON,
 	AUDIO_ICON,
 	UPTIME_ICON
+};
+
+static WORD UTIL_iCON_IDS[iconArrCpuUtilizationIconsSize]{
+	UTILIZATION_ICON_0,
+	UTILIZATION_ICON_1,
+	UTILIZATION_ICON_2,
+	UTILIZATION_ICON_3,
+	UTILIZATION_ICON_4,
+	UTILIZATION_ICON_5
 };
 
 static wstring UI_messagesTxt[] = {
@@ -164,4 +174,9 @@ enum class ACTION {
 
 extern WNDPROC lpfnScrEditProc;
 extern TCHAR sysInfoConfigDirectoryPath[256];
+extern int currentCpuUsageGlobal;
+
+extern int cpuInfoHolderXoffset;
+extern int cpuInfoHolderYoffset;
+
 #endif

@@ -49,6 +49,10 @@
 	enum class WMI_SOUND {
 		CAPTION
 	};
+
+	enum class WMI_CPU_PERF {
+		PROC_TIME_PERCENTAGE
+	};
 	static unordered_map <wchar_t*, std::vector<LPCWSTR>> wmiClassStringsMap = {
 		{ L"Win32_OperatingSystem", {L"Name", L"OSArchitecture"}},
 		{ L"Win32_Processor", { L"Name", L"MaxClockSpeed", L"SocketDesignation"} },
@@ -60,6 +64,8 @@
 		{ L"Win32_DiskDrive", { L"Caption", L"Size" } },
 		{ L"Win32_CDROMDrive", { L"Caption" } },
 		{ L"Win32_SoundDevice", { L"Caption"} },
+		{ L"Win32_PerfFormattedData_PerfOS_Processor", { L"PercentProcessorTime"} }
+
 	};
 	int fillSystemInformation(SystemInfo *localMachine);
 	int test();
@@ -80,7 +86,10 @@
 	void fillUptime(SystemInfo *localMachine);
 	void fillDimensionsAndFrequency(HRESULT, IWbemServices*, IWbemLocator*, UINT*);
 	wstring getSocket(HRESULT, IWbemServices*, IWbemLocator*);
+	int getCpuUsagePercentage(void);
 	IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc, IWbemServices *pSvc, BSTR stringQuery);
 	bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs);
+	bstr_t buildQueryString(const wchar_t* wmiClass, vector<LPCWSTR> attrs, const wchar_t *whereClause);
+
 	wstring getRamBySlot(HRESULT hres, IWbemServices*, IWbemLocator*, const vector<LPCWSTR>&);
 #endif
