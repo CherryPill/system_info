@@ -86,7 +86,7 @@
 	void fillUptime(SystemInfo *localMachine);
 	void fillDimensionsAndFrequency(HRESULT, IWbemServices*, IWbemLocator*, UINT*);
 	wstring getSocket(HRESULT, IWbemServices*, IWbemLocator*);
-	int getCpuUsagePercentage(void);
+	unsigned int getCpuUsagePercentage(void);
 	IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator *pLoc, IWbemServices *pSvc, BSTR stringQuery);
 	bstr_t buildQueryString(const wchar_t *wmiClass, vector<LPCWSTR> attrs);
 	bstr_t buildQueryString(const wchar_t* wmiClass, vector<LPCWSTR> attrs, const wchar_t *whereClause);

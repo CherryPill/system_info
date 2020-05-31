@@ -452,24 +452,26 @@ unsigned int __stdcall updateUptime(void *t) {
 }
 
 unsigned int __stdcall updateCpuUtilizationPercentage(void *t) {
-
 	while (true) {
 		int cpuPercentage = getCpuUsagePercentage();
-		currentCpuUsageGlobal = cpuPercentage;
-		if (cpuPercentage == 0) {
-			SetWindowText(GetDlgItem(mainWindowHwnd,
-				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING), L"IDLE");
-		}
-		else {
-			SetWindowText(GetDlgItem(mainWindowHwnd,
-				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING),
-				std::to_wstring(cpuPercentage).append(L"%").c_str());
-		}
-		SendDlgItemMessage(mainWindowHwnd,
-			AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
-			STM_SETICON,
-			(WPARAM)iconArrCpuUtilizationIcons.at((int)(cpuPercentage / 20)),
-			NULL);
+		if (cpuPercentage != -1) {
+			currentCpuUsageGlobal = cpuPercentage;
+			if (cpuPercentage == 0) {
+				SetWindowText(GetDlgItem(mainWindowHwnd,
+					AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING), L"IDLE");
+			}
+			else {
+				SetWindowText(GetDlgItem(mainWindowHwnd,
+					AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING),
+					std::to_wstring(cpuPercentage).append(L"%").c_str());
+			}
+			SendDlgItemMessage(mainWindowHwnd,
+				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
+				STM_SETICON,
+				(WPARAM)iconArrCpuUtilizationIcons.at((int)(cpuPercentage / 20)),
+				NULL);
+		} 
+
 		Sleep(1000);
 	}
 	_endthreadex(0);
@@ -497,10 +499,10 @@ void createCpuUtiliazationInfoHolder(HWND parent, int xOff, int yOff) {
 		0,
 		L"Static",
 		L"",
-		WS_VISIBLE | WS_CHILD | SS_LEFT | DS_SETFONT,
+		WS_VISIBLE | WS_CHILD | SS_RIGHT | DS_SETFONT,
 		xOff,
 		yOff,
-		80,
+		26,
 		15,
 		parent,
 		(HMENU)AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING,
@@ -523,11 +525,6 @@ void createCpuUtiliazationInfoHolder(HWND parent, int xOff, int yOff) {
 		NULL,
 		NULL
 	);
-	SendDlgItemMessage(parent, 
-		AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
-		STM_SETICON,
-		(WPARAM)iconArrCpuUtilizationIcons.at(0),
-		NULL);
 }
 
 void toggleIpAddress(HWND mainWindow, SystemInfo *info) {

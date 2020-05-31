@@ -207,31 +207,10 @@
     <Image Include="Icons\uptime.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="icons\icon2.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Icons\bios.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Icons\network.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Icons\utilization\utilization_0.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Icons\utilization\utilization_1.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Icons\utilization\utilization_2.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Icons\utilization\utilization_3.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Icons\utilization\utilization_4.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="Icons\utilization\utilization_5.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Icons\utilization\utilization_0.ico">
@@ -246,10 +225,10 @@
     <Image Include="Icons\utilization\utilization_3.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Icons\utilization\utilization_4.ico">
+    <Image Include="Icons\utilization\utilization_5.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Icons\utilization\utilization_5.ico">
+    <Image Include="Icons\utilization\utilization_4.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

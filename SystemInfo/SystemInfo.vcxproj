@@ -201,7 +201,6 @@
     <Image Include="Icons\bios.ico" />
     <Image Include="Icons\cpu.ico" />
     <Image Include="Icons\GPU.ico" />
-    <Image Include="icons\icon2.ico" />
     <Image Include="Icons\mainIcon.ico" />
     <Image Include="Icons\mb.ico" />
     <Image Include="Icons\monitor.ico" />
@@ -213,17 +212,11 @@
     <Image Include="Icons\storage.ico" />
     <Image Include="Icons\uptime.ico" />
     <Image Include="Icons\utilization\utilization_0.ico" />
-    <Image Include="Icons\utilization\utilization_0.png" />
     <Image Include="Icons\utilization\utilization_1.ico" />
-    <Image Include="Icons\utilization\utilization_1.png" />
     <Image Include="Icons\utilization\utilization_2.ico" />
-    <Image Include="Icons\utilization\utilization_2.png" />
     <Image Include="Icons\utilization\utilization_3.ico" />
-    <Image Include="Icons\utilization\utilization_3.png" />
     <Image Include="Icons\utilization\utilization_4.ico" />
-    <Image Include="Icons\utilization\utilization_4.png" />
     <Image Include="Icons\utilization\utilization_5.ico" />
-    <Image Include="Icons\utilization\utilization_5.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="SystemInfo.manifest">

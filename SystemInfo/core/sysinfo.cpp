@@ -654,7 +654,7 @@ wstring getRamBySlot(HRESULT hres,
 	return wstring(capacityStrBuff);
 }
 
-int getCpuUsagePercentage() {
+unsigned int getCpuUsagePercentage() {
 	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_PerfFormattedData_PerfOS_Processor");
 	IEnumWbemClassObject* pEnumerator = executeWQLQuery
 	(wmiWbemInfo->getHres(), 
@@ -664,13 +664,13 @@ int getCpuUsagePercentage() {
 
 	IWbemClassObject* pclsObj = NULL;
 	ULONG uReturn = 0;
-
-	int cpuUsage = 0;
+	//if -1, then WMI for some reason didn't get the data from the tables
+	int cpuUsage = -1;
 		while (pEnumerator) {
 			HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
 				&pclsObj, &uReturn);
 
-			if (0 == uReturn){
+			if (0 == uReturn) {
 				break;
 			}
 
@@ -683,6 +683,7 @@ int getCpuUsagePercentage() {
 					VariantClear(&vtProp);
 					pclsObj->Release(); pclsObj = NULL;
 				}
+				throw std::exception("Failed to get info from perf table");
 				break;
 			}
 			cpuUsage = std::stoi(vtProp.bstrVal);
