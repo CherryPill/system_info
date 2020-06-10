@@ -7,7 +7,7 @@
 	void createHardwareInfoHolders(HWND, SystemInfo*, int);
 	void populateInfoHolders(SystemInfo *machine, HWND);
 	void createIPToggleControl(HWND, int, int);
-	void createCpuUtiliazationInfoHolder(HWND, int, int);
+	void createCpuUtilizationInfoHolder(HWND, int, int);
 	void loadImages(void);
 	void toggleIpAddress(HWND, SystemInfo*);
 	void updateNetworkAdaptersView(SystemInfo*);

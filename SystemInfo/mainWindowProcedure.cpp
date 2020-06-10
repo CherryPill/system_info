@@ -409,7 +409,7 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 	int charLen = GetWindowTextLength(cpuInfoHolderHandle);
 	if (!PROGRAM_INSTANCE) {
 		glbCpuInfoHolderXoffset = glbCpuInfoHolderXoffset + charLen * 6;
-		createCpuUtiliazationInfoHolder(mainWindowHwnd, glbCpuInfoHolderXoffset, glbCpuInfoHolderYoffset);
+		createCpuUtilizationInfoHolder(mainWindowHwnd, glbCpuInfoHolderXoffset, glbCpuInfoHolderYoffset);
 
 	}
 	
@@ -492,13 +492,13 @@ unsigned int __stdcall playLoadTextAnimation(void *t) {
 	std::wstring animationCharArr[4] = {L"--", L"\\", L"|", L"/"};
 	while (currentCpuUsageGlobal < 0) {
 		for (const auto &ch : animationCharArr) {
-			if (currentCpuUsageGlobal < 0) {
+			if (currentCpuUsageGlobal >= 0) {
 				return 0;
 			}
 			SetWindowText(GetDlgItem(mainWindowHwnd,
 				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING),
 				ch.c_str());
-			Sleep(1000);
+			Sleep(500);
 		}
 	}
 	return 0;
@@ -521,7 +521,7 @@ void createIPToggleControl(HWND parent, int xOff, int yOff) {
 	);
 }
 
-void createCpuUtiliazationInfoHolder(HWND parent, int xOff, int yOff) {
+void createCpuUtilizationInfoHolder(HWND parent, int xOff, int yOff) {
 
 	ControlManager::appCreateControl(
 		L"Static",
@@ -536,23 +536,17 @@ void createCpuUtiliazationInfoHolder(HWND parent, int xOff, int yOff) {
 	);
 	HANDLE cpuLoadTextAnimation = (HANDLE)_beginthreadex(0, 0,
 		playLoadTextAnimation, 0, 0, 0);
-	CreateWindowEx(
-		0,
+	ControlManager::appCreateControl(
 		L"Static",
-		NULL,
-		WS_VISIBLE |
-		WS_CHILD |
-		SS_ICON |
-		SS_CENTER,
 		xOff + cpuProgressStringWindowWidthLarge + 5,
 		yOff,
 		ITEM_UTIL_ICON_RENDER_SIZE_WIDTH,
 		ITEM_UTIL_ICON_RENDER_SIZE_HEIGHT,
+		WS_VISIBLE | WS_CHILD | SS_ICON | SS_CENTER,
 		parent,
-		(HMENU)AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_ICON,
-		NULL,
-		NULL
+		AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_ICON
 	);
+
 	SendDlgItemMessage(parent,
 		AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_ICON,
 		STM_SETICON,
