@@ -161,6 +161,7 @@
     <ClCompile Include="export\screenCapture.cpp" />
     <ClCompile Include="glb\globalVars.cpp" />
     <ClCompile Include="import\binImport.cpp" />
+    <ClCompile Include="logger\logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainWindowProcedure.cpp" />
     <ClCompile Include="meta\SoftwareInfo.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="pugi\pugixml.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
     <ClCompile Include="util\utility.cpp" />
+    <ClCompile Include="controlManager.cpp" />
     <ClCompile Include="WMIWBEMINFO.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +185,7 @@
     <ClInclude Include="export\screenCapture.h" />
     <ClInclude Include="glb\globalVars.h" />
     <ClInclude Include="import\binImport.h" />
+    <ClInclude Include="logger\logger.h" />
     <ClInclude Include="mainWindowProcedure.h" />
     <ClInclude Include="meta\SoftwareInfo.h" />
     <ClInclude Include="network\common\network.h" />
@@ -192,6 +195,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="SMBIOS.h" />
     <ClInclude Include="util\utility.h" />
+    <ClInclude Include="controlManager.h" />
     <ClInclude Include="WMIWBEMINFO.h" />
   </ItemGroup>
   <ItemGroup>

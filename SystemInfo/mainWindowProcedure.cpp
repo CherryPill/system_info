@@ -21,6 +21,7 @@
 #include "import/binImport.h"
 #include "core/WMIWBEMINFO.h"
 #include "core/sysinfo.h"
+#include "controlManager.h"
 
 int g_scrollY = 0;
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -112,14 +113,19 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 			}
 			else if (GetDlgCtrlID((HWND)lParam) == AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING) {
-				if (currentCpuUsageGlobal <= 33) {
-					SetTextColor(hdcStatic, RGB(0, 255, 0));
-				}
-				else if (currentCpuUsageGlobal > 33 && currentCpuUsageGlobal <= 66) {
-					SetTextColor(hdcStatic, RGB(255, 255, 0));
+				if (currentCpuUsageGlobal >= 0) {
+					if (currentCpuUsageGlobal <= 33) {
+						SetTextColor(hdcStatic, RGB(0, 255, 0));
+					}
+					else if (currentCpuUsageGlobal > 33 && currentCpuUsageGlobal <= 66) {
+						SetTextColor(hdcStatic, RGB(255, 255, 0));
+					}
+					else {
+						SetTextColor(hdcStatic, RGB(255, 0, 0));
+					}
 				}
 				else {
-					SetTextColor(hdcStatic, RGB(255, 0, 0));
+					SetTextColor(hdcStatic, RGB(255, 255, 255));
 				}
 			}
 			else {
@@ -370,8 +376,8 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			NULL
 		);
 		if (y == CPU_INFO) {
-			cpuInfoHolderXoffset = xStartOffSetInformation;
-			cpuInfoHolderYoffset = yStartOffSet + 16;
+			glbCpuInfoHolderXoffset = xStartOffSetInformation;
+			glbCpuInfoHolderYoffset = yStartOffSet + 16;
 		}
 		if (y >= GPU_INFO  && y < AUDIO_INFO) {
 			UINT32 listSize = getInfoBoxItemCount(y, info);
@@ -401,7 +407,11 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 
 	HWND cpuInfoHolderHandle = GetDlgItem(mainWindowHwnd, CPU_INFO);
 	int charLen = GetWindowTextLength(cpuInfoHolderHandle);
-	createCpuUtiliazationInfoHolder(mainWindowHwnd, cpuInfoHolderXoffset + charLen * 6, cpuInfoHolderYoffset);
+	if (!PROGRAM_INSTANCE) {
+		glbCpuInfoHolderXoffset = glbCpuInfoHolderXoffset + charLen * 6;
+		createCpuUtiliazationInfoHolder(mainWindowHwnd, glbCpuInfoHolderXoffset, glbCpuInfoHolderYoffset);
+
+	}
 	
 	SetWindowText(GetDlgItem(mainWindowHwnd, MB_INFO),
 				  currentMachineInfo->getMB().c_str());
@@ -452,6 +462,7 @@ unsigned int __stdcall updateUptime(void *t) {
 }
 
 unsigned int __stdcall updateCpuUtilizationPercentage(void *t) {
+
 	while (true) {
 		int cpuPercentage = getCpuUsagePercentage();
 		if (cpuPercentage != -1) {
@@ -466,15 +477,31 @@ unsigned int __stdcall updateCpuUtilizationPercentage(void *t) {
 					std::to_wstring(cpuPercentage).append(L"%").c_str());
 			}
 			SendDlgItemMessage(mainWindowHwnd,
-				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
+				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_ICON,
 				STM_SETICON,
 				(WPARAM)iconArrCpuUtilizationIcons.at((int)(cpuPercentage / 20)),
 				NULL);
-		} 
+		}
 
 		Sleep(1000);
 	}
 	_endthreadex(0);
+}
+
+unsigned int __stdcall playLoadTextAnimation(void *t) {
+	std::wstring animationCharArr[4] = {L"--", L"\\", L"|", L"/"};
+	while (currentCpuUsageGlobal < 0) {
+		for (const auto &ch : animationCharArr) {
+			if (currentCpuUsageGlobal < 0) {
+				return 0;
+			}
+			SetWindowText(GetDlgItem(mainWindowHwnd,
+				AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING),
+				ch.c_str());
+			Sleep(1000);
+		}
+	}
+	return 0;
 }
 
 void createIPToggleControl(HWND parent, int xOff, int yOff) {
@@ -495,36 +522,43 @@ void createIPToggleControl(HWND parent, int xOff, int yOff) {
 }
 
 void createCpuUtiliazationInfoHolder(HWND parent, int xOff, int yOff) {
-	CreateWindowEx(
-		0,
+
+	ControlManager::appCreateControl(
 		L"Static",
-		L"",
-		WS_VISIBLE | WS_CHILD | SS_RIGHT | DS_SETFONT,
 		xOff,
 		yOff,
-		26,
-		15,
+		cpuProgressStringWindowWidthLarge,
+		cpuProgressStringWindowHeightLarge,
+		WS_VISIBLE | WS_CHILD | SS_RIGHT | DS_SETFONT,
 		parent,
-		(HMENU)AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING,
-		NULL,
-		NULL
+		AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING,
+		L"--"
 	);
+	HANDLE cpuLoadTextAnimation = (HANDLE)_beginthreadex(0, 0,
+		playLoadTextAnimation, 0, 0, 0);
 	CreateWindowEx(
 		0,
 		L"Static",
 		NULL,
 		WS_VISIBLE |
 		WS_CHILD |
-		SS_ICON | SS_CENTER,
-		xOff + 28,
+		SS_ICON |
+		SS_CENTER,
+		xOff + cpuProgressStringWindowWidthLarge + 5,
 		yOff,
 		ITEM_UTIL_ICON_RENDER_SIZE_WIDTH,
 		ITEM_UTIL_ICON_RENDER_SIZE_HEIGHT,
 		parent,
-		(HMENU)AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE,
+		(HMENU)AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_ICON,
 		NULL,
 		NULL
 	);
+	SendDlgItemMessage(parent,
+		AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_ICON,
+		STM_SETICON,
+		(WPARAM)iconArrCpuUtilizationIcons.at(0),
+		NULL);
+
 }
 
 void toggleIpAddress(HWND mainWindow, SystemInfo *info) {

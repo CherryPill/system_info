@@ -13,6 +13,7 @@
 	void updateNetworkAdaptersView(SystemInfo*);
 	unsigned int __stdcall updateUptime(void*);
 	unsigned int __stdcall updateCpuUtilizationPercentage(void*);
+	unsigned int __stdcall playLoadTextAnimation(void*);
 	void scrollClientWindow(HWND hwnd, int bar, int pos);
 	void fillGUI(HWND hwnd, SystemInfo *localMachine, int);
 #endif

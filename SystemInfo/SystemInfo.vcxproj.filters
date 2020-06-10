@@ -49,6 +49,9 @@
     <Filter Include="util">
       <UniqueIdentifier>{6978f6a2-6a74-4303-8e45-40d49674e069}</UniqueIdentifier>
     </Filter>
+    <Filter Include="logger">
+      <UniqueIdentifier>{d1cbdcf0-8a30-40f3-8555-149fa60d0ab0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -101,6 +104,12 @@
     </ClCompile>
     <ClCompile Include="WMIWBEMINFO.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="logger\logger.cpp">
+      <Filter>logger</Filter>
+    </ClCompile>
+    <ClCompile Include="controlManager.cpp">
+      <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +175,12 @@
     </ClInclude>
     <ClInclude Include="WMIWBEMINFO.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="logger\logger.h">
+      <Filter>logger</Filter>
+    </ClInclude>
+    <ClInclude Include="controlManager.h">
+      <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

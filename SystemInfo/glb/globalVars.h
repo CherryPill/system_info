@@ -25,6 +25,15 @@ static vector<HICON> iconArrCpuUtilizationIcons;
 const static int iconArrCpuUtilizationIconsSize = 6;
 const static int totalItemsCount = 13;
 
+
+static int glbCpuProgressStringXOffset;
+static int glbCpuProgressStringYOffset;
+const static int cpuProgressStringWindowWidthSmall = 26;
+
+const static int cpuProgressStringWindowHeightSmall = 15;
+const static int cpuProgressStringWindowWidthLarge = 40;
+const static int cpuProgressStringWindowHeightLarge = 15;
+
 static WORD ICON_IDS[totalItemsCount]{
 	BIOS_ICON,
 	OS_ICON,
@@ -176,7 +185,7 @@ extern WNDPROC lpfnScrEditProc;
 extern TCHAR sysInfoConfigDirectoryPath[256];
 extern int currentCpuUsageGlobal;
 
-extern int cpuInfoHolderXoffset;
-extern int cpuInfoHolderYoffset;
+extern int glbCpuInfoHolderXoffset;
+extern int glbCpuInfoHolderYoffset;
 
 #endif
