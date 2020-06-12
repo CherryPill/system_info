@@ -169,8 +169,8 @@
     <ClCompile Include="network\rest\rest.cpp" />
     <ClCompile Include="pugi\pugixml.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
+    <ClCompile Include="util\controlManager.cpp" />
     <ClCompile Include="util\utility.cpp" />
-    <ClCompile Include="controlManager.cpp" />
     <ClCompile Include="WMIWBEMINFO.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -194,8 +194,8 @@
     <ClInclude Include="pugi\pugixml.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SMBIOS.h" />
+    <ClInclude Include="util\controlManager.h" />
     <ClInclude Include="util\utility.h" />
-    <ClInclude Include="controlManager.h" />
     <ClInclude Include="WMIWBEMINFO.h" />
   </ItemGroup>
   <ItemGroup>

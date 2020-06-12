@@ -108,7 +108,7 @@
     <ClCompile Include="logger\logger.cpp">
       <Filter>logger</Filter>
     </ClCompile>
-    <ClCompile Include="controlManager.cpp">
+    <ClCompile Include="util\controlManager.cpp">
       <Filter>util</Filter>
     </ClCompile>
   </ItemGroup>
@@ -179,7 +179,7 @@
     <ClInclude Include="logger\logger.h">
       <Filter>logger</Filter>
     </ClInclude>
-    <ClInclude Include="controlManager.h">
+    <ClInclude Include="util\controlManager.h">
       <Filter>util</Filter>
     </ClInclude>
   </ItemGroup>

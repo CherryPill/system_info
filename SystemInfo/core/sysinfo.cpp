@@ -14,6 +14,7 @@
 #include "../SMBIOS.h"
 #include "../mainWindowProcedure.h"
 #include "../core/WMIWBEMINFO.h"
+#include "../util/controlManager.h"
 
 //TODO: Conflate fillMB and fillCPU into one procedure since MB uses socket info available on Win32_Processor
 
@@ -564,8 +565,11 @@ IEnumWbemClassObject* executeWQLQuery(HRESULT hres, IWbemLocator * pLoc,
 		&pEnumerator);
 	//test this behavior
 	if (FAILED(hres)) {
-		displayMessageGeneric(UI_MESS_RES::FAILURE,
-			L"Fatal error: Query to operating system failed");
+		GenericMessageOK()
+			.withMessage(L"Fatal error: Query to operating system failed")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
+
 		pSvc->Release();
 		pLoc->Release();
 		CoUninitialize();

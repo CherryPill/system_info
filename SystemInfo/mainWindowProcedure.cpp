@@ -21,7 +21,7 @@
 #include "import/binImport.h"
 #include "core/WMIWBEMINFO.h"
 #include "core/sysinfo.h"
-#include "controlManager.h"
+#include "util/controlManager.h"
 
 int g_scrollY = 0;
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -68,16 +68,33 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 					saveSpecs::save(receivedCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
 					if (resStruct.result == ACTION::ACCEPTED) {
-						displayExportMessage(UI_MESS_RES::SUCCESS, getUIMessByCommand(receivedCommand));
-						if (displayPromptForAction(actionPromptText[0]) == IDYES) {
+						GenericMessageOK()
+							.withMessage(
+								formMessageForUIExportByExportAction
+									(ControlManager::UI_MESS_RES_ICON::QUESTION, 
+										receivedCommand)
+							)
+							->withIcon(ControlManager::UI_MESS_RES_ICON::SUCCESS)
+							->display();
+
+						if (PromptMessageYesNo()
+							.withMessage(actionPromptText[0])
+							->withIcon(ControlManager::UI_MESS_RES_ICON::QUESTION)
+							->display() == IDYES) {
 							if (openDefAppForExpData(receivedCommand, &resStruct) != TRUE) {
-								displayMessageGeneric(UI_MESS_RES::FAILURE, L"Unable to open exported data");
+								GenericMessageOK()
+									.withMessage(L"Unable to open exported data")
+									->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+									->display();
 							}
 						}
 						break;
 					}
 					else if(resStruct.result == ACTION::__ERROR) {
-						displayMessageGeneric(UI_MESS_RES::FAILURE, L"Error while writing to file");
+						GenericMessageOK()
+							.withMessage(L"Error while writing to file")
+							->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+							->display();
 					}
 					else {
 						//user canceled the save window out

@@ -5,17 +5,7 @@
 #include <tchar.h>
 #include "../core/SystemInfo.h"
 #include "../glb/globalVars.h"
-enum class UI_MESS_RES {
-	SUCCESS,
-	FAILURE
-};
-
-enum class UI_MESS_ACTION {
-	WRITE_OUT_TXT,
-	WRITE_OUT_XML,
-	WRITE_OUT_HTML,
-	WRITE_OUT_IMG
-};
+#include "../util/controlManager.h"
 
 enum class FILE_IO_OPERATION {
 	SAVE_AS,
@@ -119,9 +109,6 @@ std::wstring netAdapterStringWrapper(NetAdapter);
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
 ACTION fileIOCheck(wofstream&);
 void calculateTimeAndFormat(TCHAR*);
-void displayExportMessage(enum class UI_MESS_RES, enum class UI_MESS_ACTION);
-void displayMessageGeneric(enum class UI_MESS_RES, const TCHAR*);
-UI_MESS_ACTION getUIMessByCommand(WORD);
 int displayPromptForAction(std::wstring);
 BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res);
 void configAppData();
@@ -129,4 +116,7 @@ bool dirExists(LPCTSTR);
 std::wstring convertWmiCapacityToGB(std::wstring);
 void removeTabulation(std::wstring&);
 void condenseSpaces(std::wstring&);
+std::wstring getSystemErrorCodeMessageForErrorCode(DWORD);
+std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_ICON res, DWORD act);
+
 #endif

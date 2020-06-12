@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <tchar.h>
+#include <unordered_map>
 #include "../meta/SoftwareInfo.h"	
 #include "../resource.h"
 
@@ -58,12 +59,7 @@ static WORD UTIL_iCON_IDS[iconArrCpuUtilizationIconsSize]{
 	UTILIZATION_ICON_5
 };
 
-static wstring UI_messagesTxt[] = {
-	L"Successfully written to ",
-	L"Error writing to ",
-	L"Link successfully copied to clipboard",
-	L"There's been a problem copying link to clipboard"
-};
+
 
 static wstring UI_messagesCapt[] = {
 	L"Success",
@@ -85,15 +81,15 @@ static wstring itemStrings[totalItemsCount] = {
 	L"Uptime",
 	L"Snapshot"
 };
-
-static TCHAR *savefileExtensions[5] = {
+//DO NOT change, a map depends on it
+static TCHAR* savefileExtensions[] = {
 	_T(".txt"),
 	_T(".xml"),
 	_T(".html"),
 	_T(".png")
 };
 
-static TCHAR *savefileExtensionsLong[5] = {
+static TCHAR *savefileExtensionsLong[] = {
 	_T(".txt files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0"),
 	_T(".xml files (*.xml)\0*.xml\0All Files (*.*)\0*.*\0"),
 	_T(".html files (*.html)\0*.html\0All Files (*.*)\0*.*\0"),
