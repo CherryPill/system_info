@@ -41,6 +41,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			}
 			fillGUI(hwnd, localMachine, 0);
 			toggleIpAddress(hwnd, NULL);
+			
 			return 0;
 		}
 
@@ -110,7 +111,20 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					break;
 				}
 				case ID_FILE_EXIT: {
-					PostQuitMessage(WM_QUIT);
+					for (int x = 0; x < 10; x++) {
+						if (scrollFullPageHeight) {
+						}
+						ScrollWindow(hwnd, 0, -10, NULL, NULL);
+						UpdateWindow(hwnd);
+						Sleep(1000);
+					}
+					for (int x = 0; x < 10; x++) {
+						ScrollWindow(hwnd, 0, 10, NULL, NULL);
+						UpdateWindow(hwnd);
+						Sleep(1000);
+					}
+
+					//PostQuitMessage(WM_QUIT);
 					break;
 				}
 				case AUX_IP_TOGGLE: {

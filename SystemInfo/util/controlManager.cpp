@@ -62,8 +62,6 @@ HWND ControlManager::appCreateControl(
 			.withMessage(getSystemErrorCodeMessageForErrorCode(errCode))
 			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
 			->display();
-		//to do: implement this https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-the-last-error-code
-
 	}
 	return createdWindow;
 }
