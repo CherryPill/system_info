@@ -17,9 +17,9 @@ ACTION takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType, RESULT_STRUCT *res) {
 
 	CLSID pngEncoderCLSID;
 
-	if (!GetEncoderClsid(
+	if (GetEncoderClsid(
 		encoderImgTypesToStringMap.at(ENCODER_IMG_TYPES::IMG_PNG).c_str(),
-		&pngEncoderCLSID)) {
+		&pngEncoderCLSID) == -1) {
 		pngEncoderCLSID = glbPngFallbackHardCodedEncoderClsID;
 	}
 	
