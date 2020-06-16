@@ -57,14 +57,13 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				case ID_EXPORT_XML:
 				case ID_EXPORT_TXT:
 				case ID_EXPORT_HTML: {
-					TCHAR *dateTime = new TCHAR[256];
+					std::unique_ptr<TCHAR> pDateTime(new TCHAR[256]);
 					//export xml
-					getCurrentDateTimeVerbose(dateTime);
-					wstring dateTimeConv(dateTime);
+					getCurrentDateTimeVerbose(pDateTime.get());
+					wstring dateTimeConv(pDateTime.get());
 					localMachine->
 						getCurrentInstance()->
 						setSnapshotGenDateTime(dateTimeConv);
-					delete dateTime;
 					RESULT_STRUCT resStruct = {};
 
 					saveSpecs::save(receivedCommand, &resStruct, hwnd, localMachine->getCurrentInstance());
