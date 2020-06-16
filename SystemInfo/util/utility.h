@@ -1,5 +1,6 @@
 #ifndef UTILITY_H
 #define UTILITY_H
+
 #include <string>
 #include <fstream>
 #include <tchar.h>
@@ -75,6 +76,33 @@ static std::wstring storageMediumManufacturers[20]{
 	L"IMB"
 };
 
+enum class ENCODER_IMG_TYPES {
+	IMG_PNG = 0,
+	IMG_BMP,
+	IMG_JPG,
+	IMG_GIF,
+	IMG_TIFF
+};
+
+const 
+static 
+unordered_map <ENCODER_IMG_TYPES, wstring>
+	encoderImgTypesToStringMap = {
+		{ENCODER_IMG_TYPES::IMG_PNG, L"image/png"},
+		{ENCODER_IMG_TYPES::IMG_BMP, L"image/bmp"},
+		{ENCODER_IMG_TYPES::IMG_JPG, L"image/jpeg"},
+		{ENCODER_IMG_TYPES::IMG_GIF, L"image/gif"},
+		{ENCODER_IMG_TYPES::IMG_TIFF, L"image/tiff"}
+	};
+
+static std::wstring imageEncodersForGdiPlus[]{
+	L"image / bmp",
+	L"image / jpeg",
+	L"image / gif",
+	L"image / tiff",
+	L"image / png"
+};
+
 typedef struct RESULT_STRUCT {
 	ACTION result;
 	std::wstring src;
@@ -103,13 +131,12 @@ void writeToFile(wofstream&, SystemInfo*, int, WRITE_OUT_TYPE);
 wstring fromChToWideStr(char *value);
 wstring fromIntToWideStr(int);
 std::wstring convertStringToWide(const std::string& as);
-void prependMinuteStr(WORD min, TCHAR *minBuff);
+void prependZeroToStr(WORD min, TCHAR *minBuff);
 vector<wstring> stringSplit(const wchar_t *s, wchar_t delimiter);
 std::wstring netAdapterStringWrapper(NetAdapter);
 void getFileNameFromPath(TCHAR *fullPath, TCHAR *fileName);
 ACTION fileIOCheck(wofstream&);
 void calculateTimeAndFormat(TCHAR*);
-int displayPromptForAction(std::wstring);
 BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res);
 void configAppData();
 bool dirExists(LPCTSTR);
@@ -118,5 +145,5 @@ void removeTabulation(std::wstring&);
 void condenseSpaces(std::wstring&);
 std::wstring getSystemErrorCodeMessageForErrorCode(DWORD);
 std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_ICON res, DWORD act);
-
+int GetEncoderClsid(const TCHAR *format, CLSID *pClsid);
 #endif

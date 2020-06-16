@@ -35,6 +35,13 @@ const static int cpuProgressStringWindowHeightSmall = 15;
 const static int cpuProgressStringWindowWidthLarge = 40;
 const static int cpuProgressStringWindowHeightLarge = 15;
 
+//use this hardcoded value for png cls id if os failed to provide its own values for the png clsid
+const static CLSID glbPngFallbackHardCodedEncoderClsID = {
+		0x557cf406,
+		0x1a04,
+		0x11d3,
+		{0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e} };
+
 static WORD ICON_IDS[totalItemsCount]{
 	BIOS_ICON,
 	OS_ICON,

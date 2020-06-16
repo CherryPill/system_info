@@ -7,8 +7,6 @@
 #include "../dialog/scrUploadDialog.h"
 #include "../network/rest/rest.h"
 
-#pragma comment (lib,"Gdiplus.lib")
-
 
 ACTION takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType, RESULT_STRUCT *res) {
 	
@@ -16,8 +14,15 @@ ACTION takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType, RESULT_STRUCT *res) {
 	ULONG_PTR gdiPlusToken;
 	Gdiplus::GdiplusStartupInput input;
 	Gdiplus::GdiplusStartup(&gdiPlusToken, &input, nullptr);
-	CLSID pngEncoderCLSID = { 0x557cf406, 0x1a04, 0x11d3,{ 0x9a,0x73,0x00,0x00,0xf8,0x1e,0xf3,0x2e } };
 
+	CLSID pngEncoderCLSID;
+
+	if (!GetEncoderClsid(
+		encoderImgTypesToStringMap.at(ENCODER_IMG_TYPES::IMG_PNG).c_str(),
+		&pngEncoderCLSID)) {
+		pngEncoderCLSID = glbPngFallbackHardCodedEncoderClsID;
+	}
+	
 	std::vector<Gdiplus::Bitmap*> bitmapList;
 
 	INT32 pixelsToOffset = 10;
@@ -81,7 +86,10 @@ ACTION takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType, RESULT_STRUCT *res) {
 	if (scrSaveType == SCR_SAVETYPE::INTERNET) {
 		RESULT_STRUCT resStruct = {};
 		if (!uploadImage(&resStruct, fullSavePath)) {
-			MessageBox(NULL, _T("Failed to upload"), NULL, MB_ICONERROR | MB_OK);
+			GenericMessageOK()
+				.withMessage(L"Failed to upload")
+				->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+				->display();
 			return ACTION::__ERROR;
 		}
 		else {
@@ -128,7 +136,6 @@ Gdiplus::Bitmap* getBitmapFromAreaCoords(HWND hwnd, VisibleAreaCoordsStruct &coo
 Gdiplus::Bitmap *mergeBitmaps(
 	std::vector<Gdiplus::Bitmap*> bitmapsToMerge,
 	INT32 adjustedImageSizeByYOffset) {
-
 	bitmapsToMerge.at(0)->GetWidth();
 	Gdiplus::Bitmap *completeBitmap = 
 	new Gdiplus::Bitmap(

@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include <gdiplus.h> 
 #include <iostream>
 #include <vector>
 #include <string.h>

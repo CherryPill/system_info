@@ -39,7 +39,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wc.hIconSm = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(MAIN_APP_ICON), IMAGE_ICON, 0, 0, NULL);
 	wc.hIcon = (HICON)LoadImage(hInstance, MAKEINTRESOURCE(MAIN_APP_ICON), IMAGE_ICON, 32, 32, NULL);
 	if (!RegisterClassEx(&wc)) {
-		MessageBox(NULL, L"Window class registration failed", L"Error", MB_ICONERROR);
+		GenericMessageOK()
+			.withMessage(L"Window class registration failed")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
 		return FALSE;
 	}
 	ghInstance = hInstance;

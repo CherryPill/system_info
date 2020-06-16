@@ -111,20 +111,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					break;
 				}
 				case ID_FILE_EXIT: {
-					for (int x = 0; x < 10; x++) {
-						if (scrollFullPageHeight) {
-						}
-						ScrollWindow(hwnd, 0, -10, NULL, NULL);
-						UpdateWindow(hwnd);
-						Sleep(1000);
-					}
-					for (int x = 0; x < 10; x++) {
-						ScrollWindow(hwnd, 0, 10, NULL, NULL);
-						UpdateWindow(hwnd);
-						Sleep(1000);
-					}
-
-					//PostQuitMessage(WM_QUIT);
+					PostQuitMessage(WM_QUIT);
 					break;
 				}
 				case AUX_IP_TOGGLE: {

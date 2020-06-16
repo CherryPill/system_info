@@ -46,7 +46,10 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 	std::ifstream png;
 	png.open(fileName, std::ios::binary);
 	if (png.fail()) {
-		MessageBox(NULL, _T("Could not open PNG file"), NULL, MB_ICONERROR | MB_OK);
+		GenericMessageOK()
+			.withMessage(L"Could not open PNG file")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
 		png.close();
 		return FALSE;
 	}
@@ -64,8 +67,10 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 	HINTERNET hSession = InternetOpen(szTitle,
 									  INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 	if (NULL == hSession) {
-		MessageBox(NULL, _T("Cannot configure wininet"),
-				   szTitle, MB_ICONERROR | MB_OK);
+		GenericMessageOK()
+			.withMessage(L"Cannot configure wininet")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
 		return FALSE;
 	}
 
@@ -73,8 +78,10 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 											UPLOAD_SERVER, INTERNET_DEFAULT_HTTP_PORT,
 											NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
 	if (NULL == hSession) {
-		MessageBox(NULL, _T("Cannot initiate connection"),
-				   szTitle, MB_ICONERROR | MB_OK);
+		GenericMessageOK()
+			.withMessage(L"Cannot initiate connection")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
 		return FALSE;
 	}
 
@@ -82,8 +89,10 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 										 _T("POST"), UPLOAD_PATH, NULL,
 										 NULL, NULL, INTERNET_FLAG_DONT_CACHE | INTERNET_FLAG_RELOAD, NULL);
 	if (NULL == hSession) {
-		MessageBox(NULL, _T("Cannot compose post request"),
-				   szTitle, MB_ICONERROR | MB_OK);
+		GenericMessageOK()
+			.withMessage(L"Cannot compose post request")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
 		return FALSE;
 	}
 
@@ -93,8 +102,11 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 		hRequest, ua, _tcslen(ua),
 		HTTP_ADDREQ_FLAG_ADD | HTTP_ADDREQ_FLAG_REPLACE);
 	if (FALSE == bResult) {
-		MessageBox(NULL, _T("Cannot set user agent"),
-				   szTitle, MB_ICONERROR | MB_OK);
+		GenericMessageOK()
+			.withMessage(L"Cannot set user agent")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
+
 		return FALSE;
 	}
 
@@ -110,9 +122,12 @@ bool uploadImage(RESULT_STRUCT *res, TCHAR *fileName) {
 		HttpQueryInfo(hRequest, HTTP_QUERY_STATUS_CODE, resCode, &resLen, 0);
 		int ress = _tcscmp(resCode, L"200\0");
 		if (ress) {
+
 			// upload (status error)
-			MessageBox(NULL, _T("Failed to upload (unexpected result code, under maintainance?)"),
-					   szTitle, MB_ICONERROR | MB_OK);
+			GenericMessageOK()
+				.withMessage(L"Failed to upload (unexpected result code, under maintainance?)")
+				->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+				->display();
 		} else {
 			DWORD idLen = 100;
 			TCHAR newid[100];

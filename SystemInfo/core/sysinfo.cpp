@@ -510,11 +510,17 @@ void fillBIOS(SystemInfo * localMachine) {
 			DumpSMBIOSStruct(&(pDMIData->SMBIOSTableData), pDMIData->Length, biosData);
 		}
 		else {
-			MessageBox(NULL, _T("Failed to fetch firmware tables"), _T("Fatal Error"), MB_OK);
+			GenericMessageOK()
+				.withMessage(L"Fatal Error. Failed to fetch firmware tables")
+				->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+				->display();
 		}
 	}
 	else {
-		MessageBox(NULL, _T("Memory allocation failed"), _T("Fatal Error"), MB_OK);
+		GenericMessageOK()
+			.withMessage(L"Fatal Error. Memory allocation failed")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
 	}
 	_tcscat(biosData, (wchar_t*)getComputerType().c_str());
 	localMachine->setBIOS(biosData);
