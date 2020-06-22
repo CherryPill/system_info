@@ -6,7 +6,7 @@
 #include "../glb/globalVars.h"
 #include "../util/utility.h"
 #include "../const/itemIDs.h"
-#include "../core/SystemInfo.h"
+#include "../util/controlManager.h"
 
 void positionWindow(POINT *upperLeftCorner) {
 
@@ -127,19 +127,22 @@ void getCurrentDateTime(TCHAR *buffer) {
 	TCHAR finalTimeString[256];
 	TCHAR strMinBuff[16];
 	TCHAR strSecBuff[16];
+	TCHAR strMonBuff[16];
 
-	prependMinuteStr(currentTime.wMinute, strMinBuff);
-	prependMinuteStr(currentTime.wSecond, strSecBuff);
-	_stprintf(buffer, _T("%d-%d-%d_@_%d.%s.%s"),
+	prependZeroToStr(currentTime.wMinute, strMinBuff);
+	prependZeroToStr(currentTime.wSecond, strSecBuff);
+	prependZeroToStr(currentTime.wMonth, strMonBuff);
+
+	_stprintf(buffer, _T("%d-%s-%d_@_%d.%s.%s"),
 			  currentTime.wYear,
-			  currentTime.wMonth,
+			  strMonBuff,
 			  currentTime.wDay,
 			  currentTime.wHour,
 			  strMinBuff,
 			  strSecBuff);
 }
 
-void prependMinuteStr(WORD val, TCHAR *valBuff) {
+void prependZeroToStr(WORD val, TCHAR *valBuff) {
 	if (val < 10) {
 		_itow(val, valBuff, 10);
 		wstring temp = wstring(valBuff);
@@ -156,7 +159,7 @@ void getCurrentDateTimeVerbose(TCHAR *buffer) {
 	WORD min;
 	TCHAR minBuff[16];
 	GetLocalTime(&currentTime);
-	prependMinuteStr(currentTime.wMinute, minBuff);
+	prependZeroToStr(currentTime.wMinute, minBuff);
 	_stprintf(buffer, _T("%s, %s %d, %d @ %d:%s"),
 			  timeVerboseDaysOfWeek[currentTime.wDayOfWeek],
 			  timeVerboseMonths[currentTime.wMonth],
@@ -465,58 +468,6 @@ void calculateTimeAndFormat(TCHAR *formattedTimeString) {
 	}
 }
 
-void displayExportMessage(UI_MESS_RES res, UI_MESS_ACTION act) {
-	MessageBox(NULL, (UI_messagesTxt[static_cast<int>(res)] +
-					  savefileExtensions[static_cast<int>(act)] + L" file").c_str(),
-			   UI_messagesCapt[static_cast<int>(res)].c_str(),
-			   MB_OK
-			   |
-			   !static_cast<int>(res)
-			   ?
-			   MB_ICONINFORMATION
-			   :
-			   MB_ICONERROR);
-
-}
-
-void displayMessageGeneric(UI_MESS_RES res, const TCHAR *message) {
-	MessageBox(NULL, message,
-			   UI_messagesCapt[static_cast<int>(res)].c_str(),
-			   MB_OK
-			   |
-			   !static_cast<int>(res)
-			   ?
-			   MB_ICONINFORMATION
-			   :
-			   MB_ICONERROR);
-}
-
-//gets the appropriate format message 
-UI_MESS_ACTION getUIMessByCommand(WORD command) {
-	switch (command) {
-		case (ID_EXPORT_XML): {
-			return UI_MESS_ACTION::WRITE_OUT_XML;
-			break;
-		}
-		case (ID_EXPORT_TXT): {
-			return UI_MESS_ACTION::WRITE_OUT_TXT;
-			break;
-		}
-		case (ID_EXPORT_HTML): {
-			return UI_MESS_ACTION::WRITE_OUT_HTML;
-			break;
-		}
-		case(ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY): {
-			return UI_MESS_ACTION::WRITE_OUT_IMG;
-			break;
-		}
-	}
-}
-
-int displayPromptForAction(std::wstring promptMessage) {
-	return MessageBox(NULL, promptMessage.c_str(),
-					  L"Notification", MB_YESNO);
-}
 
 //opens external application to view exported data, opens 'open with' dialog
 BOOL openDefAppForExpData(WORD command, RESULT_STRUCT *res) {
@@ -578,4 +529,55 @@ void condenseSpaces(std::wstring &str) {
 	std::wstring::iterator new_end = 
 		std::unique(str.begin(), str.end(), wcharEqualsPredicate);
 	str.erase(new_end, str.end());
+}
+
+std::wstring getSystemErrorCodeMessageForErrorCode(DWORD errorCode) {
+	TCHAR *errorCodeString = new TCHAR[256];
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM |
+		FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		errorCode,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)& errorCode,
+		0, NULL);
+	return std::wstring(errorCodeString);
+}
+
+std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_ICON res, DWORD act) {
+	return (ControlManager::UI_messagesTxt[0] +
+		ControlManager::UIMessageExportFileExtByUserExportModeCommandMap
+		.at((ControlManager::UI_MESS_EXPORT_ACTION)static_cast<int>(act))
+		[0] + L" file");
+}
+
+int GetEncoderClsid(const TCHAR *format, CLSID *pClsid) {
+	UINT  num = 0;          // number of image encoders
+	UINT  size = 0;         // size of the image encoder array in bytes
+
+	Gdiplus::ImageCodecInfo* pImageCodecInfo = NULL;
+
+	Gdiplus::GetImageEncodersSize(&num, &size);
+	if (size == 0)
+		return -1;  // Failure
+
+	pImageCodecInfo = (Gdiplus::ImageCodecInfo*)(malloc(size));
+	if (pImageCodecInfo == NULL)
+		return -1;  // Failure
+
+	GetImageEncoders(num, size, pImageCodecInfo);
+
+	for (UINT j = 0; j < num; ++j)
+	{
+		if (wcscmp(pImageCodecInfo[j].MimeType, format) == 0)
+		{
+			*pClsid = pImageCodecInfo[j].Clsid;
+			free(pImageCodecInfo);
+			return j;  // Success
+		}
+	}
+
+	free(pImageCodecInfo);
+	return -1;  // Failure
 }

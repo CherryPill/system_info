@@ -1,4 +1,5 @@
 #include "SystemInfo.h"
+#pragma comment (lib,"Gdiplus.lib")
 wstring SystemInfo::getCPU() {
 	return (*this).CPU;
 }

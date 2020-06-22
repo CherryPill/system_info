@@ -1,6 +1,7 @@
 #include "scrUploadDialog.h"
 #include "../util/utility.h"
 #include "../glb/globalVars.h"
+#include "../util/controlManager.h"
 
 UPLOAD_SRC_LINK_DATA uploadSrcLinkData = {};
 BOOL CALLBACK scrDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lParam) {
@@ -35,8 +36,8 @@ LRESULT CALLBACK editCtrlProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WM_LBUTTONDOWN: {
 			SetWindowText(GetDlgItem(GetParent(hwnd), IDC_STATIC_SCRCOPYDONE),
 						  copyLinkToClipboard() ?
-						  UI_messagesTxt[2].c_str() :
-						  UI_messagesTxt[3].c_str());
+						  ControlManager::UI_messagesTxt[2].c_str() :
+						  ControlManager::UI_messagesTxt[3].c_str());
 			break;
 		}
 	}
