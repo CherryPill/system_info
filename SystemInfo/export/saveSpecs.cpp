@@ -154,7 +154,10 @@ void importAsXML(HWND hwnd) {
 						   NULL,           // Use parent's starting directory 
 						   &si,            // Pointer to STARTUPINFO structure
 						   &pi)) {
-			MessageBox(NULL, L"Unable to create process", L"Something happened", MB_OK | MB_ICONERROR);
+			GenericMessageOK()
+				.withMessage(L"Unable to create process")
+				->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+				->display();
 		}
 	}
 }

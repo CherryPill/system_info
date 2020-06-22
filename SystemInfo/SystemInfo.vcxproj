@@ -161,6 +161,7 @@
     <ClCompile Include="export\screenCapture.cpp" />
     <ClCompile Include="glb\globalVars.cpp" />
     <ClCompile Include="import\binImport.cpp" />
+    <ClCompile Include="logger\logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainWindowProcedure.cpp" />
     <ClCompile Include="meta\SoftwareInfo.cpp" />
@@ -168,7 +169,9 @@
     <ClCompile Include="network\rest\rest.cpp" />
     <ClCompile Include="pugi\pugixml.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
+    <ClCompile Include="util\controlManager.cpp" />
     <ClCompile Include="util\utility.cpp" />
+    <ClCompile Include="WMIWBEMINFO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="const\appconst.h" />
@@ -182,6 +185,7 @@
     <ClInclude Include="export\screenCapture.h" />
     <ClInclude Include="glb\globalVars.h" />
     <ClInclude Include="import\binImport.h" />
+    <ClInclude Include="logger\logger.h" />
     <ClInclude Include="mainWindowProcedure.h" />
     <ClInclude Include="meta\SoftwareInfo.h" />
     <ClInclude Include="network\common\network.h" />
@@ -190,7 +194,9 @@
     <ClInclude Include="pugi\pugixml.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SMBIOS.h" />
+    <ClInclude Include="util\controlManager.h" />
     <ClInclude Include="util\utility.h" />
+    <ClInclude Include="WMIWBEMINFO.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SystemInfo.rc" />
@@ -199,7 +205,6 @@
     <Image Include="Icons\bios.ico" />
     <Image Include="Icons\cpu.ico" />
     <Image Include="Icons\GPU.ico" />
-    <Image Include="icons\icon2.ico" />
     <Image Include="Icons\mainIcon.ico" />
     <Image Include="Icons\mb.ico" />
     <Image Include="Icons\monitor.ico" />
@@ -210,6 +215,12 @@
     <Image Include="Icons\sound.ico" />
     <Image Include="Icons\storage.ico" />
     <Image Include="Icons\uptime.ico" />
+    <Image Include="Icons\utilization\utilization_0.ico" />
+    <Image Include="Icons\utilization\utilization_1.ico" />
+    <Image Include="Icons\utilization\utilization_2.ico" />
+    <Image Include="Icons\utilization\utilization_3.ico" />
+    <Image Include="Icons\utilization\utilization_4.ico" />
+    <Image Include="Icons\utilization\utilization_5.ico" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="SystemInfo.manifest">

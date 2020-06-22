@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <tchar.h>
+#include <unordered_map>
 #include "../meta/SoftwareInfo.h"	
 #include "../resource.h"
 
@@ -21,8 +22,25 @@ extern int scrollFullPageHeight;
 extern HBRUSH grayBrush;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
-
+static vector<HICON> iconArrCpuUtilizationIcons;
+const static int iconArrCpuUtilizationIconsSize = 6;
 const static int totalItemsCount = 13;
+
+
+static int glbCpuProgressStringXOffset;
+static int glbCpuProgressStringYOffset;
+const static int cpuProgressStringWindowWidthSmall = 26;
+
+const static int cpuProgressStringWindowHeightSmall = 15;
+const static int cpuProgressStringWindowWidthLarge = 40;
+const static int cpuProgressStringWindowHeightLarge = 15;
+
+//use this hardcoded value for png cls id if os failed to provide its own values for the png clsid
+const static CLSID glbPngFallbackHardCodedEncoderClsID = {
+		0x557cf406,
+		0x1a04,
+		0x11d3,
+		{0x9a, 0x73, 0x00, 0x00, 0xf8, 0x1e, 0xf3, 0x2e} };
 
 static WORD ICON_IDS[totalItemsCount]{
 	BIOS_ICON,
@@ -39,12 +57,16 @@ static WORD ICON_IDS[totalItemsCount]{
 	UPTIME_ICON
 };
 
-static wstring UI_messagesTxt[] = {
-	L"Successfully written to ",
-	L"Error writing to ",
-	L"Link successfully copied to clipboard",
-	L"There's been a problem copying link to clipboard"
+static WORD UTIL_iCON_IDS[iconArrCpuUtilizationIconsSize]{
+	UTILIZATION_ICON_0,
+	UTILIZATION_ICON_1,
+	UTILIZATION_ICON_2,
+	UTILIZATION_ICON_3,
+	UTILIZATION_ICON_4,
+	UTILIZATION_ICON_5
 };
+
+
 
 static wstring UI_messagesCapt[] = {
 	L"Success",
@@ -66,15 +88,15 @@ static wstring itemStrings[totalItemsCount] = {
 	L"Uptime",
 	L"Snapshot"
 };
-
-static TCHAR *savefileExtensions[5] = {
+//DO NOT change, a map depends on it
+static TCHAR* savefileExtensions[] = {
 	_T(".txt"),
 	_T(".xml"),
 	_T(".html"),
 	_T(".png")
 };
 
-static TCHAR *savefileExtensionsLong[5] = {
+static TCHAR *savefileExtensionsLong[] = {
 	_T(".txt files (*.txt)\0*.txt\0All Files (*.*)\0*.*\0"),
 	_T(".xml files (*.xml)\0*.xml\0All Files (*.*)\0*.*\0"),
 	_T(".html files (*.html)\0*.html\0All Files (*.*)\0*.*\0"),
@@ -164,4 +186,9 @@ enum class ACTION {
 
 extern WNDPROC lpfnScrEditProc;
 extern TCHAR sysInfoConfigDirectoryPath[256];
+extern int currentCpuUsageGlobal;
+
+extern int glbCpuInfoHolderXoffset;
+extern int glbCpuInfoHolderYoffset;
+
 #endif

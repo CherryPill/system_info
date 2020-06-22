@@ -1,5 +1,6 @@
 #include "../util/utility.h"
 #include "../import/binImport.h"
+#include "../util/controlManager.h"
 void importData(SystemInfo* snapshotInstance) {
 	pugi::xml_document doc;
 	pugi::xml_parse_result res = doc.load_file(PROGRAM_DATA_IMPORT_LOCATION);
@@ -49,6 +50,9 @@ void importData(SystemInfo* snapshotInstance) {
 			}
 		}
 	} else {
-		displayMessageGeneric(UI_MESS_RES::FAILURE, _T("Unable to parse XML file"));
+		GenericMessageOK()
+			.withMessage(L"Unable to parse XML file")
+			->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+			->display();
 	}
 }
