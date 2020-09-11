@@ -168,6 +168,7 @@
     <ClCompile Include="network\common\network.cpp" />
     <ClCompile Include="network\rest\rest.cpp" />
     <ClCompile Include="pugi\pugixml.cpp" />
+    <ClCompile Include="settings\settings.cpp" />
     <ClCompile Include="SMBIOS.cpp" />
     <ClCompile Include="util\controlManager.cpp" />
     <ClCompile Include="util\utility.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="pugi\pugiconfig.hpp" />
     <ClInclude Include="pugi\pugixml.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="settings\settings.h" />
     <ClInclude Include="SMBIOS.h" />
     <ClInclude Include="util\controlManager.h" />
     <ClInclude Include="util\utility.h" />

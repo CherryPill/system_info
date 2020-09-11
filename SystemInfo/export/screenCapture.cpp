@@ -6,10 +6,15 @@
 #include "../util/utility.h"
 #include "../dialog/scrUploadDialog.h"
 #include "../network/rest/rest.h"
+#include <dwmapi.h>
 
 
-ACTION takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType, RESULT_STRUCT *res) {
-	
+#pragma comment(lib, "dwmapi.lib")
+ACTION takeScreenshot(HWND hwnd, 
+	SCR_SAVETYPE scrSaveType, 
+	RESULT_STRUCT *res,
+	BOOL isClientAreaOnly) {
+
 	//init GDI+
 	ULONG_PTR gdiPlusToken;
 	Gdiplus::GdiplusStartupInput input;
@@ -22,43 +27,51 @@ ACTION takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType, RESULT_STRUCT *res) {
 		&pngEncoderCLSID) == -1) {
 		pngEncoderCLSID = glbPngFallbackHardCodedEncoderClsID;
 	}
-	
-	std::vector<Gdiplus::Bitmap*> bitmapList;
 
-	INT32 pixelsToOffset = 10;
-	VisibleAreaCoordsStruct initialDims = getVisibleClientArea(hwnd);
-	
-	INT32 currentVisibleYOffset = initialDims.visibleAreaHeight;
-	INT32 initialVisibleYOffset = currentVisibleYOffset;
-	//scroll a few pixels up and get hbitmap, 
-	//put into vector
-	//merge by calling mergeBitmaps
-	//scroll back
-	if (scrollFullPageHeight > currentVisibleYOffset) {
-		while (scrollFullPageHeight > currentVisibleYOffset) {
-			ScrollWindow(hwnd, 0, -pixelsToOffset, NULL, NULL);
-			UpdateWindow(hwnd);
-			VisibleAreaCoordsStruct a = getVisibleClientArea(hwnd);
-			Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a);
-			bitmapList.push_back(currBitmap);
-			currentVisibleYOffset += pixelsToOffset;
-			Sleep(200);
-		}
-		ScrollWindow(hwnd, 0, currentVisibleYOffset - initialVisibleYOffset, NULL, NULL);
-		UpdateWindow(hwnd);
-	}
-	else {
-		VisibleAreaCoordsStruct a = getVisibleClientArea(hwnd);
+
+	std::vector<Gdiplus::Bitmap*> bitmapList;
+	Gdiplus::Bitmap* gdiPlusMainImgBitmap = NULL;
+	if (!isClientAreaOnly) {
+		VisibleAreaCoordsStruct a = getRequiredArea(hwnd, isClientAreaOnly);
 		Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a);
 		bitmapList.push_back(currBitmap);
-	}
-	//currentVisibleYOffset = adjusted image size;
-	Gdiplus::Bitmap* gdiPlusMainImgBitmap = NULL;
-	if (bitmapList.size() > 1) {
-		gdiPlusMainImgBitmap = mergeBitmaps(bitmapList, currentVisibleYOffset);
+		gdiPlusMainImgBitmap = bitmapList.at(0);
 	}
 	else {
-		gdiPlusMainImgBitmap = bitmapList.at(0);
+		INT32 pixelsToOffset = 10;
+		VisibleAreaCoordsStruct initialDims = getRequiredArea(hwnd, isClientAreaOnly);
+
+		INT32 currentVisibleYOffset = initialDims.visibleAreaHeight;
+		INT32 initialVisibleYOffset = currentVisibleYOffset;
+		//scroll a few pixels up and get hbitmap, 
+		//put into vector
+		//merge by calling mergeBitmaps
+		//scroll back
+		if (scrollFullPageHeight > currentVisibleYOffset) {
+			while (scrollFullPageHeight > currentVisibleYOffset) {
+				ScrollWindow(hwnd, 0, -pixelsToOffset, NULL, NULL);
+				UpdateWindow(hwnd);
+				VisibleAreaCoordsStruct a = getRequiredArea(hwnd, isClientAreaOnly);
+				Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a);
+				bitmapList.push_back(currBitmap);
+				currentVisibleYOffset += pixelsToOffset;
+				Sleep(200);
+			}
+			ScrollWindow(hwnd, 0, currentVisibleYOffset - initialVisibleYOffset, NULL, NULL);
+			UpdateWindow(hwnd);
+		}
+		else {
+			VisibleAreaCoordsStruct a = getRequiredArea(hwnd, isClientAreaOnly);
+			Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a);
+			bitmapList.push_back(currBitmap);
+		}
+		//currentVisibleYOffset = adjusted image size;
+		if (bitmapList.size() > 1) {
+			gdiPlusMainImgBitmap = mergeBitmaps(bitmapList, currentVisibleYOffset);
+		}
+		else {
+			gdiPlusMainImgBitmap = bitmapList.at(0);
+		}
 	}
 
 	TCHAR fullSavePath[256];
@@ -100,17 +113,41 @@ ACTION takeScreenshot(HWND hwnd, SCR_SAVETYPE scrSaveType, RESULT_STRUCT *res) {
 	return ACTION::ACCEPTED;
 }
 
-VisibleAreaCoordsStruct getVisibleClientArea(HWND hwnd) {
-	RECT winSize;
-	GetClientRect(hwnd, &winSize);
+VisibleAreaCoordsStruct getRequiredArea(HWND hwnd, BOOL isClientAreaOnly) {
+	RECT areaRect;
+	//isClientAreaOnly ? GetClientRect(hwnd, &areaRect) : GetWindowRect(hwnd, &areaRect);
 
-	//visible client area
-	INT32 areaWidth = winSize.right - winSize.left;
-	INT32 areaHeight = winSize.bottom - winSize.top;
+	RECT r;
+	HRESULT stat = DwmGetWindowAttribute(
+		hwnd,
+		DWMWA_EXTENDED_FRAME_BOUNDS,
+		&areaRect,
+		sizeof(areaRect));
+	INT32 areaWidth = areaRect.right - areaRect.left;
+	INT32 areaHeight = areaRect.bottom - areaRect.top;
+
 	return { areaWidth, areaHeight };
 }
 
 Gdiplus::Bitmap* getBitmapFromAreaCoords(HWND hwnd, VisibleAreaCoordsStruct &coords) {
+	
+	RECT winSize;
+	//GetWindowRect(hwnd, &winSize);
+
+	HRESULT stat = DwmGetWindowAttribute(
+		hwnd,
+		DWMWA_EXTENDED_FRAME_BOUNDS,
+		&winSize,
+		sizeof(winSize));
+
+	RECT clientSize;
+	GetClientRect(hwnd, &clientSize);
+
+	MapWindowPoints(hwnd, nullptr, reinterpret_cast<LPPOINT>(&clientSize), 2);
+	const POINT coordinates = { clientSize.left, clientSize.top };
+	const INT32 yOffset = coordinates.y - winSize.top;
+	const INT32 xOffset = coordinates.x - winSize.left;
+	
 	HDC mainWindowDC = GetDC(hwnd);
 	HDC screenCapture = CreateCompatibleDC(mainWindowDC);
 	HBITMAP hCaptureBitmap = CreateCompatibleBitmap(mainWindowDC,
@@ -122,9 +159,11 @@ Gdiplus::Bitmap* getBitmapFromAreaCoords(HWND hwnd, VisibleAreaCoordsStruct &coo
 		coords.visibleAreaWidth, 
 		coords.visibleAreaHeight,
 		mainWindowDC, 
-		0, 
-		0, 
+		-xOffset, 
+		-yOffset,
 		SRCCOPY | CAPTUREBLT);
+
+	//use in a separate block in main function
 
 	Gdiplus::Bitmap *gdiPlusMainImgBitmap = Gdiplus::Bitmap::FromHBITMAP(hCaptureBitmap, NULL);
 	DeleteObject(hCaptureBitmap);

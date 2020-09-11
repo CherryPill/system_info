@@ -52,6 +52,9 @@
     <Filter Include="logger">
       <UniqueIdentifier>{d1cbdcf0-8a30-40f3-8555-149fa60d0ab0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="settings">
+      <UniqueIdentifier>{b2590d7e-755e-4b8a-b6ae-bff310b20f2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -110,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="util\controlManager.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="settings\settings.cpp">
+      <Filter>settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="util\controlManager.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="settings\settings.h">
+      <Filter>settings</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

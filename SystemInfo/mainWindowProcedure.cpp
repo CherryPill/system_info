@@ -22,6 +22,7 @@
 #include "core/WMIWBEMINFO.h"
 #include "core/sysinfo.h"
 #include "util/controlManager.h"
+#include "settings/settings.h"
 
 int g_scrollY = 0;
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -49,7 +50,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			WORD receivedCommand = LOWORD(wParam);
 			switch (receivedCommand) {
 				case ID_FILE_TAKESCREENSHOT_UPLOAD: {
-					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET, NULL);
+					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET, NULL, FALSE);
 					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG_SCRUPLOAD), hwnd, (DLGPROC)scrDlgProc);
 					break;
 				}
@@ -115,6 +116,45 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 				case AUX_IP_TOGGLE: {
 					toggleIpAddress(hwnd, localMachine);
+					break;
+				}
+				case ID_FILE_SETTINGS: {
+					sw = new SettingsWindow();
+					sw->setHandlerProc((WNDPROC)settingsDialogProcedure);
+					registerSettingsDialogClass();
+					registerTabContentWrapperWindowClass();
+
+					RECT rcClient;
+					GetClientRect(hwnd, &rcClient);
+					POINT upperLeftCorner;
+					positionWindow(&upperLeftCorner, sw->getWindowWidth(), sw->getWindowHeight());
+				
+					settingsDialogHwnd = ControlManager::appCreateControl(
+						_T("Settings"),
+						upperLeftCorner.x,
+						upperLeftCorner.y,
+						sw->getWindowWidth(),
+						sw->getWindowHeight(),
+						WS_VISIBLE |
+						WS_SYSMENU |
+						DS_SETFONT,
+						hwnd,
+						NULL,
+						_T("SystemInfo Settings"),
+						WS_EX_DLGMODALFRAME | WS_EX_TOPMOST,
+						ghInstance,
+						NULL
+					);
+					sw->setWindowHandle(settingsDialogHwnd);
+					
+					SetActiveWindow(settingsDialogHwnd);
+
+					SetWindowPos(settingsDialogHwnd, HWND_TOP, 
+						upperLeftCorner.x,
+						upperLeftCorner.y,
+						sw->getWindowWidth(),
+						sw->getWindowHeight(), NULL);
+
 					break;
 				}
 			}

@@ -114,7 +114,7 @@ static std::wstring actionPromptText[]{
 };
 
 void centerWindow(POINT*);
-void positionWindow(POINT*);
+void positionWindow(POINT*, INT32, INT32);
 std::string& BstrToStdString(const BSTR, std::string&, int cp = CP_UTF8);
 void trimNullTerminator(std::wstring&);
 std::wstring parseDiskStorageName(std::wstring);

@@ -41,7 +41,7 @@ class ControlManager {
 			HWND parent,
 			int controlMenuID,
 			TCHAR* windowName = NULL,
-			DWORD exStyle = 0,
+			std::bitset<32> exStyle = 0,
 			HINSTANCE hInstance = NULL,
 			LPVOID lParam = NULL);
 

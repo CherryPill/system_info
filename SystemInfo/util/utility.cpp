@@ -8,14 +8,14 @@
 #include "../const/itemIDs.h"
 #include "../util/controlManager.h"
 
-void positionWindow(POINT *upperLeftCorner) {
+void positionWindow(POINT *upperLeftCorner, INT32 windowWidth, INT32 windowHeight) {
 
 	int offset = 0;
 	if (PROGRAM_INSTANCE) {
 		offset = 16;
 	}
-	(*upperLeftCorner).x = (GetSystemMetrics(SM_CXSCREEN) / 2 - mainWindowWidth / 2) + offset;
-	(*upperLeftCorner).y = (GetSystemMetrics(SM_CYSCREEN) / 2 - mainWindowHeight / 2) + offset;
+	(*upperLeftCorner).x = (GetSystemMetrics(SM_CXSCREEN) / 2 - windowWidth / 2) + offset;
+	(*upperLeftCorner).y = (GetSystemMetrics(SM_CYSCREEN) / 2 - windowHeight / 2) + offset;
 }
 
 void centerWindow(POINT *upperLeftCorner) {

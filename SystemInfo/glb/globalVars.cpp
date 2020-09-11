@@ -6,6 +6,9 @@
 
 HINSTANCE ghInstance = NULL;
 HWND mainWindowHwnd = NULL;
+HWND settingsDialogHwnd = NULL;
+HWND dialogTabControl = NULL;
+SettingsWindow* sw = NULL;
 int PROGRAM_INSTANCE = 0;
 TCHAR PROGRAM_DATA_IMPORT_LOCATION[256] = { 0 };
 TCHAR execName[256] = { 0 };

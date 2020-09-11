@@ -47,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	}
 	ghInstance = hInstance;
 	POINT upperLeftCorner;
-	positionWindow(&upperLeftCorner);
+	positionWindow(&upperLeftCorner, mainWindowWidth, mainWindowHeight);
 	//centerWindow(&upperLeftCorner);
 	mainWindowHwnd = CreateWindowEx
 	(

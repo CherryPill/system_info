@@ -38,12 +38,12 @@ HWND ControlManager::appCreateControl(
 	HWND parent,
 	int controlMenuID,
 	TCHAR* windowName,
-	DWORD exStyle,
+	std::bitset<32> exStyle,
 	HINSTANCE hInstance,
 	LPVOID lParam
 	) {
 	HWND createdWindow = CreateWindowEx(
-		0,
+		exStyle.to_ulong(),
 		className,
 		windowName,
 		windowStyles.to_ulong(),

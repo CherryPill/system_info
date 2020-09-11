@@ -7,14 +7,18 @@
 #include <unordered_map>
 #include "../meta/SoftwareInfo.h"	
 #include "../resource.h"
+#include "../settings/settings.h"
 
 using namespace std;
 extern int PROGRAM_INSTANCE; //0 - parent, 1 - child
 extern TCHAR PROGRAM_DATA_IMPORT_LOCATION[256]; //path to the xml file to import data from if the process is spawned by parent
 extern TCHAR execName[256];
 extern SoftwareInfo *shippedSoftWare;
+extern SettingsWindow *sw;
 extern HINSTANCE ghInstance;
 extern HWND mainWindowHwnd;
+extern HWND settingsDialogHwnd;
+extern HWND dialogTabControl;
 extern int mainWindowWidth;
 extern int mainWindowHeight;
 extern int scrollY;
