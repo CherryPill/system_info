@@ -8,6 +8,8 @@
 #include "../const/itemIDs.h"
 #include "../util/controlManager.h"
 
+TCHAR* SavedUserSettingsHelper::configFileName = L"sys-info-config.conf";
+TCHAR* SavedUserSettingsHelper::fullConfigFilePath;
 void positionWindow(POINT *upperLeftCorner, INT32 windowWidth, INT32 windowHeight) {
 
 	int offset = 0;

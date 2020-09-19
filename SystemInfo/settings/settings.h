@@ -1,10 +1,9 @@
 #pragma once
 #include <Windows.h>
 #include <CommCtrl.h>
-
-extern std::unordered_map<WPARAM, BOOL> tabClickState;
+extern std::unordered_map<WPARAM, INT32> tabClickState;
 class SettingsControl {
-private: 
+private:
 	HWND controlHandle;
 public:
 	void setControlHandle(HWND controlHandle) {
@@ -20,7 +19,7 @@ private:
 	HWND blockHandle;
 public:
 
-	std::vector<SettingsControl*> &getControls() {
+	std::vector<SettingsControl*>& getControls() {
 		return blockControls;
 	}
 	void setControls(std::vector<SettingsControl*> blockControls) {
@@ -29,16 +28,9 @@ public:
 };
 class SettingsTab {
 private:
-	HWND handle;
 	HWND tabContentWrapperHandle;
 	std::vector<SettingsBlock*> tabBlocks;
 public:
-	void setHandle(HWND hwnd) {
-		this->handle = hwnd;
-	}
-	HWND getHandle() {
-		return handle;
-	}
 	void setTabContentWrapperHandle(HWND tabContentWrapperHandle) {
 		this->tabContentWrapperHandle = tabContentWrapperHandle;
 	}
@@ -100,21 +92,43 @@ public:
 		for (std::vector<SettingsTab*>::iterator iterator = this->tabs.begin();
 			iterator != this->tabs.end();
 			iterator++) {
+			INT32 ctrlId = GetDlgCtrlID((*iterator)->getTabContentWrapperHandle());
+			HWND handle = (*iterator)->getTabContentWrapperHandle();
 			ShowWindow((*iterator)->getTabContentWrapperHandle(),
 				tabClickState.at(GetDlgCtrlID((*iterator)->getTabContentWrapperHandle())));
 		}
 	}
 };
 
+class SavedUserSettings {
+private:
 
-std::vector<SettingsTab*> createAndFillTabs();
+	//tab 0
+	BOOL isShowCPUusage;
+	BOOL isScreenshotCaptureClientAreaOnly;
+	BOOL isRememberLastWindowPosition;
+
+	//tab 1
+	COLORREF htmlExportHeaderBgColorRGB;
+	COLORREF htmlExportHeaderFgColorRGB;
+	COLORREF htmlExportInfoBgColorRGB;
+	COLORREF htmlExportInfoFgColorRGB;
+
+
+
+};
+
+
+std::vector<SettingsTab*> createAndFillTabs(SettingsWindow*);
 void registerSettingsDialogClass();
 void registerTabContentWrapperWindowClass();
 LRESULT CALLBACK settingsDialogProcedure(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK tabWrapperProc(HWND, UINT, WPARAM, LPARAM);
 bool CALLBACK __SetFont(HWND child, LPARAM font);
 
-HWND createTabContentWrapper(INT32);
+HWND createTabContentWrapper(INT32 id, INT32 w, INT32 h, INT32 yOffset, HWND parent);
 std::vector<SettingsBlock*> createControlsForTab(HWND controlTabWrapperHandle, INT32 id);
 void handleTabSelectionChange(INT32);
+COLORREF initializeColorDlgBox(HWND hwnd);
+HWND createGenericContainer(INT32 id, INT32 w, INT32 h, INT32 yOffset, HWND parent);
 //filled based on the number of tabs

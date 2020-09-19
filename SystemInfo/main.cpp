@@ -4,6 +4,7 @@
 #include "glb/globalVars.h"
 #include "util/utility.h"
 #include "mainWindowProcedure.h"
+#include "settings/settings.h"
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				   LPSTR lpCmdLine, int nCmdShow) {
 	int argc;
@@ -14,6 +15,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	getFileNameFromPath(fullExecPath, execName);
 	_tcscat(execName, L" ");
 	configAppData();
+	SavedUserSettings* savedUserSettings = new SavedUserSettings();
+	SavedUserSettingsHelper::initializeFullConfigFilePath();
+	SavedUserSettingsHelper::loadSettingsFromDisk(savedUserSettings);
 	if (argc > 1) {
 		PROGRAM_INSTANCE = 1;
 		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[1]);

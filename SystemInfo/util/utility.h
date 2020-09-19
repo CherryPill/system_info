@@ -7,6 +7,7 @@
 #include "../core/SystemInfo.h"
 #include "../glb/globalVars.h"
 #include "../util/controlManager.h"
+#include "../settings/settings.h"
 
 enum class FILE_IO_OPERATION {
 	SAVE_AS,
@@ -146,4 +147,49 @@ void condenseSpaces(std::wstring&);
 std::wstring getSystemErrorCodeMessageForErrorCode(DWORD);
 std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_ICON res, DWORD act);
 int GetEncoderClsid(const TCHAR *format, CLSID *pClsid);
+
+
+class SavedUserSettingsHelper {
+private:
+	//path for user settings is %current_user_name%/AppData/<configFileName>
+	static TCHAR* configFileName;
+	static TCHAR* fullConfigFilePath;
+	
+public:
+	static void initializeFullConfigFilePath() {
+		if (!sysInfoConfigDirectoryPath) {
+			configAppData();
+		}
+		fullConfigFilePath = new TCHAR[256]{ 0 };
+		_tcscat(fullConfigFilePath, sysInfoConfigDirectoryPath);
+		_tcscat(fullConfigFilePath, L"\\");
+		_tcscat(fullConfigFilePath, SavedUserSettingsHelper::configFileName);
+	}
+	static BOOL saveSettingsToDisk(SavedUserSettings* settings) {
+		//sysInfoConfigDirectoryPath
+		std::ofstream configFile;
+		configFile.std::ofstream::open(SavedUserSettingsHelper::fullConfigFilePath, std::ios::binary | std::ios::out);
+		configFile.std::ofstream::write((char*)& settings, sizeof(SavedUserSettings));
+		configFile.std::ofstream::close();
+		return FALSE;
+	}
+	static BOOL loadSettingsFromDisk(SavedUserSettings * settings) {
+		std::ifstream configFile;
+		configFile.std::ifstream::open(SavedUserSettingsHelper::fullConfigFilePath, std::ios::binary
+			| std::ios::in);
+		configFile.std::ifstream::read((char*)& settings, sizeof(SavedUserSettings));
+		configFile.std::ifstream::close();
+		return FALSE;
+	}
+	BOOL setDefaultSettings() {
+		//isShowCPUusage = isScreenshotCaptureClientAreaOnly = TRUE;
+		//isRememberLastWindowPosition = FALSE;
+		//htmlExportHeaderBgColorRGB = COLOR_PURPLE; //purple in rgb
+		//htmlExportHeaderFgColorRGB = COLOR_WHITE;
+		//htmlExportInfoBgColorRGB = COLOR_WHITE;
+		//htmlExportInfoFgColorRGB = COLOR_BLACK;
+		//saveSettingsToDisk();
+	}
+
+};
 #endif
