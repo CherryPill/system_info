@@ -52,6 +52,9 @@ private:
 
 	WNDPROC handlerProc;
 	HWND windowHandle;
+	//saved settings obj also needs to be here
+
+	std::wstring exportInfoPreviewOsString;
 
 	std::vector<SettingsTab*> tabs;
 
@@ -87,6 +90,14 @@ public:
 	std::vector<SettingsTab*>& getTabs() {
 		return tabs;
 	}
+	void setExportInfoPreviewOsString(std::wstring previewStr) {
+		this->exportInfoPreviewOsString = previewStr;
+	}
+
+	std::wstring getExportInfoPreviewOsString() {
+		return this->exportInfoPreviewOsString;
+	}
+
 	void showTabs() {
 		//show depending on state of each tab
 		for (std::vector<SettingsTab*>::iterator iterator = this->tabs.begin();
@@ -104,18 +115,59 @@ class SavedUserSettings {
 private:
 
 	//tab 0
-	BOOL isShowCPUusage;
-	BOOL isScreenshotCaptureClientAreaOnly;
-	BOOL isRememberLastWindowPosition;
+	BOOL isShowCPUusage = TRUE;
+	BOOL isScreenshotCaptureClientAreaOnly = TRUE;
+	BOOL isRememberLastWindowPosition = FALSE;
 
 	//tab 1
-	COLORREF htmlExportHeaderBgColorRGB;
-	COLORREF htmlExportHeaderFgColorRGB;
-	COLORREF htmlExportInfoBgColorRGB;
-	COLORREF htmlExportInfoFgColorRGB;
+	COLORREF htmlExportHeaderBgColorRGB = RGB(128, 0, 128);
+	COLORREF htmlExportHeaderFgColorRGB = RGB(255, 255, 255);
+	COLORREF htmlExportInfoBgColorRGB = RGB(255, 255, 255);
+	COLORREF htmlExportInfoFgColorRGB = RGB(0, 0, 0);
 
-
-
+public:
+	BOOL getShowCpuUsage() {
+		return this->isShowCPUusage;
+	}
+	void setShowCpuUsage(BOOL isShowCPUusage) {
+		this->isShowCPUusage = isShowCPUusage;
+	}
+	BOOL getScreenshotCaptureClientAreaOnly() {
+		return this->isScreenshotCaptureClientAreaOnly;
+	}
+	void setScreenshotCaptureClientAreaOnly(BOOL isScreenshotCaptureClientAreaOnly) {
+		this->isScreenshotCaptureClientAreaOnly = isScreenshotCaptureClientAreaOnly;
+	}
+	BOOL getRememberLastWindowPosition() {
+		return this->isRememberLastWindowPosition;
+	}
+	void setRememberLastWindowPosition(BOOL isRememberLastWindowPosition) {
+		this->isRememberLastWindowPosition = isRememberLastWindowPosition;
+	}
+	COLORREF getHtmlExportHeaderBgColorRGB() {
+		return this->htmlExportHeaderBgColorRGB;
+	}
+	void setHtmlExportHeaderBgColorRGB(COLORREF htmlExportHeaderBgColorRGB) {
+		this->htmlExportHeaderBgColorRGB = htmlExportHeaderBgColorRGB;
+	}
+	COLORREF getHtmlExportHeaderFgColorRGB() {
+		return this->htmlExportHeaderFgColorRGB;
+	}
+	void setHtmlExportHeaderFgColorRGB(COLORREF htmlExportHeaderFgColorRGB) {
+		this->htmlExportHeaderFgColorRGB = htmlExportHeaderFgColorRGB;
+	}
+	COLORREF getHtmlExportInfoBgColorRGB() {
+		return this->htmlExportInfoBgColorRGB;
+	}
+	void setHtmlExportInfoBgColorRGB(COLORREF htmlExportInfoBgColorRGB) {
+		this->htmlExportInfoBgColorRGB = htmlExportInfoBgColorRGB;
+	}
+	COLORREF getHtmlExportInfoFgColorRGB() {
+		return this->htmlExportInfoFgColorRGB;
+	}
+	void setHtmlExportInfoFgColorRGB(COLORREF htmlExportInfoFgColorRGB) {
+		this->htmlExportInfoFgColorRGB = htmlExportInfoFgColorRGB;
+	}
 };
 
 
@@ -124,10 +176,11 @@ void registerSettingsDialogClass();
 void registerTabContentWrapperWindowClass();
 LRESULT CALLBACK settingsDialogProcedure(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK tabWrapperProc(HWND, UINT, WPARAM, LPARAM);
+
 bool CALLBACK __SetFont(HWND child, LPARAM font);
 
 HWND createTabContentWrapper(INT32 id, INT32 w, INT32 h, INT32 yOffset, HWND parent);
-std::vector<SettingsBlock*> createControlsForTab(HWND controlTabWrapperHandle, INT32 id);
+std::vector<SettingsBlock*> createControlsForTab(HWND controlTabWrapperHandle, INT32 id, SettingsWindow* sw);
 void handleTabSelectionChange(INT32);
 COLORREF initializeColorDlgBox(HWND hwnd);
 HWND createGenericContainer(INT32 id, INT32 w, INT32 h, INT32 yOffset, HWND parent);

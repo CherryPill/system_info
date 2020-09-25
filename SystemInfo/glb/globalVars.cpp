@@ -17,6 +17,8 @@ int mainWindowHeight = 660; //default 660
 int scrollY = 0;
 int scrollFullPageHeight = 0;
 WNDPROC lpfnScrEditProc;
+WNDPROC tabControlWrapperProc;
+COLORREF purpleColorRef = RGB(128, 0, 128);
 HBRUSH grayBrush = CreateSolidBrush(RGB(81, 81, 81));
 TCHAR *fontFamilies[] = {
 	_T("Arial"),
@@ -24,7 +26,7 @@ TCHAR *fontFamilies[] = {
 };
 HFONT appNameFontLarge = CreateFont(-28, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
 HFONT ipToggleBtnFont = CreateFont(-10, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
-
+HFONT helveticaFont = CreateFont(-12, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, L"Helvetica");
 TCHAR *timeVerboseMonths[] = {
 	_T("Dummy"),
 	_T("January"),
@@ -58,4 +60,5 @@ int currentCpuUsageGlobal = -1;
 int glbCpuInfoHolderXoffset = 0;
 int glbCpuInfoHolderYoffset = 0;
 
+SavedUserSettings* glbUserSettings;
 

@@ -1,6 +1,7 @@
 #include "controlManager.h"
 #include "utility.h"
 
+
 const wstring ControlManager::UI_messagesTxt[] = {
 		   L"Successfully written to ",
 		   L"Error writing to ",
@@ -29,11 +30,11 @@ const unordered_map <ControlManager::UI_MESS_EXPORT_ACTION, vector<wstring>> Con
 };
 
 HWND ControlManager::appCreateControl(
-	TCHAR *className, 
-	int xOffset, 
-	int yOffSet, 
-	int width, 
-	int height, 
+	TCHAR* className,
+	int xOffset,
+	int yOffSet,
+	int width,
+	int height,
 	std::bitset<32> windowStyles,
 	HWND parent,
 	int controlMenuID,
@@ -41,7 +42,7 @@ HWND ControlManager::appCreateControl(
 	std::bitset<32> exStyle,
 	HINSTANCE hInstance,
 	LPVOID lParam
-	) {
+) {
 	HWND createdWindow = CreateWindowEx(
 		exStyle.to_ulong(),
 		className,
@@ -67,9 +68,9 @@ HWND ControlManager::appCreateControl(
 }
 
 bool ControlManager::searchAndDestroy(
-	HWND parentWindowHandle, 
-	TCHAR *className,
-	TCHAR *windowName) {
+	HWND parentWindowHandle,
+	TCHAR* className,
+	TCHAR* windowName) {
 	HWND foundWindowHandle = NULL;
 	if ((foundWindowHandle = FindWindowEx(NULL, NULL, className, windowName)) != NULL) {
 		return DestroyWindow(foundWindowHandle);

@@ -18,6 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	SavedUserSettings* savedUserSettings = new SavedUserSettings();
 	SavedUserSettingsHelper::initializeFullConfigFilePath();
 	SavedUserSettingsHelper::loadSettingsFromDisk(savedUserSettings);
+	glbUserSettings = savedUserSettings;
 	if (argc > 1) {
 		PROGRAM_INSTANCE = 1;
 		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[1]);

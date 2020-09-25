@@ -147,6 +147,7 @@ void condenseSpaces(std::wstring&);
 std::wstring getSystemErrorCodeMessageForErrorCode(DWORD);
 std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_ICON res, DWORD act);
 int GetEncoderClsid(const TCHAR *format, CLSID *pClsid);
+TCHAR* convertColorReftoHexColorString(COLORREF);
 
 
 class SavedUserSettingsHelper {
@@ -179,6 +180,7 @@ public:
 			| std::ios::in);
 		configFile.std::ifstream::read((char*)& settings, sizeof(SavedUserSettings));
 		configFile.std::ifstream::close();
+		
 		return FALSE;
 	}
 	BOOL setDefaultSettings() {

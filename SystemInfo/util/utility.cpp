@@ -583,3 +583,10 @@ int GetEncoderClsid(const TCHAR *format, CLSID *pClsid) {
 	free(pImageCodecInfo);
 	return -1;  // Failure
 }
+TCHAR* convertColorReftoHexColorString(COLORREF colorRef) {
+	TCHAR* buff = new TCHAR[256]{0};
+	_stprintf(buff, L"#%x%x%x", GetRValue(colorRef), 
+		GetGValue(colorRef),
+		GetBValue(colorRef));
+	return buff;
+}

@@ -24,6 +24,7 @@ extern int mainWindowHeight;
 extern int scrollY;
 extern int scrollFullPageHeight;
 extern HBRUSH grayBrush;
+extern COLORREF purpleColorRef;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
 static vector<HICON> iconArrCpuUtilizationIcons;
@@ -181,6 +182,7 @@ extern TCHAR *timeVerboseMonths[];
 extern TCHAR *timeVerboseDaysOfWeek[];
 //font
 extern HFONT ipToggleBtnFont;
+extern HFONT helveticaFont;
 
 enum class ACTION {
 	ACCEPTED,
@@ -189,10 +191,13 @@ enum class ACTION {
 };
 
 extern WNDPROC lpfnScrEditProc;
+extern WNDPROC tabControlWrapperProc;
 extern TCHAR sysInfoConfigDirectoryPath[256];
 extern int currentCpuUsageGlobal;
 
 extern int glbCpuInfoHolderXoffset;
 extern int glbCpuInfoHolderYoffset;
+
+extern SavedUserSettings* glbUserSettings;
 
 #endif

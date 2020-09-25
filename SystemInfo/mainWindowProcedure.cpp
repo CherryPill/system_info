@@ -120,6 +120,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 				case ID_FILE_SETTINGS: {
 					sw = new SettingsWindow();
+					sw->setExportInfoPreviewOsString(localMachine->getOS());
 					sw->setHandlerProc((WNDPROC)settingsDialogProcedure);
 					registerSettingsDialogClass();
 					registerTabContentWrapperWindowClass();
@@ -157,6 +158,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 					break;
 				}
+
 			}
 		}
 						 //to do put hardcoded color values in external constants
