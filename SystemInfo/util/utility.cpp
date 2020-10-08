@@ -585,7 +585,7 @@ int GetEncoderClsid(const TCHAR *format, CLSID *pClsid) {
 }
 TCHAR* convertColorReftoHexColorString(COLORREF colorRef) {
 	TCHAR* buff = new TCHAR[256]{0};
-	_stprintf(buff, L"#%x%x%x", GetRValue(colorRef), 
+	_stprintf(buff, L"#%X%X%X", GetRValue(colorRef), 
 		GetGValue(colorRef),
 		GetBValue(colorRef));
 	return buff;

@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <CommCtrl.h>
+#include <map>
 extern std::unordered_map<WPARAM, INT32> tabClickState;
 class SettingsControl {
 private:
@@ -44,11 +45,15 @@ public:
 
 class SettingsWindow {
 private:
-	static const INT32 defaultWindowWidth = 450;
-	static const INT32 defaultWindowHeight = 300;
+	static const INT32 defaultWindowWidth = 500;
+	static const INT32 defaultWindowHeight = 400;
 
 	INT32 windowWidth = defaultWindowWidth;
 	INT32 windowHeight = defaultWindowHeight;
+
+	INT32 controlBtnsRequiredHeight = 60;
+
+	INT32 effectiveWindowHeight = windowWidth - controlBtnsRequiredHeight;
 
 	WNDPROC handlerProc;
 	HWND windowHandle;
@@ -57,6 +62,7 @@ private:
 	std::wstring exportInfoPreviewOsString;
 
 	std::vector<SettingsTab*> tabs;
+	std::vector<SettingsControl*> controlButtons;
 
 public:
 	void setHandlerProc(WNDPROC proc) {
@@ -77,6 +83,13 @@ public:
 	void setWindowHeight(INT32 windowHeight) {
 		this->windowHeight = windowHeight;
 	}
+	void setEffectiveWindowHeight(INT32 effectiveWindowHeight) {
+		this->effectiveWindowHeight = effectiveWindowHeight;
+	}
+	INT32 getEffectiveWindowHeight() {
+		return effectiveWindowHeight;
+	}
+
 	void setWindowHandle(HWND windowHandle) {
 		this->windowHandle = windowHandle;
 	}
@@ -96,6 +109,14 @@ public:
 
 	std::wstring getExportInfoPreviewOsString() {
 		return this->exportInfoPreviewOsString;
+	}
+
+	std::vector<SettingsControl*> getControlButtons() {
+		return this->controlButtons;
+	}
+	
+	void setControlButtons(std::vector<SettingsControl*> controlButtons) {
+		this->controlButtons = controlButtons;
 	}
 
 	void showTabs() {
@@ -172,6 +193,8 @@ public:
 
 
 std::vector<SettingsTab*> createAndFillTabs(SettingsWindow*);
+std::vector<SettingsControl*> createControlButtons(SettingsWindow*);
+
 void registerSettingsDialogClass();
 void registerTabContentWrapperWindowClass();
 LRESULT CALLBACK settingsDialogProcedure(HWND, UINT, WPARAM, LPARAM);
@@ -184,4 +207,6 @@ std::vector<SettingsBlock*> createControlsForTab(HWND controlTabWrapperHandle, I
 void handleTabSelectionChange(INT32);
 COLORREF initializeColorDlgBox(HWND hwnd);
 HWND createGenericContainer(INT32 id, INT32 w, INT32 h, INT32 yOffset, HWND parent);
+INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, INT32 yOffset);
+
 //filled based on the number of tabs

@@ -27,12 +27,34 @@ void registerTabContentWrapperWindowClass() {
 	RegisterClassEx(&wc);
 }
 
+std::vector<SettingsControl*> createControlButtons(SettingsWindow* sw) {
+	map<TCHAR*, INT32> titleToIdMap = {
+		{L"Save", IDC_SETTINGS_CONTROL_BTN_SAVE},
+		{L"Cancel", IDC_SETTINGS_CONTROL_BTN_CANCEL},
+		{L"Reset", IDC_SETTINGS_CONTROL_BTN_RESET},
+	};
+	DWORD buttonStyles = ;
+	std::vector<SettingsControl*> btns;
+	std::map<TCHAR*, INT32>::iterator mapIter;
+	for (mapIter = titleToIdMap.begin(); 
+		mapIter != titleToIdMap.end(); mapIter++) {
+		SettingsControl* sc = new SettingsControl();
 
+		ControlBuilder::initBuilder()
+			->withClassName(L"Button")
+			->withControlId()
+			->withCoords()
+			->withParent();
 
+		sc->setControlHandle();
+	}
+
+	return btns;
+}
 
 std::vector<SettingsTab*> createAndFillTabs(SettingsWindow* sw) {
 
-	const WPARAM headerCount = 3;
+	constexpr WPARAM headerCount = 3;
 	TCITEM tabData;
 	TCHAR* tabHeaderTxt[headerCount] = {
 			_T("Main"),
@@ -47,8 +69,8 @@ std::vector<SettingsTab*> createAndFillTabs(SettingsWindow* sw) {
 		WS_CHILD | WS_VISIBLE,
 		0,
 		0,
-		440,
-		500,
+		sw->getWindowWidth(),
+		sw->getWindowHeight(),
 		settingsDialogHwnd,
 		(HMENU)IDC_SETTINGS_TABAREA,
 		NULL,
@@ -68,7 +90,7 @@ std::vector<SettingsTab*> createAndFillTabs(SettingsWindow* sw) {
 			TAB_CONTENT_WRAPPER_OFFSET + tabNum,
 			yOffset,
 			sw->getWindowWidth(),
-			sw->getWindowHeight(),
+			sw->getEffectiveWindowHeight(),
 			settingsDialogHwnd);
 		tabControlWrapperProc = (WNDPROC)SetWindowLongPtr(contentWrapperHandler, GWL_WNDPROC, (LONG_PTR)& tabWrapperProc);
 
@@ -86,13 +108,15 @@ std::vector<SettingsBlock*> createControlsForTab(
 	std::vector<SettingsBlock*> settingsBlocks;
 	SettingsBlock* sb = new SettingsBlock();
 	std::vector<SettingsControl*> controls;
-	TCHAR* checkBoxNames[3] = {
+	constexpr INT32 checkBoxSize = 4;
+	TCHAR* checkBoxNames[checkBoxSize] = {
 		L"Show CPU usage",
+		L"Show Hard disks temperature",
 		L"Screencap client area only",
 		L"Remember last window position"
 	};
 	if (id == TAB_CONTENT_WRAPPER_OFFSET) {
-		for (int t = 0, yOffset = 15; t < 3; t++, yOffset += 25) {
+		for (int t = 0, yOffset = 15; t < checkBoxSize; t++, yOffset += 25) {
 			SettingsControl* sc = new SettingsControl();
 			HWND hwnd = CreateWindowEx(0,
 				_T("Button"),
@@ -112,90 +136,28 @@ std::vector<SettingsBlock*> createControlsForTab(
 	}
 	else if (id == TAB_CONTENT_WRAPPER_OFFSET + 1) {
 
-		HWND htmlExportSettingsStaticHeader = CreateWindowEx(
-			0,
-			_T("Static"),
-			_T("HTML export theme"),
-			WS_VISIBLE |
-			WS_CHILD,
-			0, 0,
-			100, 20,
-			controlTabWrapperHandle,
-			NULL,
-			NULL,
-			NULL);
-		SettingsControl* htmlExportSettingsHeaderThemeGroupBoxSC = new SettingsControl();
-		HWND htmlExportSettingsHeaderThemeGroupBox = CreateWindowEx(
-			0,
-			_T("Button"),
-			_T("Header"),
-			WS_VISIBLE |
-			WS_CHILD | BS_GROUPBOX,
-			10, 10 + 20,
-			150, 150,
-			controlTabWrapperHandle,
-			NULL,
-			NULL,
-			NULL);
-		htmlExportSettingsHeaderThemeGroupBoxSC->setControlHandle(htmlExportSettingsHeaderThemeGroupBox);
-		controls.push_back(htmlExportSettingsHeaderThemeGroupBoxSC);
-
-		
-		SettingsControl* htmlHeaderBlockBgColor = new SettingsControl();
-		HWND htmlHeaderBlockBgColorHwnd =
-			ControlBuilder::initBuilder()
+		SettingsControl* htmlExportHeader = new SettingsControl();
+		HWND htmlExportSettingsStaticHeader = ControlBuilder::initBuilder()
 			->withClassName(L"Static")
-			->withWindowName(
-				convertColorReftoHexColorString(
-					glbUserSettings->getHtmlExportHeaderBgColorRGB()))
-			->withStyles(WS_VISIBLE | WS_CHILD | SS_SUNKEN | SS_CENTERIMAGE | SS_CENTER | SS_NOTIFY)
-			->withCoords(15, 40)
-			->withDimensions(50, 30)
+			->withWindowName(L"HTML export theme:")
+			->withStyles(WS_VISIBLE |
+				WS_CHILD)
+			->withCoords(10, 10)
+			->withDimensions(100, 15)
 			->withParent(controlTabWrapperHandle)
-			->withControlId(TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR)
 			->build();
-
-		htmlHeaderBlockBgColor->setControlHandle(htmlHeaderBlockBgColorHwnd);
-		controls.push_back(htmlHeaderBlockBgColor);
-
-		SettingsControl * htmlHeaderBlockFgColor = new SettingsControl();
-		HWND htmlHeaderBlockFgColorHwnd =
-			ControlBuilder::initBuilder()
-			->withClassName(L"Static")
-			->withWindowName(L"#ffff00")
-			->withStyles(WS_VISIBLE | WS_CHILD | SS_SUNKEN | SS_CENTERIMAGE | SS_CENTER | SS_NOTIFY)
-			->withCoords(15 + 50, 40)
-			->withDimensions(50, 30)
-			->withParent(controlTabWrapperHandle)
-			->withControlId(TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR)
-			->build();
-
-		htmlHeaderBlockBgColor->setControlHandle(htmlHeaderBlockFgColorHwnd);
-		controls.push_back(htmlHeaderBlockBgColor);
-
-		/*	HWND htmlExportSettingsInfoThemeGroupBox = CreateWindowEx(
-				0,
-				_T("Static"),
-				_T("Header"),
-				WS_VISIBLE |
-				WS_CHILD | SS_SUNKEN,
-				10, 30,
-				100, 20,
-				controlTabWrapperHandle,
-				NULL,
-				NULL,
-				NULL);*/
-
-
-
-
+		htmlExportHeader->setControlHandle(htmlExportSettingsStaticHeader);
+		controls.push_back(htmlExportHeader);
+		INT32 groupBoxOffset = createControlGroupBox(controlTabWrapperHandle, controls, 30);
+		//to do: preview label
+		//to do:button below tabwrapper
 		SettingsControl * htmlHeaderBlock = new SettingsControl();
 		HWND htmlHeaderBlockStaticHwnd =
 			ControlBuilder::initBuilder()
 			->withClassName(L"Static")
 			->withWindowName(L" Operating System")
 			->withStyles(WS_VISIBLE | WS_CHILD | SS_SUNKEN)
-			->withCoords(15, 150)
+			->withCoords(10, groupBoxOffset)
 			->withDimensions(200, 20)
 			->withParent(controlTabWrapperHandle)
 			->withControlId(TAB_ÑONTENT_HTML_EXPORT_HEADER)
@@ -210,7 +172,7 @@ std::vector<SettingsBlock*> createControlsForTab(
 			->withClassName(L"Static")
 			->withWindowName((TCHAR*)sw->getExportInfoPreviewOsString().c_str())
 			->withStyles(WS_VISIBLE | WS_CHILD | SS_SUNKEN)
-			->withCoords(15, 150 + 18)
+			->withCoords(10, groupBoxOffset + 20)
 			->withDimensions(500, 20)
 			->withParent(controlTabWrapperHandle)
 			->withControlId(TAB_ÑONTENT_HTML_EXPORT_INFO)
@@ -241,6 +203,82 @@ HWND createGenericContainer(INT32 id, INT32 yOffset, INT32 w, INT32 h, HWND pare
 	);
 }
 
+
+INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, INT32 yOffset) {
+
+	map<TCHAR*, std::vector<INT32>> titleToIdMap = {
+	{L"Header", {TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR, TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR}},
+	{L"Information", {TAB_ÑONTENT_HTML_EXPORT_INFO_BG_COLOR, TAB_ÑONTENT_HTML_EXPORT_INFO_FG_COLOR}},
+	};
+	INT32 xOffset = 10;
+	INT32 colorChooserBoxWidth = 60;
+	INT32 colorChooserBoxHeight = 40;
+	INT32 colorChooserBoxRightMargin = 10;
+	INT32 colorChooserBoxMargin = 20;
+	INT32 colorGroupBoxBottomMargin = 30;
+	INT32 singleBlockWidth = 0;
+	INT32 groupBoxWidth = 0;
+	DWORD colorChooserStaticControlStyles = WS_VISIBLE | WS_CHILD | SS_SUNKEN | SS_CENTERIMAGE | SS_CENTER | SS_NOTIFY;
+	DWORD groupBoxStyles = WS_VISIBLE | WS_CHILD | BS_GROUPBOX;
+	INT32 yOffsetGroupBox = yOffset;
+	map<TCHAR*, std::vector<INT32>>::iterator mapIterator;
+	for (mapIterator = titleToIdMap.begin(); mapIterator != titleToIdMap.end(); mapIterator++) {
+
+		yOffset += 20;
+
+		SettingsControl* htmlExportSettingsHeaderThemeGroupBoxSC = new SettingsControl();
+		SettingsControl* htmlHeaderBlockBgColor = new SettingsControl();
+		HWND htmlHeaderBlockBgColorHwnd =
+			ControlBuilder::initBuilder()
+			->withClassName(L"Static")
+			->withWindowName(
+				convertColorReftoHexColorString(
+					glbUserSettings->getHtmlExportHeaderBgColorRGB()))
+			->withStyles(colorChooserStaticControlStyles)
+			->withCoords(xOffset * 2 + colorChooserBoxRightMargin, yOffset)
+			->withDimensions(colorChooserBoxWidth, colorChooserBoxHeight)
+			->withParent(hwnd)
+			->withControlId(mapIterator->second.at(0))
+			->build();
+
+		htmlHeaderBlockBgColor->setControlHandle(htmlHeaderBlockBgColorHwnd);
+		controls.push_back(htmlHeaderBlockBgColor);
+
+		SettingsControl* htmlHeaderBlockFgColor = new SettingsControl();
+		HWND htmlHeaderBlockFgColorHwnd =
+			ControlBuilder::initBuilder()
+			->withClassName(L"Static")
+			->withWindowName(convertColorReftoHexColorString(
+				glbUserSettings->getHtmlExportHeaderFgColorRGB()))
+			->withStyles(colorChooserStaticControlStyles)
+			->withCoords(xOffset * 2 + colorChooserBoxWidth + colorChooserBoxRightMargin, yOffset)
+			->withDimensions(colorChooserBoxWidth, colorChooserBoxHeight)
+			->withParent(hwnd)
+			->withControlId(mapIterator->second.at(1))
+			->build();
+		htmlHeaderBlockBgColor->setControlHandle(htmlHeaderBlockFgColorHwnd);
+		controls.push_back(htmlHeaderBlockBgColor);
+
+		HWND htmlExportSettingsHeaderThemeGroupBox =
+			ControlBuilder::initBuilder()
+			->withClassName(L"Button")
+			->withWindowName(mapIterator->first)
+			->withStyles(groupBoxStyles)
+			->withCoords(xOffset * 2, yOffsetGroupBox)
+			->withDimensions((colorChooserBoxWidth + colorChooserBoxMargin) * 2,
+			(colorChooserBoxHeight + colorChooserBoxMargin * 2))
+			->withParent(hwnd)
+			->build();
+		htmlExportSettingsHeaderThemeGroupBoxSC->setControlHandle(htmlExportSettingsHeaderThemeGroupBox);
+		controls.push_back(htmlExportSettingsHeaderThemeGroupBoxSC);
+		xOffset += (colorChooserBoxWidth + 15 * 2);
+		yOffset -= 20;
+	}
+	return yOffsetGroupBox + (colorChooserBoxHeight + colorChooserBoxMargin * 3);
+	//yOffset += (colorChooserBoxHeight + colorChooserBoxMargin);
+	//return yOffset;
+
+}
 HWND createTabContentWrapper(INT32 id, INT32 w, INT32 h, INT32 yOffset, HWND parent) {
 	return createGenericContainer(id, w, h, yOffset, parent);
 }
@@ -260,6 +298,7 @@ LRESULT CALLBACK settingsDialogProcedure(HWND dialogWindow, UINT message,
 	}
 	case WM_CREATE: {
 		std::vector<SettingsTab*> tabs = createAndFillTabs(sw);
+		std::vector<SettingsControl> controlBtns = createControlButtons(sw);
 		sw->setTabs(tabs);
 		tabClickState[TAB_CONTENT_WRAPPER_OFFSET] = SW_SHOW;
 		sw->showTabs();
@@ -292,10 +331,14 @@ LRESULT CALLBACK tabWrapperProc(HWND hwnd, UINT message,
 	case WM_COMMAND: {
 		switch (LOWORD(wParam)) {
 		case TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR: {
-			
+
 			glbUserSettings->setHtmlExportHeaderBgColorRGB(initializeColorDlgBox(hwnd));
 			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR), SW_HIDE);
 			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR), SW_SHOW);
+
+			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER), SW_HIDE);
+			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER), SW_SHOW);
+
 			SetWindowText(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR),
 				convertColorReftoHexColorString(glbUserSettings->getHtmlExportHeaderBgColorRGB()));
 			break;
@@ -307,19 +350,18 @@ LRESULT CALLBACK tabWrapperProc(HWND hwnd, UINT message,
 			break;
 		}
 		}
-		//UpdateWindow(hwnd);
 		break;
 	}
 	case WM_CTLCOLORSTATIC: {
 		HDC hdcStatic = (HDC)wParam;
 		if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_HEADER) {
-			SetTextColor(hdcStatic, RGB(255, 255, 255));
-			SetBkColor(hdcStatic, purpleColorRef);
-			return (long)CreateSolidBrush(purpleColorRef);
+			SetTextColor(hdcStatic, glbUserSettings->getHtmlExportHeaderFgColorRGB());
+			SetBkColor(hdcStatic, glbUserSettings->getHtmlExportHeaderBgColorRGB());
+			return (long)CreateSolidBrush(glbUserSettings->getHtmlExportHeaderBgColorRGB());
 		}
 		else if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_INFO) {
-			SetTextColor(hdcStatic, RGB(0, 0, 0));
-			SetBkColor(hdcStatic, RGB(255, 255, 255));
+			SetTextColor(hdcStatic, glbUserSettings->getHtmlExportInfoFgColorRGB());
+			SetBkColor(hdcStatic, glbUserSettings->getHtmlExportInfoBgColorRGB());
 			return (long)CreateSolidBrush(RGB(255, 255, 255));
 		}
 		else if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR) {
