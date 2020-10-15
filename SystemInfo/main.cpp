@@ -17,7 +17,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	configAppData();
 	SavedUserSettings* savedUserSettings = new SavedUserSettings();
 	SavedUserSettingsHelper::initializeFullConfigFilePath();
-	SavedUserSettingsHelper::loadSettingsFromDisk(savedUserSettings);
+	if (!SavedUserSettingsHelper::loadSettingsFromDisk(savedUserSettings)) {
+		SavedUserSettingsHelper::saveSettingsToDisk(savedUserSettings);
+	}
+	SavedUserSettingsHelper::fillSettingsCheckBoxState(savedUserSettings);
 	glbUserSettings = savedUserSettings;
 	if (argc > 1) {
 		PROGRAM_INSTANCE = 1;

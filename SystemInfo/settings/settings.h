@@ -3,6 +3,7 @@
 #include <CommCtrl.h>
 #include <map>
 extern std::unordered_map<WPARAM, INT32> tabClickState;
+extern std::unordered_map<WPARAM, WPARAM> checkBoxCheckedState;
 class SettingsControl {
 private:
 	HWND controlHandle;
@@ -46,14 +47,14 @@ public:
 class SettingsWindow {
 private:
 	static const INT32 defaultWindowWidth = 500;
-	static const INT32 defaultWindowHeight = 400;
+	static const INT32 defaultWindowHeight = 300;
 
 	INT32 windowWidth = defaultWindowWidth;
 	INT32 windowHeight = defaultWindowHeight;
 
-	INT32 controlBtnsRequiredHeight = 60;
+	INT32 controlBtnsRequiredHeight = 100;
 
-	INT32 effectiveWindowHeight = windowWidth - controlBtnsRequiredHeight;
+	INT32 effectiveWindowHeight = defaultWindowHeight - controlBtnsRequiredHeight;
 
 	WNDPROC handlerProc;
 	HWND windowHandle;
@@ -135,23 +136,41 @@ public:
 class SavedUserSettings {
 private:
 
+	typedef BOOL(SavedUserSettings::* chkBoxStateGetter) ();
+
+	chkBoxStateGetter checkBoxStateGetters[4] =
+	{ &SavedUserSettings::getShowCpuUsage,
+		&SavedUserSettings::getShowHDDTemp,
+		&SavedUserSettings::getScreenshotCaptureClientAreaOnly,
+		&SavedUserSettings::getRememberLastWindowPosition };
+	
 	//tab 0
 	BOOL isShowCPUusage = TRUE;
 	BOOL isScreenshotCaptureClientAreaOnly = TRUE;
 	BOOL isRememberLastWindowPosition = FALSE;
-
+	BOOL isShowHDDTemp = TRUE;
 	//tab 1
 	COLORREF htmlExportHeaderBgColorRGB = RGB(128, 0, 128);
 	COLORREF htmlExportHeaderFgColorRGB = RGB(255, 255, 255);
 	COLORREF htmlExportInfoBgColorRGB = RGB(255, 255, 255);
 	COLORREF htmlExportInfoFgColorRGB = RGB(0, 0, 0);
 
+
 public:
+	chkBoxStateGetter *getChkBoxGetters() {
+		return this->checkBoxStateGetters;
+	}
 	BOOL getShowCpuUsage() {
 		return this->isShowCPUusage;
 	}
 	void setShowCpuUsage(BOOL isShowCPUusage) {
 		this->isShowCPUusage = isShowCPUusage;
+	}
+	BOOL getShowHDDTemp() {
+		return this->isShowHDDTemp;
+	}
+	void setShowHDDTemp(BOOL isShowHDDTemp) {
+		this->isShowHDDTemp = isShowHDDTemp;
 	}
 	BOOL getScreenshotCaptureClientAreaOnly() {
 		return this->isScreenshotCaptureClientAreaOnly;

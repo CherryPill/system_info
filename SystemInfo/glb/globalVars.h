@@ -8,6 +8,7 @@
 #include "../meta/SoftwareInfo.h"	
 #include "../resource.h"
 #include "../settings/settings.h"
+#include "../const/itemIDs.h"
 
 using namespace std;
 extern int PROGRAM_INSTANCE; //0 - parent, 1 - child
@@ -71,7 +72,12 @@ static WORD UTIL_iCON_IDS[iconArrCpuUtilizationIconsSize]{
 	UTILIZATION_ICON_5
 };
 
-
+static WORD SETTINGS_WINDOW_CHKBOX_IDS[4]{
+	TAB_CONTENT_CHKBOX_CPU_USAGE,
+	TAB_CONTENT_CHKBOX_HDD_TEMP,
+	TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY,
+	TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS
+};
 
 static wstring UI_messagesCapt[] = {
 	L"Success",

@@ -169,6 +169,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					SetTextColor(hdcStatic, RGB(0, 255, 0));
 				} else {
 					SetTextColor(hdcStatic, RGB(125, 207, 246));
+					SetBkColor(hdcStatic, RGB(255, 0, 0));
 				}
 			}
 			else if (GetDlgCtrlID((HWND)lParam) == AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING) {
@@ -197,6 +198,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			return (LONG)grayBrush;
 			break;
 		}
+	
 		case WM_DESTROY: {
 			PostQuitMessage(WM_QUIT);
 			return 0;

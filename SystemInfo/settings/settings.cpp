@@ -33,20 +33,27 @@ std::vector<SettingsControl*> createControlButtons(SettingsWindow* sw) {
 		{L"Cancel", IDC_SETTINGS_CONTROL_BTN_CANCEL},
 		{L"Reset", IDC_SETTINGS_CONTROL_BTN_RESET},
 	};
-	DWORD buttonStyles = ;
+	DWORD buttonStyles = WS_CHILD | WS_VISIBLE | BS_CENTER;
 	std::vector<SettingsControl*> btns;
 	std::map<TCHAR*, INT32>::iterator mapIter;
-	for (mapIter = titleToIdMap.begin(); 
+	INT32 xOffset = sw->getWindowWidth() / 2 - (50*3);
+	INT32 yOffset = sw->getEffectiveWindowHeight() + 20;
+	for (mapIter = titleToIdMap.begin();
 		mapIter != titleToIdMap.end(); mapIter++) {
 		SettingsControl* sc = new SettingsControl();
 
-		ControlBuilder::initBuilder()
+		HWND cntrl = ControlBuilder::initBuilder()
 			->withClassName(L"Button")
-			->withControlId()
-			->withCoords()
-			->withParent();
-
-		sc->setControlHandle();
+			->withWindowName(mapIter->first)
+			->withControlId(mapIter->second)
+			->withDimensions(50, 20)
+			->withCoords(xOffset, yOffset)
+			->withStyles(buttonStyles)
+			->withParent(settingsDialogHwnd)
+			->build();
+		sc->setControlHandle(cntrl);
+		btns.push_back(sc);
+		xOffset += 50 + 10;
 	}
 
 	return btns;
@@ -127,9 +134,10 @@ std::vector<SettingsBlock*> createControlsForTab(
 				15, yOffset,
 				200, 25,
 				controlTabWrapperHandle,
-				(HMENU)id + 10 + t,
+				(HMENU)SETTINGS_WINDOW_CHKBOX_IDS[t],
 				NULL,
 				NULL);
+			SendMessage(hwnd, BM_SETCHECK, checkBoxCheckedState.at(SETTINGS_WINDOW_CHKBOX_IDS[t]), NULL);
 			sc->setControlHandle(hwnd);
 			controls.push_back(sc);
 		}
@@ -298,11 +306,30 @@ LRESULT CALLBACK settingsDialogProcedure(HWND dialogWindow, UINT message,
 	}
 	case WM_CREATE: {
 		std::vector<SettingsTab*> tabs = createAndFillTabs(sw);
-		std::vector<SettingsControl> controlBtns = createControlButtons(sw);
+		std::vector<SettingsControl*> controlBtns = createControlButtons(sw);
+		sw->setControlButtons(controlBtns);
 		sw->setTabs(tabs);
 		tabClickState[TAB_CONTENT_WRAPPER_OFFSET] = SW_SHOW;
 		sw->showTabs();
 		EnumChildWindows(dialogWindow, (WNDENUMPROC)__SetFont, (LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the fonr
+		break;
+	}
+	case WM_COMMAND: {
+		WORD receivedCommand = LOWORD(wParam);
+		switch (receivedCommand) {
+			case IDC_SETTINGS_CONTROL_BTN_SAVE: {
+				SavedUserSettingsHelper::readUISettingsState(sw->getTabs().at(0)->getTabContentWrapperHandle());
+				break;
+			}
+			case IDC_SETTINGS_CONTROL_BTN_CANCEL: {
+				SendMessage(settingsDialogHwnd, WM_CLOSE, NULL, NULL);
+				break;
+			}
+			case IDC_SETTINGS_CONTROL_BTN_RESET: {
+				break;
+			}
+
+		}
 		break;
 	}
 
@@ -412,6 +439,7 @@ bool CALLBACK __SetFont(HWND child, LPARAM font)
 	return true;
 }
 std::unordered_map<WPARAM, INT32> tabClickState;
+std::unordered_map<WPARAM, WPARAM> checkBoxCheckedState;
 
 COLORREF initializeColorDlgBox(HWND hwnd) {
 

@@ -170,18 +170,36 @@ public:
 		//sysInfoConfigDirectoryPath
 		std::ofstream configFile;
 		configFile.std::ofstream::open(SavedUserSettingsHelper::fullConfigFilePath, std::ios::binary | std::ios::out);
-		configFile.std::ofstream::write((char*)& settings, sizeof(SavedUserSettings));
-		configFile.std::ofstream::close();
+		if (configFile.good()) {
+			configFile.std::ofstream::write((char*)& settings, sizeof(SavedUserSettings));
+			configFile.std::ofstream::close();
+			return TRUE;
+		}
 		return FALSE;
 	}
 	static BOOL loadSettingsFromDisk(SavedUserSettings * settings) {
 		std::ifstream configFile;
 		configFile.std::ifstream::open(SavedUserSettingsHelper::fullConfigFilePath, std::ios::binary
 			| std::ios::in);
-		configFile.std::ifstream::read((char*)& settings, sizeof(SavedUserSettings));
-		configFile.std::ifstream::close();
-		
+		if (configFile.good()) {
+			configFile.std::ifstream::read((char*)& settings, sizeof(SavedUserSettings));
+			configFile.std::ifstream::close();
+			return TRUE;
+		}
 		return FALSE;
+	}
+	static void fillSettingsCheckBoxState(SavedUserSettings* settings) {
+		//explanation:
+		//SavedUserSettings::chkBoxStateGetter func = settings->checkBoxStateGetters[0];
+		//(settings->*c)();
+
+		for (int x = 0; x < 4; x++) {
+			BOOL res = (settings->*settings->getChkBoxGetters()[x])();
+			checkBoxCheckedState.insert_or_assign(
+				SETTINGS_WINDOW_CHKBOX_IDS[x], 
+				(settings->*settings->getChkBoxGetters()[x])() == TRUE ? BST_CHECKED : BST_UNCHECKED);
+		}
+		int x = 10;
 	}
 	BOOL setDefaultSettings() {
 		//isShowCPUusage = isScreenshotCaptureClientAreaOnly = TRUE;
@@ -191,6 +209,30 @@ public:
 		//htmlExportInfoBgColorRGB = COLOR_WHITE;
 		//htmlExportInfoFgColorRGB = COLOR_BLACK;
 		//saveSettingsToDisk();
+	}
+	static void readUISettingsState(HWND enclosingTabWrapperHandle) {
+		UINT res = IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_CPU_USAGE);
+		glbUserSettings->setShowCpuUsage(
+			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_CPU_USAGE) == BST_CHECKED ?
+			TRUE : FALSE);
+		glbUserSettings->setShowHDDTemp(
+			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_HDD_TEMP) == BST_CHECKED ?
+			TRUE : FALSE);
+		glbUserSettings->setScreenshotCaptureClientAreaOnly(
+			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY) == BST_CHECKED ?
+			TRUE : FALSE);
+		glbUserSettings->setRememberLastWindowPosition(
+			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS) == BST_CHECKED ?
+			TRUE : FALSE);
+		SavedUserSettingsHelper::fillSettingsCheckBoxState(glbUserSettings);
+		if (SavedUserSettingsHelper::saveSettingsToDisk(glbUserSettings)) {
+			GenericMessageOK()
+				.withMessage(L"Settings saved")
+				->withIcon(ControlManager::UI_MESS_RES_ICON::SUCCESS)
+				->display();
+		};
+		//use IsDlgButtonChecked and set glbusersettings to appropriate value
+		//also fix html export theme first so that colors actually change on ui
 	}
 
 };
