@@ -36,7 +36,7 @@ std::vector<SettingsControl*> createControlButtons(SettingsWindow* sw) {
 	DWORD buttonStyles = WS_CHILD | WS_VISIBLE | BS_CENTER;
 	std::vector<SettingsControl*> btns;
 	std::map<TCHAR*, INT32>::iterator mapIter;
-	INT32 xOffset = sw->getWindowWidth() / 2 - (50*3);
+	INT32 xOffset = sw->getWindowWidth() - (70*3) - 10;
 	INT32 yOffset = sw->getEffectiveWindowHeight() + 20;
 	for (mapIter = titleToIdMap.begin();
 		mapIter != titleToIdMap.end(); mapIter++) {
@@ -46,14 +46,15 @@ std::vector<SettingsControl*> createControlButtons(SettingsWindow* sw) {
 			->withClassName(L"Button")
 			->withWindowName(mapIter->first)
 			->withControlId(mapIter->second)
-			->withDimensions(50, 20)
+			->withDimensions(60, 20)
 			->withCoords(xOffset, yOffset)
 			->withStyles(buttonStyles)
 			->withParent(settingsDialogHwnd)
 			->build();
+	
 		sc->setControlHandle(cntrl);
 		btns.push_back(sc);
-		xOffset += 50 + 10;
+		xOffset += 50 + 20;
 	}
 
 	return btns;
@@ -115,12 +116,13 @@ std::vector<SettingsBlock*> createControlsForTab(
 	std::vector<SettingsBlock*> settingsBlocks;
 	SettingsBlock* sb = new SettingsBlock();
 	std::vector<SettingsControl*> controls;
-	constexpr INT32 checkBoxSize = 4;
+	constexpr INT32 checkBoxSize = 5;
 	TCHAR* checkBoxNames[checkBoxSize] = {
 		L"Show CPU usage",
-		L"Show Hard disks temperature",
+		L"Show HDD temperature",
 		L"Screencap client area only",
-		L"Remember last window position"
+		L"Remember last window position",
+		L"Hide IP Address by default"
 	};
 	if (id == TAB_CONTENT_WRAPPER_OFFSET) {
 		for (int t = 0, yOffset = 15; t < checkBoxSize; t++, yOffset += 25) {
@@ -140,6 +142,31 @@ std::vector<SettingsBlock*> createControlsForTab(
 			SendMessage(hwnd, BM_SETCHECK, checkBoxCheckedState.at(SETTINGS_WINDOW_CHKBOX_IDS[t]), NULL);
 			sc->setControlHandle(hwnd);
 			controls.push_back(sc);
+			
+			if (t == 1) {
+				std::unique_ptr<SIZE> dimsForStatic(getAdjustedDimensionsForStaticCntrl(hwnd, checkBoxNames[t]));
+				resizeWindow(controlTabWrapperHandle, hwnd, dimsForStatic.get()->cx); 
+				SettingsControl* uacIconCntrl = new SettingsControl();
+				HWND uacIconCntrlHwnd = CreateWindowEx(0,
+					_T("Static"),
+					NULL,
+					WS_CHILD |
+					WS_VISIBLE |
+					SS_ICON | SS_CENTER,
+					dimsForStatic.get()->cx+20, yOffset,
+					16, 16,
+					controlTabWrapperHandle,
+					(HMENU)TAB_CONTENT_UAC_ICON_STATIC,
+					NULL,
+					NULL);
+				SendDlgItemMessage(controlTabWrapperHandle,
+					TAB_CONTENT_UAC_ICON_STATIC,
+					STM_SETICON,
+					(WPARAM)uacIcon,
+					NULL);
+				uacIconCntrl->setControlHandle(uacIconCntrlHwnd);
+				controls.push_back(uacIconCntrl);
+			}
 		}
 	}
 	else if (id == TAB_CONTENT_WRAPPER_OFFSET + 1) {
@@ -311,7 +338,7 @@ LRESULT CALLBACK settingsDialogProcedure(HWND dialogWindow, UINT message,
 		sw->setTabs(tabs);
 		tabClickState[TAB_CONTENT_WRAPPER_OFFSET] = SW_SHOW;
 		sw->showTabs();
-		EnumChildWindows(dialogWindow, (WNDENUMPROC)__SetFont, (LPARAM)GetStockObject(DEFAULT_GUI_FONT)); //setting the fonr
+		EnumChildWindows(dialogWindow, (WNDENUMPROC)__SetFont, (LPARAM)helveticaFont); //setting the fonr
 		break;
 	}
 	case WM_COMMAND: {

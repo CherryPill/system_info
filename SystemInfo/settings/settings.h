@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <CommCtrl.h>
 #include <map>
+#include <string>
 extern std::unordered_map<WPARAM, INT32> tabClickState;
 extern std::unordered_map<WPARAM, WPARAM> checkBoxCheckedState;
 class SettingsControl {
@@ -138,17 +139,20 @@ private:
 
 	typedef BOOL(SavedUserSettings::* chkBoxStateGetter) ();
 
-	chkBoxStateGetter checkBoxStateGetters[4] =
+	chkBoxStateGetter checkBoxStateGetters[5] =
 	{ &SavedUserSettings::getShowCpuUsage,
 		&SavedUserSettings::getShowHDDTemp,
 		&SavedUserSettings::getScreenshotCaptureClientAreaOnly,
-		&SavedUserSettings::getRememberLastWindowPosition };
+		&SavedUserSettings::getRememberLastWindowPosition,
+		&SavedUserSettings::getHideIPAddress
+	};
 	
 	//tab 0
 	BOOL isShowCPUusage = TRUE;
 	BOOL isScreenshotCaptureClientAreaOnly = TRUE;
 	BOOL isRememberLastWindowPosition = FALSE;
-	BOOL isShowHDDTemp = TRUE;
+	BOOL isShowHDDTemp = FALSE;
+	BOOL isHideIPAddress = TRUE;
 	//tab 1
 	COLORREF htmlExportHeaderBgColorRGB = RGB(128, 0, 128);
 	COLORREF htmlExportHeaderFgColorRGB = RGB(255, 255, 255);
@@ -160,8 +164,20 @@ public:
 	chkBoxStateGetter *getChkBoxGetters() {
 		return this->checkBoxStateGetters;
 	}
+	BOOL getHideIPAddress() {
+		return this->isHideIPAddress;
+	}
+	BOOL *getHideIPAddressRef() {
+		return &isHideIPAddress;
+	}
+	void setHideIPAddress(BOOL isHideIPAddress) {
+		this->isHideIPAddress = isHideIPAddress;
+	}
 	BOOL getShowCpuUsage() {
 		return this->isShowCPUusage;
+	}
+	BOOL *getShowCpuUsageRef() {
+		return &isShowCPUusage;
 	}
 	void setShowCpuUsage(BOOL isShowCPUusage) {
 		this->isShowCPUusage = isShowCPUusage;
@@ -169,11 +185,17 @@ public:
 	BOOL getShowHDDTemp() {
 		return this->isShowHDDTemp;
 	}
+	BOOL *getShowHDDTempRef() {
+		return &isShowHDDTemp;
+	}
 	void setShowHDDTemp(BOOL isShowHDDTemp) {
 		this->isShowHDDTemp = isShowHDDTemp;
 	}
 	BOOL getScreenshotCaptureClientAreaOnly() {
 		return this->isScreenshotCaptureClientAreaOnly;
+	}
+	BOOL *getScreenshotCaptureClientAreaOnlyRef() {
+		return &isScreenshotCaptureClientAreaOnly;
 	}
 	void setScreenshotCaptureClientAreaOnly(BOOL isScreenshotCaptureClientAreaOnly) {
 		this->isScreenshotCaptureClientAreaOnly = isScreenshotCaptureClientAreaOnly;
@@ -181,11 +203,17 @@ public:
 	BOOL getRememberLastWindowPosition() {
 		return this->isRememberLastWindowPosition;
 	}
+	BOOL *getRememberLastWindowPositionRef() {
+		return &isRememberLastWindowPosition;
+	}
 	void setRememberLastWindowPosition(BOOL isRememberLastWindowPosition) {
 		this->isRememberLastWindowPosition = isRememberLastWindowPosition;
 	}
 	COLORREF getHtmlExportHeaderBgColorRGB() {
 		return this->htmlExportHeaderBgColorRGB;
+	}
+	COLORREF *getHtmlExportHeaderBgColorRGBRef() {
+		return &htmlExportHeaderBgColorRGB;
 	}
 	void setHtmlExportHeaderBgColorRGB(COLORREF htmlExportHeaderBgColorRGB) {
 		this->htmlExportHeaderBgColorRGB = htmlExportHeaderBgColorRGB;
@@ -193,17 +221,26 @@ public:
 	COLORREF getHtmlExportHeaderFgColorRGB() {
 		return this->htmlExportHeaderFgColorRGB;
 	}
+	COLORREF *getHtmlExportHeaderFgColorRGBRef() {
+		return &htmlExportHeaderFgColorRGB;
+	}
 	void setHtmlExportHeaderFgColorRGB(COLORREF htmlExportHeaderFgColorRGB) {
 		this->htmlExportHeaderFgColorRGB = htmlExportHeaderFgColorRGB;
 	}
 	COLORREF getHtmlExportInfoBgColorRGB() {
 		return this->htmlExportInfoBgColorRGB;
 	}
+	COLORREF *getHtmlExportInfoBgColorRGBRef() {
+		return &htmlExportInfoBgColorRGB;
+	}
 	void setHtmlExportInfoBgColorRGB(COLORREF htmlExportInfoBgColorRGB) {
 		this->htmlExportInfoBgColorRGB = htmlExportInfoBgColorRGB;
 	}
 	COLORREF getHtmlExportInfoFgColorRGB() {
 		return this->htmlExportInfoFgColorRGB;
+	}
+	COLORREF *getHtmlExportInfoFgColorRGBRef() {
+		return &htmlExportInfoFgColorRGB;
 	}
 	void setHtmlExportInfoFgColorRGB(COLORREF htmlExportInfoFgColorRGB) {
 		this->htmlExportInfoFgColorRGB = htmlExportInfoFgColorRGB;

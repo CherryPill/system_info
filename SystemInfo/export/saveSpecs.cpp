@@ -138,6 +138,7 @@ void importAsXML(HWND hwnd) {
 		// Start the child process. 
 		TCHAR fullExecLine[256] = { 0 };
 		_tcscpy(fullExecLine, execName);
+		_tcscat(fullExecLine, L" import ");
 		_tcscat(fullExecLine, fullOpenPath);
 
 
@@ -158,6 +159,9 @@ void importAsXML(HWND hwnd) {
 				.withMessage(L"Unable to create process")
 				->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
 				->display();
+		}
+		else {
+			int xx = 1232;
 		}
 	}
 }

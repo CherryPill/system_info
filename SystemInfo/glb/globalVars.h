@@ -11,7 +11,6 @@
 #include "../const/itemIDs.h"
 
 using namespace std;
-extern int PROGRAM_INSTANCE; //0 - parent, 1 - child
 extern TCHAR PROGRAM_DATA_IMPORT_LOCATION[256]; //path to the xml file to import data from if the process is spawned by parent
 extern TCHAR execName[256];
 extern SoftwareInfo *shippedSoftWare;
@@ -28,6 +27,7 @@ extern HBRUSH grayBrush;
 extern COLORREF purpleColorRef;
 extern HFONT appNameFontLarge;
 static vector<HICON> iconArr;
+extern HICON uacIcon;
 static vector<HICON> iconArrCpuUtilizationIcons;
 const static int iconArrCpuUtilizationIconsSize = 6;
 const static int totalItemsCount = 13;
@@ -72,11 +72,12 @@ static WORD UTIL_iCON_IDS[iconArrCpuUtilizationIconsSize]{
 	UTILIZATION_ICON_5
 };
 
-static WORD SETTINGS_WINDOW_CHKBOX_IDS[4]{
+static WORD SETTINGS_WINDOW_CHKBOX_IDS[5]{
 	TAB_CONTENT_CHKBOX_CPU_USAGE,
 	TAB_CONTENT_CHKBOX_HDD_TEMP,
 	TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY,
-	TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS
+	TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS,
+	TAB_CONTENT_CHKBOX_HIDE_IP_ADDR
 };
 
 static wstring UI_messagesCapt[] = {
@@ -205,5 +206,7 @@ extern int glbCpuInfoHolderXoffset;
 extern int glbCpuInfoHolderYoffset;
 
 extern SavedUserSettings* glbUserSettings;
+
+extern enum APPLICATION_OPERATION_MODE applicationOpMode;
 
 #endif

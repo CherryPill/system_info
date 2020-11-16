@@ -10,26 +10,44 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	int argc;
 	//if argcount > 1 then a snapshot is being loaded
 	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+
+
+#ifdef _DEBUG
+	for (int x = 0; x < argc; x++)
+		MessageBox(NULL, argv[x], _T("arg"), MB_OK);
+#endif
 	TCHAR fullExecPath[256] = { 0 };
 	GetModuleFileName(NULL, fullExecPath, 256);
 	getFileNameFromPath(fullExecPath, execName);
 	_tcscat(execName, L" ");
 	configAppData();
-	SavedUserSettings* savedUserSettings = new SavedUserSettings();
+	std::unique_ptr<SavedUserSettings> savedUserSettings(new SavedUserSettings());
 	SavedUserSettingsHelper::initializeFullConfigFilePath();
-	if (!SavedUserSettingsHelper::loadSettingsFromDisk(savedUserSettings)) {
-		SavedUserSettingsHelper::saveSettingsToDisk(savedUserSettings);
+	if (!SavedUserSettingsHelper::loadSettingsFromDisk(savedUserSettings.get())) {
+		SavedUserSettingsHelper::saveSettingsToDisk(savedUserSettings.get());
 	}
-	SavedUserSettingsHelper::fillSettingsCheckBoxState(savedUserSettings);
-	glbUserSettings = savedUserSettings;
-	if (argc > 1) {
-		PROGRAM_INSTANCE = 1;
-		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[1]);
+	SavedUserSettingsHelper::fillSettingsCheckBoxState(savedUserSettings.get());
+	glbUserSettings = savedUserSettings.get();
+	//savedUserSettings.get()->setShowHDDTemp(true);
+	if (NULL != argv[1] &&_tcscmp(argv[1], L"import") == 0) {
+		applicationOpMode = APPLICATION_OPERATION_MODE::SNAPSHOT;
+		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[2]);
 	}
-#ifdef _DEBUG
-	for (int x = 0; x < argc; x++)
-		MessageBox(NULL, argv[x], _T("arg"), MB_OK);
-#endif
+	else {
+		if (NULL == argv[1] || _tcscmp(L"as_admin", argv[1]) != 0) {
+			applicationOpMode = APPLICATION_OPERATION_MODE::PARENT_NON_ADMIN;
+			if (savedUserSettings.get()->getShowHDDTemp()) {
+				if (ShellExecute(NULL, L"runas", fullExecPath, L"as_admin", NULL, SW_SHOWNORMAL) < (HINSTANCE)32) {
+					MessageBox(NULL, L"Unable to start program as admin.", NULL, MB_OK);
+				}
+				ExitProcess(0);
+			}
+		}
+		else {
+			applicationOpMode = APPLICATION_OPERATION_MODE::PARENT_ADMIN;
+		}
+	}
 	LocalFree(argv);
 	shippedSoftWare = new SoftwareInfo();
 	MSG message;
@@ -61,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	(
 		0,
 		wc.lpszClassName,
-		PROGRAM_INSTANCE ? L"SystemInfo (snapshot)" : L"SystemInfo",
+		applicationOpMode == APPLICATION_OPERATION_MODE::SNAPSHOT ? L"SystemInfo (snapshot)" : L"SystemInfo",
 		WS_SYSMENU | WS_OVERLAPPEDWINDOW,
 		upperLeftCorner.x,
 		upperLeftCorner.y,

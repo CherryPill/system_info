@@ -2,6 +2,7 @@
 #include <CommCtrl.h>
 #include <tchar.h>
 #include <vector>
+#include "../util/utility.h"
 #include "globalVars.h"
 
 HINSTANCE ghInstance = NULL;
@@ -9,7 +10,7 @@ HWND mainWindowHwnd = NULL;
 HWND settingsDialogHwnd = NULL;
 HWND dialogTabControl = NULL;
 SettingsWindow* sw = NULL;
-int PROGRAM_INSTANCE = 0;
+APPLICATION_OPERATION_MODE applicationOpMode = APPLICATION_OPERATION_MODE::PARENT_NON_ADMIN;
 TCHAR PROGRAM_DATA_IMPORT_LOCATION[256] = { 0 };
 TCHAR execName[256] = { 0 };
 int mainWindowWidth = 600;
@@ -61,4 +62,5 @@ int glbCpuInfoHolderXoffset = 0;
 int glbCpuInfoHolderYoffset = 0;
 
 SavedUserSettings* glbUserSettings;
+HICON uacIcon;
 

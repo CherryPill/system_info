@@ -9,6 +9,11 @@
 #include "../util/controlManager.h"
 #include "../settings/settings.h"
 
+enum APPLICATION_OPERATION_MODE {
+	PARENT_NON_ADMIN,
+	PARENT_ADMIN,
+	SNAPSHOT
+};
 enum class FILE_IO_OPERATION {
 	SAVE_AS,
 	OPEN
@@ -148,8 +153,10 @@ std::wstring getSystemErrorCodeMessageForErrorCode(DWORD);
 std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_ICON res, DWORD act);
 int GetEncoderClsid(const TCHAR *format, CLSID *pClsid);
 TCHAR* convertColorReftoHexColorString(COLORREF);
-
-
+UINT parseBool(BOOL);
+SIZE *getAdjustedDimensionsForStaticCntrl(HWND hwnd, TCHAR *string);
+void resizeWindow(HWND hwndParent, HWND cntrlHwnd, INT32 newWidth);
+void resizeWindow(HWND hwndParent, HWND cntrlHwnd, INT32 newWidth, INT32 newHeight);
 class SavedUserSettingsHelper {
 private:
 	//path for user settings is %current_user_name%/AppData/<configFileName>
@@ -169,20 +176,42 @@ public:
 	static BOOL saveSettingsToDisk(SavedUserSettings* settings) {
 		//sysInfoConfigDirectoryPath
 		std::ofstream configFile;
-		configFile.std::ofstream::open(SavedUserSettingsHelper::fullConfigFilePath, std::ios::binary | std::ios::out);
+		configFile.std::ofstream::open(SavedUserSettingsHelper::fullConfigFilePath, 
+			std::ios::binary | std::ios::out);
 		if (configFile.good()) {
-			configFile.std::ofstream::write((char*)& settings, sizeof(SavedUserSettings));
+			configFile.write(reinterpret_cast<const char*>((settings->getShowCpuUsageRef())), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getShowHDDTempRef()), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getRememberLastWindowPositionRef()), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getScreenshotCaptureClientAreaOnlyRef()), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getHideIPAddressRef()), sizeof(BOOL));
+			
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportInfoFgColorRGBRef()), sizeof(BOOL));
+
 			configFile.std::ofstream::close();
 			return TRUE;
 		}
 		return FALSE;
 	}
-	static BOOL loadSettingsFromDisk(SavedUserSettings * settings) {
+	static BOOL loadSettingsFromDisk(SavedUserSettings *settings) {
 		std::ifstream configFile;
+		
 		configFile.std::ifstream::open(SavedUserSettingsHelper::fullConfigFilePath, std::ios::binary
 			| std::ios::in);
 		if (configFile.good()) {
-			configFile.std::ifstream::read((char*)& settings, sizeof(SavedUserSettings));
+			configFile.read((char*)settings->getShowCpuUsageRef(), sizeof(BOOL));
+			configFile.read((char*)settings->getShowHDDTempRef(), sizeof(BOOL));
+			configFile.read((char*)settings->getRememberLastWindowPositionRef(), sizeof(BOOL));
+			configFile.read((char*)settings->getScreenshotCaptureClientAreaOnlyRef(), sizeof(BOOL));
+			configFile.read((char*)(settings->getHideIPAddressRef()), sizeof(BOOL));
+
+			configFile.read((char*)(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(BOOL));
+			configFile.read((char*)(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(BOOL));
+			configFile.read((char*)(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(BOOL));
+			configFile.read((char*)(settings->getHtmlExportInfoFgColorRGBRef()), sizeof(BOOL));
+
 			configFile.std::ifstream::close();
 			return TRUE;
 		}
@@ -193,13 +222,12 @@ public:
 		//SavedUserSettings::chkBoxStateGetter func = settings->checkBoxStateGetters[0];
 		//(settings->*c)();
 
-		for (int x = 0; x < 4; x++) {
+		for (int x = 0; x < 5; x++) {
 			BOOL res = (settings->*settings->getChkBoxGetters()[x])();
 			checkBoxCheckedState.insert_or_assign(
 				SETTINGS_WINDOW_CHKBOX_IDS[x], 
-				(settings->*settings->getChkBoxGetters()[x])() == TRUE ? BST_CHECKED : BST_UNCHECKED);
+				parseBool((settings->*settings->getChkBoxGetters()[x])()));
 		}
-		int x = 10;
 	}
 	BOOL setDefaultSettings() {
 		//isShowCPUusage = isScreenshotCaptureClientAreaOnly = TRUE;
@@ -229,6 +257,7 @@ public:
 			GenericMessageOK()
 				.withMessage(L"Settings saved")
 				->withIcon(ControlManager::UI_MESS_RES_ICON::SUCCESS)
+				->top()
 				->display();
 		};
 		//use IsDlgButtonChecked and set glbusersettings to appropriate value

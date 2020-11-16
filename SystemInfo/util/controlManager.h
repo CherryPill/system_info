@@ -219,6 +219,7 @@ class AbstractMessage {
 	protected:
 		wstring message;
 		ControlManager::UI_MESS_RES_ICON icon;
+		UINT topStyle = NULL;
 	public: 
 		virtual UINT display() = 0;
 		AbstractMessage *withMessage(const wstring message) {
@@ -227,6 +228,10 @@ class AbstractMessage {
 		}
 		AbstractMessage* withIcon(ControlManager::UI_MESS_RES_ICON icon) {
 			this->icon = icon;
+			return this;
+		}
+		AbstractMessage* top() {
+			this->topStyle = MB_TOPMOST;
 			return this;
 		}
 };
@@ -238,7 +243,7 @@ class GenericMessageOK : public AbstractMessage {
 				mainWindowHwnd,
 				this->message.c_str(),
 				ControlManager::messageCodeCaptionsMap.at(this->icon).c_str(),
-				MB_OK | static_cast<int>(this->icon));
+				MB_OK | static_cast<int>(this->icon) | topStyle);
 		}
 };
 

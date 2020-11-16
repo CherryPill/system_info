@@ -34,11 +34,10 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	switch (msg) {
 		case WM_CREATE: {
 			loadImages();
-			if (PROGRAM_INSTANCE == 1) {
+			if (applicationOpMode == APPLICATION_OPERATION_MODE::SNAPSHOT) {
 				importData(localMachine->getCurrentInstance());
 			} else {
 				fillSystemInformation(localMachine->getCurrentInstance());
-				//test();
 			}
 			fillGUI(hwnd, localMachine, 0);
 			toggleIpAddress(hwnd, NULL);
@@ -119,6 +118,9 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 					break;
 				}
 				case ID_FILE_SETTINGS: {
+					if (applicationOpMode == APPLICATION_OPERATION_MODE::SNAPSHOT) {
+						EnableMenuItem((HMENU)IDR_MENU1, ID_FILE_SETTINGS, MF_DISABLED | MF_GRAYED);
+					} else {
 					sw = new SettingsWindow();
 					sw->setExportInfoPreviewOsString(localMachine->getOS());
 					sw->setHandlerProc((WNDPROC)settingsDialogProcedure);
@@ -155,7 +157,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 						upperLeftCorner.y,
 						sw->getWindowWidth(),
 						sw->getWindowHeight(), NULL);
-
+				}
 					break;
 				}
 
@@ -347,11 +349,14 @@ void loadImages(void) {
 			NULL);
 		iconArrCpuUtilizationIcons.push_back(newIcon);
 	}
-	int s = 0;
+	SHSTOCKICONINFO sii;
+	sii.cbSize = sizeof(sii);
+	SHGetStockIconInfo(SIID_SHIELD, SHGSI_ICON | SHGSI_SMALLICON, &sii);
+	uacIcon = sii.hIcon;
 }
 
 void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
-	if (PROGRAM_INSTANCE == 1) {
+	if (applicationOpMode == APPLICATION_OPERATION_MODE::SNAPSHOT) {
 		CreateWindowEx
 		(
 			0,
@@ -468,10 +473,12 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 
 	HWND cpuInfoHolderHandle = GetDlgItem(mainWindowHwnd, CPU_INFO);
 	int charLen = GetWindowTextLength(cpuInfoHolderHandle);
-	if (!PROGRAM_INSTANCE) {
-		glbCpuInfoHolderXoffset = glbCpuInfoHolderXoffset + charLen * 6;
-		createCpuUtilizationInfoHolder(mainWindowHwnd, glbCpuInfoHolderXoffset, glbCpuInfoHolderYoffset);
-
+	if (applicationOpMode != APPLICATION_OPERATION_MODE::SNAPSHOT) {
+		//put other logic for non-snapshot instance here if necessary
+		if (glbUserSettings->getShowCpuUsage()) {
+			glbCpuInfoHolderXoffset = glbCpuInfoHolderXoffset + charLen * 6;
+			createCpuUtilizationInfoHolder(mainWindowHwnd, glbCpuInfoHolderXoffset, glbCpuInfoHolderYoffset);
+		}		
 	}
 	
 	SetWindowText(GetDlgItem(mainWindowHwnd, MB_INFO),
@@ -501,10 +508,12 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 								 WRITE_OUT_TYPE::APP_WINDOW).c_str());
 	SetWindowText(GetDlgItem(mainWindowHwnd, AUDIO_INFO),
 				  currentMachineInfo->getAudio().c_str());
-	if (!PROGRAM_INSTANCE) {
+	if (applicationOpMode != APPLICATION_OPERATION_MODE::SNAPSHOT) {
 		HANDLE threadHandle = (HANDLE)_beginthreadex(0, 0, updateUptime, 0, 0, 0);
-		HANDLE cpuUtilThreadHandle = (HANDLE)_beginthreadex(0, 0, 
-			updateCpuUtilizationPercentage, 0, 0, 0);
+		if (glbUserSettings->getShowCpuUsage()) {
+			HANDLE cpuUtilThreadHandle = (HANDLE)_beginthreadex(0, 0,
+				updateCpuUtilizationPercentage, 0, 0, 0);
+		}
 	} else {
 		SetWindowText(GetDlgItem(mainWindowHwnd, UPTIME_INFO),
 					  currentMachineInfo->getUptime().c_str());
