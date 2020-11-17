@@ -191,6 +191,9 @@
     <ClInclude Include="settings\settings.h">
       <Filter>settings</Filter>
     </ClInclude>
+    <ClInclude Include="glb\colorVals.h">
+      <Filter>glb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SystemInfo.rc">

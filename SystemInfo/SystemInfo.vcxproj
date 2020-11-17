@@ -184,6 +184,7 @@
     <ClInclude Include="dialog\scrUploadDialog.h" />
     <ClInclude Include="export\saveSpecs.h" />
     <ClInclude Include="export\screenCapture.h" />
+    <ClInclude Include="glb\colorVals.h" />
     <ClInclude Include="glb\globalVars.h" />
     <ClInclude Include="import\binImport.h" />
     <ClInclude Include="logger\logger.h" />

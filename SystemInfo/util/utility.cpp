@@ -645,3 +645,20 @@ void resizeWindow(HWND hwndParent, HWND cntrlHwnd, INT32 newWidth, INT32 newHeig
 	}
 	MoveWindow(cntrlHwnd, ptl.x, ptl.y, newWidth, newHeight, TRUE);
 }
+COLORREF getColorForNumberGauge(INT32 gaugeMetricsVal) {
+	if (currentCpuUsageGlobal >= 0) {
+		if (currentCpuUsageGlobal <= 33) {
+			return RGB(0, 255, 0);
+		} else if (currentCpuUsageGlobal > 33 && currentCpuUsageGlobal <= 66) {
+			return RGB(255, 255, 0);
+		} else {
+			return RGB(255, 0, 0);
+		}
+	} else {
+		return RGB(255, 255, 255);
+	}
+}
+void updateWindow(HWND hwnd, INT32 controlId) {
+	ShowWindow(GetDlgItem(hwnd, controlId), SW_HIDE);
+	ShowWindow(GetDlgItem(hwnd, controlId), SW_SHOW);
+}

@@ -201,6 +201,7 @@ extern WNDPROC lpfnScrEditProc;
 extern WNDPROC tabControlWrapperProc;
 extern TCHAR sysInfoConfigDirectoryPath[256];
 extern int currentCpuUsageGlobal;
+extern int currentHDDTempGlobal;
 
 extern int glbCpuInfoHolderXoffset;
 extern int glbCpuInfoHolderYoffset;
@@ -208,5 +209,7 @@ extern int glbCpuInfoHolderYoffset;
 extern SavedUserSettings* glbUserSettings;
 
 extern enum APPLICATION_OPERATION_MODE applicationOpMode;
+
+extern BOOL glbHideIpAddrControlState;
 
 #endif

@@ -3,6 +3,7 @@
 #include <CommCtrl.h>
 #include <map>
 #include <string>
+#include "../glb/colorVals.h"
 extern std::unordered_map<WPARAM, INT32> tabClickState;
 extern std::unordered_map<WPARAM, WPARAM> checkBoxCheckedState;
 class SettingsControl {
@@ -153,11 +154,12 @@ private:
 	BOOL isRememberLastWindowPosition = FALSE;
 	BOOL isShowHDDTemp = FALSE;
 	BOOL isHideIPAddress = TRUE;
+
 	//tab 1
-	COLORREF htmlExportHeaderBgColorRGB = RGB(128, 0, 128);
-	COLORREF htmlExportHeaderFgColorRGB = RGB(255, 255, 255);
-	COLORREF htmlExportInfoBgColorRGB = RGB(255, 255, 255);
-	COLORREF htmlExportInfoFgColorRGB = RGB(0, 0, 0);
+	COLORREF htmlExportHeaderBgColorRGB = getColorFromPreset(COLOR::PURPLE);
+	COLORREF htmlExportHeaderFgColorRGB = getColorFromPreset(COLOR::WHITE);
+	COLORREF htmlExportInfoBgColorRGB = getColorFromPreset(COLOR::WHITE);
+	COLORREF htmlExportInfoFgColorRGB = getColorFromPreset(COLOR::BLACK);
 
 
 public:

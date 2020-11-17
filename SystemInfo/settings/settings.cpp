@@ -1,8 +1,10 @@
 #include "../glb/globalVars.h"
+#include "../glb/colorVals.h"
 #include "../const/itemIDs.h"
 #include "settings.h"
 #include "../util/utility.h"
 #include "../mainWindowProcedure.h"
+
 void registerSettingsDialogClass()
 {
 	WNDCLASSEX wc = { 0 };
@@ -243,8 +245,7 @@ INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, I
 
 	map<TCHAR*, std::vector<INT32>> titleToIdMap = {
 	{L"Header", {TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR, TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR}},
-	{L"Information", {TAB_ÑONTENT_HTML_EXPORT_INFO_BG_COLOR, TAB_ÑONTENT_HTML_EXPORT_INFO_FG_COLOR}},
-	};
+	{L"Information", {TAB_ÑONTENT_HTML_EXPORT_INFO_BG_COLOR, TAB_ÑONTENT_HTML_EXPORT_INFO_FG_COLOR}}};
 	INT32 xOffset = 10;
 	INT32 colorChooserBoxWidth = 60;
 	INT32 colorChooserBoxHeight = 40;
@@ -268,7 +269,9 @@ INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, I
 			->withClassName(L"Static")
 			->withWindowName(
 				convertColorReftoHexColorString(
-					glbUserSettings->getHtmlExportHeaderBgColorRGB()))
+					_tcscmp(mapIterator->first, L"Header") == 0 ? 
+					glbUserSettings->getHtmlExportHeaderBgColorRGB() : 
+					glbUserSettings->getHtmlExportInfoBgColorRGB()))
 			->withStyles(colorChooserStaticControlStyles)
 			->withCoords(xOffset * 2 + colorChooserBoxRightMargin, yOffset)
 			->withDimensions(colorChooserBoxWidth, colorChooserBoxHeight)
@@ -284,7 +287,10 @@ INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, I
 			ControlBuilder::initBuilder()
 			->withClassName(L"Static")
 			->withWindowName(convertColorReftoHexColorString(
-				glbUserSettings->getHtmlExportHeaderFgColorRGB()))
+				_tcscmp(mapIterator->first, L"Header") == 0 ? 
+				glbUserSettings->getHtmlExportHeaderFgColorRGB(): 
+				glbUserSettings->getHtmlExportInfoFgColorRGB()
+			))
 			->withStyles(colorChooserStaticControlStyles)
 			->withCoords(xOffset * 2 + colorChooserBoxWidth + colorChooserBoxRightMargin, yOffset)
 			->withDimensions(colorChooserBoxWidth, colorChooserBoxHeight)
@@ -346,6 +352,7 @@ LRESULT CALLBACK settingsDialogProcedure(HWND dialogWindow, UINT message,
 		switch (receivedCommand) {
 			case IDC_SETTINGS_CONTROL_BTN_SAVE: {
 				SavedUserSettingsHelper::readUISettingsState(sw->getTabs().at(0)->getTabContentWrapperHandle());
+				DestroyWindow(dialogWindow);
 				break;
 			}
 			case IDC_SETTINGS_CONTROL_BTN_CANCEL: {
@@ -383,31 +390,44 @@ LRESULT CALLBACK tabWrapperProc(HWND hwnd, UINT message,
 		break;
 	}
 	case WM_COMMAND: {
-		switch (LOWORD(wParam)) {
-		case TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR: {
+		INT32 controlId = LOWORD(wParam);
+		switch (controlId) {
+			case TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR: {
+				glbUserSettings->setHtmlExportHeaderBgColorRGB(initializeColorDlgBox(hwnd));
+				updateWindow(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER);
 
-			glbUserSettings->setHtmlExportHeaderBgColorRGB(initializeColorDlgBox(hwnd));
-			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR), SW_HIDE);
-			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR), SW_SHOW);
-
-			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER), SW_HIDE);
-			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER), SW_SHOW);
-
-			SetWindowText(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR),
-				convertColorReftoHexColorString(glbUserSettings->getHtmlExportHeaderBgColorRGB()));
-			break;
-		}
-		case TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR: {
-			glbUserSettings->setHtmlExportHeaderFgColorRGB(initializeColorDlgBox(hwnd));
-			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR), SW_HIDE);
-			ShowWindow(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR), SW_SHOW);
-			break;
-		}
+				SetWindowText(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR),
+					convertColorReftoHexColorString(glbUserSettings->getHtmlExportHeaderBgColorRGB()));
+				break;
+			}
+			case TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR: {
+				glbUserSettings->setHtmlExportHeaderFgColorRGB(initializeColorDlgBox(hwnd));
+				updateWindow(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER);
+				SetWindowText(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR),
+					convertColorReftoHexColorString(glbUserSettings->getHtmlExportHeaderFgColorRGB()));
+				break;
+			}
+			case TAB_ÑONTENT_HTML_EXPORT_INFO_FG_COLOR: {
+				glbUserSettings->setHtmlExportInfoFgColorRGB(initializeColorDlgBox(hwnd));
+				updateWindow(hwnd, TAB_ÑONTENT_HTML_EXPORT_INFO);
+				SetWindowText(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_INFO_FG_COLOR),
+					convertColorReftoHexColorString(glbUserSettings->getHtmlExportInfoFgColorRGB()));
+				break;
+			}
+			case TAB_ÑONTENT_HTML_EXPORT_INFO_BG_COLOR: {
+				glbUserSettings->setHtmlExportInfoBgColorRGB(initializeColorDlgBox(hwnd));
+				updateWindow(hwnd, TAB_ÑONTENT_HTML_EXPORT_INFO);
+				SetWindowText(GetDlgItem(hwnd, TAB_ÑONTENT_HTML_EXPORT_INFO_BG_COLOR),
+					convertColorReftoHexColorString(glbUserSettings->getHtmlExportInfoBgColorRGB()));
+				break;
+			}
+			updateWindow(hwnd, controlId);
 		}
 		break;
 	}
 	case WM_CTLCOLORSTATIC: {
 		HDC hdcStatic = (HDC)wParam;
+		
 		if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_HEADER) {
 			SetTextColor(hdcStatic, glbUserSettings->getHtmlExportHeaderFgColorRGB());
 			SetBkColor(hdcStatic, glbUserSettings->getHtmlExportHeaderBgColorRGB());
@@ -419,16 +439,26 @@ LRESULT CALLBACK tabWrapperProc(HWND hwnd, UINT message,
 			return (long)CreateSolidBrush(RGB(255, 255, 255));
 		}
 		else if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR) {
-			SetTextColor(hdcStatic, RGB(0, 0, 0));
+			
 			SetBkColor(hdcStatic, glbUserSettings->getHtmlExportHeaderBgColorRGB());
+			SetTextColor(hdcStatic, ColorUtil::pickAppropriateFgSysColor(glbUserSettings->getHtmlExportHeaderBgColorRGB()));
 			return (long)CreateSolidBrush(glbUserSettings->getHtmlExportHeaderBgColorRGB());
 		}
 		else if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR) {
-			SetTextColor(hdcStatic, RGB(0, 0, 0));
+			SetTextColor(hdcStatic, ColorUtil::pickAppropriateFgSysColor(glbUserSettings->getHtmlExportHeaderFgColorRGB()));
 			SetBkColor(hdcStatic, glbUserSettings->getHtmlExportHeaderFgColorRGB());
 			return (long)CreateSolidBrush(glbUserSettings->getHtmlExportHeaderFgColorRGB());
 		}
-
+		else if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_INFO_BG_COLOR) {
+			SetTextColor(hdcStatic, ColorUtil::pickAppropriateFgSysColor(glbUserSettings->getHtmlExportInfoBgColorRGB()));
+			SetBkColor(hdcStatic, glbUserSettings->getHtmlExportInfoBgColorRGB());
+			return (long)CreateSolidBrush(glbUserSettings->getHtmlExportInfoBgColorRGB());
+		}
+		else if (GetDlgCtrlID((HWND)lParam) == TAB_ÑONTENT_HTML_EXPORT_INFO_FG_COLOR) {
+			SetTextColor(hdcStatic, ColorUtil::pickAppropriateFgSysColor(glbUserSettings->getHtmlExportInfoFgColorRGB()));
+			SetBkColor(hdcStatic, glbUserSettings->getHtmlExportInfoFgColorRGB());
+			return (long)CreateSolidBrush(glbUserSettings->getHtmlExportInfoFgColorRGB());
+		}
 		break;
 	}
 	}

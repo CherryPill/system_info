@@ -10,7 +10,7 @@
 	void createCpuUtilizationInfoHolder(HWND, int, int);
 	void loadImages(void);
 	void toggleIpAddress(HWND, SystemInfo*);
-	void updateNetworkAdaptersView(SystemInfo*);
+	void updateNetworkAdaptersView(HWND, SystemInfo*);
 	unsigned int __stdcall updateUptime(void*);
 	unsigned int __stdcall updateCpuUtilizationPercentage(void*);
 	unsigned int __stdcall playLoadTextAnimation(void*);

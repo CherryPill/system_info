@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <tchar.h>
 #include <process.h>
+#include <Shlobj.h>
 #include "resource.h"
 #include "core/SystemInfo.h"
 #include "core/sysinfo.h"
@@ -40,8 +41,8 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				fillSystemInformation(localMachine->getCurrentInstance());
 			}
 			fillGUI(hwnd, localMachine, 0);
-			toggleIpAddress(hwnd, NULL);
-			
+			glbHideIpAddrControlState = glbUserSettings->getHideIPAddress();
+			toggleIpAddress(hwnd, localMachine->getCurrentInstance());
 			return 0;
 		}
 
@@ -49,7 +50,8 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			WORD receivedCommand = LOWORD(wParam);
 			switch (receivedCommand) {
 				case ID_FILE_TAKESCREENSHOT_UPLOAD: {
-					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET, NULL, FALSE);
+					takeScreenshot(hwnd, SCR_SAVETYPE::INTERNET, NULL, 
+						glbUserSettings->getScreenshotCaptureClientAreaOnly());
 					DialogBox(ghInstance, MAKEINTRESOURCE(IDD_DIALOG_SCRUPLOAD), hwnd, (DLGPROC)scrDlgProc);
 					break;
 				}
@@ -175,20 +177,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				}
 			}
 			else if (GetDlgCtrlID((HWND)lParam) == AUX_CPU_INFO_TOTAL_UTILIZATION_PERCENTAGE_STRING) {
-				if (currentCpuUsageGlobal >= 0) {
-					if (currentCpuUsageGlobal <= 33) {
-						SetTextColor(hdcStatic, RGB(0, 255, 0));
-					}
-					else if (currentCpuUsageGlobal > 33 && currentCpuUsageGlobal <= 66) {
-						SetTextColor(hdcStatic, RGB(255, 255, 0));
-					}
-					else {
-						SetTextColor(hdcStatic, RGB(255, 0, 0));
-					}
-				}
-				else {
-					SetTextColor(hdcStatic, RGB(255, 255, 255));
-				}
+				SetTextColor(hdcStatic, getColorForNumberGauge(currentCpuUsageGlobal));
 			}
 			else {
 				if (GetDlgCtrlID((HWND)lParam) == AUX_IP_TOGGLE) {
@@ -478,7 +467,10 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 		if (glbUserSettings->getShowCpuUsage()) {
 			glbCpuInfoHolderXoffset = glbCpuInfoHolderXoffset + charLen * 6;
 			createCpuUtilizationInfoHolder(mainWindowHwnd, glbCpuInfoHolderXoffset, glbCpuInfoHolderYoffset);
-		}		
+		}
+		if (glbUserSettings->getShowHDDTemp() && IsUserAnAdmin()) {
+			//create hdd temp holder
+		}
 	}
 	
 	SetWindowText(GetDlgItem(mainWindowHwnd, MB_INFO),
@@ -575,20 +567,14 @@ unsigned int __stdcall playLoadTextAnimation(void *t) {
 }
 
 void createIPToggleControl(HWND parent, int xOff, int yOff) {
-	CreateWindowEx(
-		0,
-		L"Button",
-		ipToggleText[0].c_str(),
-		WS_VISIBLE | WS_CHILD | WS_TABSTOP,
-		xOff,
-		yOff,
-		64,
-		15,
-		parent,
-		(HMENU)AUX_IP_TOGGLE,
-		NULL,
-		NULL
-	);
+	ControlBuilder::initBuilder()
+		->withClassName(L"Button")
+		->withStyles(WS_VISIBLE | WS_CHILD | WS_TABSTOP)
+		->withCoords(xOff, yOff)
+		->withDimensions(64, 15)
+		->withParent(parent)
+		->withControlId(AUX_IP_TOGGLE)
+		->build();
 }
 
 void createCpuUtilizationInfoHolder(HWND parent, int xOff, int yOff) {
@@ -626,27 +612,25 @@ void createCpuUtilizationInfoHolder(HWND parent, int xOff, int yOff) {
 }
 
 void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
-	static bool showStatus = 0;
-	static wstring savedIP;
-	SetWindowText(GetDlgItem(mainWindow, AUX_IP_TOGGLE), ipToggleText[showStatus].c_str());
+	static wstring savedIP = info->getNetworkAdaptersTextRef().back();
+	SetWindowText(GetDlgItem(mainWindow, AUX_IP_TOGGLE), ipToggleText[glbHideIpAddrControlState].c_str());
 	if (info != NULL) {
-
-		if (!showStatus) {
+		if (!glbHideIpAddrControlState) {
 			info->getNetworkAdaptersTextRef().back().assign(savedIP);
 		} else {
 			savedIP.assign(info->getNetworkAdaptersText().back());
 			//hide ip
 			info->getNetworkAdaptersTextRef().back().clear();
-			info->getNetworkAdaptersTextRef().back().assign(L"Connected to the Internet: (IP hidden by user)");
+			info->getNetworkAdaptersTextRef().back().assign(L"Connected to the Internet: (IP hidden)");
 
 		}
 		trimWhiteSpace(info->getNetworkAdaptersTextRef().back());
-		updateNetworkAdaptersView(info);
+		updateNetworkAdaptersView(mainWindow, info);
 	}
-	showStatus = !showStatus;
+	glbHideIpAddrControlState = !glbHideIpAddrControlState;
 }
 
-void updateNetworkAdaptersView(SystemInfo *currentMachineInfo) {
+void updateNetworkAdaptersView(HWND mainWindowHwnd, SystemInfo *currentMachineInfo) {
 	SetWindowText(GetDlgItem(mainWindowHwnd, NETWORK_INFO),
 				  formListString(currentMachineInfo,
 								 OS_INFO_TYPES::HARDWARE_NETWORK, WRITE_OUT_TYPE::APP_WINDOW).c_str());

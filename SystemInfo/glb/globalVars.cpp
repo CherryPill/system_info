@@ -56,11 +56,13 @@ TCHAR *timeVerboseDaysOfWeek[] = {
 TCHAR sysInfoConfigDirectoryPath[256] = {};
 
 int currentCpuUsageGlobal = -1;
+int currentHDDTempGlobal = -1;
 
 
 int glbCpuInfoHolderXoffset = 0;
 int glbCpuInfoHolderYoffset = 0;
 
 SavedUserSettings* glbUserSettings;
+BOOL glbHideIpAddrControlState = FALSE;
 HICON uacIcon;
 

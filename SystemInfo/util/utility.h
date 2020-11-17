@@ -6,6 +6,8 @@
 #include <tchar.h>
 #include "../core/SystemInfo.h"
 #include "../glb/globalVars.h"
+#include "../glb/colorVals.h"
+
 #include "../util/controlManager.h"
 #include "../settings/settings.h"
 
@@ -154,9 +156,12 @@ std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_IC
 int GetEncoderClsid(const TCHAR *format, CLSID *pClsid);
 TCHAR* convertColorReftoHexColorString(COLORREF);
 UINT parseBool(BOOL);
+BOOL parseCheckBoxState(UINT);
 SIZE *getAdjustedDimensionsForStaticCntrl(HWND hwnd, TCHAR *string);
 void resizeWindow(HWND hwndParent, HWND cntrlHwnd, INT32 newWidth);
 void resizeWindow(HWND hwndParent, HWND cntrlHwnd, INT32 newWidth, INT32 newHeight);
+COLORREF getColorForNumberGauge(INT32);
+void updateWindow(HWND, INT32);
 class SavedUserSettingsHelper {
 private:
 	//path for user settings is %current_user_name%/AppData/<configFileName>
@@ -185,10 +190,10 @@ public:
 			configFile.write(reinterpret_cast<const char*>(settings->getScreenshotCaptureClientAreaOnlyRef()), sizeof(BOOL));
 			configFile.write(reinterpret_cast<const char*>(settings->getHideIPAddressRef()), sizeof(BOOL));
 			
-			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(BOOL));
-			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(BOOL));
-			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(BOOL));
-			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportInfoFgColorRGBRef()), sizeof(BOOL));
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(COLORREF));
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(COLORREF));
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(COLORREF));
+			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportInfoFgColorRGBRef()), sizeof(COLORREF));
 
 			configFile.std::ofstream::close();
 			return TRUE;
@@ -207,10 +212,10 @@ public:
 			configFile.read((char*)settings->getScreenshotCaptureClientAreaOnlyRef(), sizeof(BOOL));
 			configFile.read((char*)(settings->getHideIPAddressRef()), sizeof(BOOL));
 
-			configFile.read((char*)(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(BOOL));
-			configFile.read((char*)(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(BOOL));
-			configFile.read((char*)(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(BOOL));
-			configFile.read((char*)(settings->getHtmlExportInfoFgColorRGBRef()), sizeof(BOOL));
+			configFile.read((char*)(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(COLORREF));
+			configFile.read((char*)(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(COLORREF));
+			configFile.read((char*)(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(COLORREF));
+			configFile.read((char*)(settings->getHtmlExportInfoFgColorRGBRef()), sizeof(COLORREF));
 
 			configFile.std::ifstream::close();
 			return TRUE;
@@ -240,18 +245,11 @@ public:
 	}
 	static void readUISettingsState(HWND enclosingTabWrapperHandle) {
 		UINT res = IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_CPU_USAGE);
-		glbUserSettings->setShowCpuUsage(
-			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_CPU_USAGE) == BST_CHECKED ?
-			TRUE : FALSE);
-		glbUserSettings->setShowHDDTemp(
-			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_HDD_TEMP) == BST_CHECKED ?
-			TRUE : FALSE);
-		glbUserSettings->setScreenshotCaptureClientAreaOnly(
-			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY) == BST_CHECKED ?
-			TRUE : FALSE);
-		glbUserSettings->setRememberLastWindowPosition(
-			IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS) == BST_CHECKED ?
-			TRUE : FALSE);
+		glbUserSettings->setShowCpuUsage(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_CPU_USAGE)));
+		glbUserSettings->setShowHDDTemp(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_HDD_TEMP)));
+		glbUserSettings->setScreenshotCaptureClientAreaOnly(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY)));
+		glbUserSettings->setRememberLastWindowPosition(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS)));
+		glbUserSettings->setHideIPAddress(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_HIDE_IP_ADDR)));
 		SavedUserSettingsHelper::fillSettingsCheckBoxState(glbUserSettings);
 		if (SavedUserSettingsHelper::saveSettingsToDisk(glbUserSettings)) {
 			GenericMessageOK()
@@ -259,10 +257,41 @@ public:
 				->withIcon(ControlManager::UI_MESS_RES_ICON::SUCCESS)
 				->top()
 				->display();
-		};
+		}
+		else {
+			GenericMessageOK()
+				.withMessage(L"Error occurred while saving your settings")
+				->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+				->top()
+				->display();
+		}
 		//use IsDlgButtonChecked and set glbusersettings to appropriate value
 		//also fix html export theme first so that colors actually change on ui
 	}
 
+};
+class ColorUtil {
+	private:
+		static const INT32 DARK_COLOR_UPPER_BOUND = 80;
+	public:
+		static BOOL isColorTooDark(COLORREF color) {
+			if (GetRValue(color) < DARK_COLOR_UPPER_BOUND && 
+				GetBValue(color) < DARK_COLOR_UPPER_BOUND &&
+				GetGValue(color) < DARK_COLOR_UPPER_BOUND) {
+				return TRUE;
+			}
+			return FALSE;
+		}
+		static BOOL isColorTooDark(COLOR color) {
+			return isColorTooDark(colorPresetsMap.at(color));
+		}
+		static COLORREF pickAppropriateFgSysColor(COLORREF bgColor) {
+			if (isColorTooDark(bgColor)) {
+				return colorPresetsMap.at(COLOR::WHITE);
+			}
+			else {
+				return colorPresetsMap.at(COLOR::BLACK);
+			}
+		}
 };
 #endif
