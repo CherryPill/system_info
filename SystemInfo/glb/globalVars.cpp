@@ -14,7 +14,7 @@ APPLICATION_OPERATION_MODE applicationOpMode = APPLICATION_OPERATION_MODE::PAREN
 TCHAR PROGRAM_DATA_IMPORT_LOCATION[256] = { 0 };
 TCHAR execName[256] = { 0 };
 int mainWindowWidth = 600;
-int mainWindowHeight = 660; //default 660
+int mainWindowHeight = 500; //default 660
 int scrollY = 0;
 int scrollFullPageHeight = 0;
 WNDPROC lpfnScrEditProc;

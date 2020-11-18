@@ -37,7 +37,7 @@ ACTION saveSpecs::save(WORD command,
 			break;
 		}
 		case ID_FILE_TAKESCREENSHOT_SAVE_LOCALLY: {
-			res->result = takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL, res, FALSE);
+			res->result = takeScreenshot(hwnd, SCR_SAVETYPE::LOCAL, res, glbUserSettings->getScreenshotCaptureClientAreaOnly());
 			break;
 		}
 	}

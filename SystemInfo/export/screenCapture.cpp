@@ -8,7 +8,6 @@
 #include "../network/rest/rest.h"
 #include <dwmapi.h>
 
-
 #pragma comment(lib, "dwmapi.lib")
 ACTION takeScreenshot(HWND hwnd, 
 	SCR_SAVETYPE scrSaveType, 
@@ -33,7 +32,7 @@ ACTION takeScreenshot(HWND hwnd,
 	Gdiplus::Bitmap* gdiPlusMainImgBitmap = NULL;
 	if (!isClientAreaOnly) {
 		VisibleAreaCoordsStruct a = getRequiredArea(hwnd, isClientAreaOnly);
-		Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a);
+		Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a, isClientAreaOnly);
 		bitmapList.push_back(currBitmap);
 		gdiPlusMainImgBitmap = bitmapList.at(0);
 	}
@@ -52,7 +51,7 @@ ACTION takeScreenshot(HWND hwnd,
 				ScrollWindow(hwnd, 0, -pixelsToOffset, NULL, NULL);
 				UpdateWindow(hwnd);
 				VisibleAreaCoordsStruct a = getRequiredArea(hwnd, isClientAreaOnly);
-				Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a);
+				Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a, isClientAreaOnly);
 				bitmapList.push_back(currBitmap);
 				currentVisibleYOffset += pixelsToOffset;
 				Sleep(200);
@@ -62,7 +61,7 @@ ACTION takeScreenshot(HWND hwnd,
 		}
 		else {
 			VisibleAreaCoordsStruct a = getRequiredArea(hwnd, isClientAreaOnly);
-			Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a);
+			Gdiplus::Bitmap* currBitmap = getBitmapFromAreaCoords(hwnd, a, isClientAreaOnly);
 			bitmapList.push_back(currBitmap);
 		}
 		//currentVisibleYOffset = adjusted image size;
@@ -115,39 +114,43 @@ ACTION takeScreenshot(HWND hwnd,
 
 VisibleAreaCoordsStruct getRequiredArea(HWND hwnd, BOOL isClientAreaOnly) {
 	RECT areaRect;
-	//isClientAreaOnly ? GetClientRect(hwnd, &areaRect) : GetWindowRect(hwnd, &areaRect);
-
-	RECT r;
-	HRESULT stat = DwmGetWindowAttribute(
+	if (!isClientAreaOnly) {
+		HRESULT stat = DwmGetWindowAttribute(
 		hwnd,
 		DWMWA_EXTENDED_FRAME_BOUNDS,
 		&areaRect,
 		sizeof(areaRect));
+	}
+	else {
+		GetClientRect(hwnd, &areaRect);
+	}
 	INT32 areaWidth = areaRect.right - areaRect.left;
 	INT32 areaHeight = areaRect.bottom - areaRect.top;
 
 	return { areaWidth, areaHeight };
 }
 
-Gdiplus::Bitmap* getBitmapFromAreaCoords(HWND hwnd, VisibleAreaCoordsStruct &coords) {
+Gdiplus::Bitmap* getBitmapFromAreaCoords(HWND hwnd, VisibleAreaCoordsStruct &coords, BOOL isClientAreaOnly) {
 	
 	RECT winSize;
-	//GetWindowRect(hwnd, &winSize);
+	INT32 yOffset = 0;
+	INT32 xOffset = 0;
+	if (!isClientAreaOnly) {
+		HRESULT stat = DwmGetWindowAttribute(
+			hwnd,
+			DWMWA_EXTENDED_FRAME_BOUNDS,
+			&winSize,
+			sizeof(winSize));
 
-	HRESULT stat = DwmGetWindowAttribute(
-		hwnd,
-		DWMWA_EXTENDED_FRAME_BOUNDS,
-		&winSize,
-		sizeof(winSize));
+		RECT clientSize;
+		GetClientRect(hwnd, &clientSize);
 
-	RECT clientSize;
-	GetClientRect(hwnd, &clientSize);
+		MapWindowPoints(hwnd, nullptr, reinterpret_cast<LPPOINT>(&clientSize), 2);
+		const POINT coordinates = { clientSize.left, clientSize.top };
+		yOffset = coordinates.y - winSize.top;
+		xOffset = coordinates.x - winSize.left;
+	}
 
-	MapWindowPoints(hwnd, nullptr, reinterpret_cast<LPPOINT>(&clientSize), 2);
-	const POINT coordinates = { clientSize.left, clientSize.top };
-	const INT32 yOffset = coordinates.y - winSize.top;
-	const INT32 xOffset = coordinates.x - winSize.left;
-	
 	HDC mainWindowDC = GetDC(hwnd);
 	HDC screenCapture = CreateCompatibleDC(mainWindowDC);
 	HBITMAP hCaptureBitmap = CreateCompatibleBitmap(mainWindowDC,
