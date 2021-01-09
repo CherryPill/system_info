@@ -5,6 +5,7 @@
 #include "../glb/globalVars.h"
 
 
+
 //intermediate control object with null fields by default
 class IntermediateControl {
 private:
@@ -97,75 +98,79 @@ public:
 
 
 class ControlBuilder {
-private:
-	IntermediateControl* interMediateControl;
-	ControlBuilder() {
-		this->interMediateControl = new IntermediateControl();
-	}
-public:
-	static ControlBuilder* initBuilder() {
-		return new ControlBuilder();
-	}
+	private:
+		std::unique_ptr<IntermediateControl> interMediateControl;
+		ControlBuilder() {
+			interMediateControl.reset(new IntermediateControl());
+		}
+	public:
+		static ControlBuilder* initBuilder() {
+			return new ControlBuilder();
+		}
 
-	ControlBuilder* withClassName(TCHAR* lpClassName) {
-		this->interMediateControl->setlpClassName(lpClassName);
-		return this;
-	}
-	ControlBuilder* withDimensions(INT32 w, INT32 h) {
-		this->interMediateControl->setnWidth(w);
-		this->interMediateControl->setnHeight(h);
-		return this;
-	}
-	ControlBuilder* withCoords(INT32 x, INT32 y) {
-		this->interMediateControl->setX(x);
-		this->interMediateControl->setY(y);
-		return this;
-	}
-	ControlBuilder* withControlId(INT32 id) {
-		this->interMediateControl->sethMenu(id);
-		return this;
-	}
-	ControlBuilder* withStyles(DWORD styles) {
-		this->interMediateControl->setDwStyle(styles);
-		return this;
-	}
-	ControlBuilder* withExStyles(DWORD exStyles) {
-		this->interMediateControl->setDwExStyle(exStyles);
-		return this;
-	}
-	ControlBuilder* withWindowName(TCHAR* windowName) {
-		this->interMediateControl->setlpWindowName(windowName);
-		return this;
-	}
-	ControlBuilder* withParent(HWND parent) {
-		this->interMediateControl->sethWndParent(parent);
-		return this;
-	}
-	ControlBuilder* withInstance(HINSTANCE hInstance) {
-		this->interMediateControl->sethInstance(hInstance);
-		return this;
-	}
-	ControlBuilder* withParam(LPVOID lParam) {
-		this->interMediateControl->setlpParam(lParam);
-		return this;
-	}
+		ControlBuilder* withClassName(TCHAR* lpClassName) {
+			this->interMediateControl->setlpClassName(lpClassName);
+			return this;
+		}
+		ControlBuilder* withDimensions(INT32 w, INT32 h) {
+			this->interMediateControl->setnWidth(w);
+			this->interMediateControl->setnHeight(h);
+			return this;
+		}
+		ControlBuilder* withCoords(INT32 x, INT32 y) {
+			this->interMediateControl->setX(x);
+			this->interMediateControl->setY(y);
+			return this;
+		}
+		ControlBuilder* withControlId(INT32 id) {
+			this->interMediateControl->sethMenu(id);
+			return this;
+		}
+		ControlBuilder* withStyles(DWORD styles) {
+			this->interMediateControl->setDwStyle(styles);
+			return this;
+		}
+		ControlBuilder* withExStyles(DWORD exStyles) {
+			this->interMediateControl->setDwExStyle(exStyles);
+			return this;
+		}
+		ControlBuilder* withWindowName(TCHAR* windowName) {
+			this->interMediateControl->setlpWindowName(windowName);
+			return this;
+		}
+		ControlBuilder* withParent(HWND parent) {
+			this->interMediateControl->sethWndParent(parent);
+			return this;
+		}
+		ControlBuilder* withInstance(HINSTANCE hInstance) {
+			this->interMediateControl->sethInstance(hInstance);
+			return this;
+		}
+		ControlBuilder* withParam(LPVOID lParam) {
+			this->interMediateControl->setlpParam(lParam);
+			return this;
+		}
 
-	HWND build() {
-		return CreateWindowEx(
-			this->interMediateControl->getDwExStyle(),
-			this->interMediateControl->getlpClassName(),
-			this->interMediateControl->getlpWindowName(),
-			this->interMediateControl->getDwStyle(),
-			this->interMediateControl->getX(),
-			this->interMediateControl->getY(),
-			this->interMediateControl->getnWidth(),
-			this->interMediateControl->getnHeight(),
-			this->interMediateControl->gethWndParent(),
-			(HMENU)this->interMediateControl->gethMenu(),
-			this->interMediateControl->gethInstance(),
-			this->interMediateControl->getlpParam()
-		);
-	}
+		std::unique_ptr<Control> build() {
+			std::unique_ptr<Control> control(new Control());
+			control.get()->setControlHandle(
+				CreateWindowEx(
+					this->interMediateControl->getDwExStyle(),
+					this->interMediateControl->getlpClassName(),
+					this->interMediateControl->getlpWindowName(),
+					this->interMediateControl->getDwStyle(),
+					this->interMediateControl->getX(),
+					this->interMediateControl->getY(),
+					this->interMediateControl->getnWidth(),
+					this->interMediateControl->getnHeight(),
+					this->interMediateControl->gethWndParent(),
+					(HMENU)this->interMediateControl->gethMenu(),
+					this->interMediateControl->gethInstance(),
+					this->interMediateControl->getlpParam()
+				)
+			);
+			return control;
+		}
 };
 class ControlManager {
 	public:

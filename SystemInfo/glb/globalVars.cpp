@@ -13,8 +13,8 @@ SettingsWindow* sw = NULL;
 APPLICATION_OPERATION_MODE applicationOpMode = APPLICATION_OPERATION_MODE::PARENT_NON_ADMIN;
 TCHAR PROGRAM_DATA_IMPORT_LOCATION[256] = { 0 };
 TCHAR execName[256] = { 0 };
-int mainWindowWidth = 600;
-int mainWindowHeight = 500; //default 660
+int mainWindowWidth = 600; //default 600
+int mainWindowHeight = 660; //default 660
 int scrollY = 0;
 int scrollFullPageHeight = 0;
 WNDPROC lpfnScrEditProc;
@@ -63,6 +63,8 @@ int glbCpuInfoHolderXoffset = 0;
 int glbCpuInfoHolderYoffset = 0;
 
 SavedUserSettings* glbUserSettings;
-BOOL glbHideIpAddrControlState = FALSE;
+IP_ADDR_BEHAVIOR glbHideIpAddrControlState;
+INT32 glbHideIpAddrControlButtonStateShowState = -1;
 HICON uacIcon;
+
 

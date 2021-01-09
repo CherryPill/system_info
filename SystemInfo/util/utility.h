@@ -22,8 +22,8 @@ enum class FILE_IO_OPERATION {
 };
 
 static wstring ipToggleText[]{
-	L"Hide IP",
-	L"Show IP"
+	L"Show IP",
+	L"Hide IP"
 };
 
 static wstring writeOutPrefix[]{
@@ -162,13 +162,20 @@ void resizeWindow(HWND hwndParent, HWND cntrlHwnd, INT32 newWidth);
 void resizeWindow(HWND hwndParent, HWND cntrlHwnd, INT32 newWidth, INT32 newHeight);
 COLORREF getColorForNumberGauge(INT32);
 void updateWindow(HWND, INT32);
+std::wstring getRamFormatString(BOOL,BOOL);
 class SavedUserSettingsHelper {
 private:
+	enum class SETTING_TYPE {
+		TEMP_SENSOR,
+		IP_ADDRESS
+	};
 	//path for user settings is %current_user_name%/AppData/<configFileName>
 	static TCHAR* configFileName;
 	static TCHAR* fullConfigFilePath;
 	
 public:
+
+
 	static void initializeFullConfigFilePath() {
 		if (!sysInfoConfigDirectoryPath) {
 			configAppData();
@@ -188,8 +195,7 @@ public:
 			configFile.write(reinterpret_cast<const char*>(settings->getShowHDDTempRef()), sizeof(BOOL));
 			configFile.write(reinterpret_cast<const char*>(settings->getRememberLastWindowPositionRef()), sizeof(BOOL));
 			configFile.write(reinterpret_cast<const char*>(settings->getScreenshotCaptureClientAreaOnlyRef()), sizeof(BOOL));
-			configFile.write(reinterpret_cast<const char*>(settings->getHideIPAddressRef()), sizeof(BOOL));
-			
+			configFile.write(reinterpret_cast<const char*>(settings->getIpAddrBehaviorRef()), sizeof(int));
 			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(COLORREF));
 			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(COLORREF));
 			configFile.write(reinterpret_cast<const char*>(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(COLORREF));
@@ -210,8 +216,7 @@ public:
 			configFile.read((char*)settings->getShowHDDTempRef(), sizeof(BOOL));
 			configFile.read((char*)settings->getRememberLastWindowPositionRef(), sizeof(BOOL));
 			configFile.read((char*)settings->getScreenshotCaptureClientAreaOnlyRef(), sizeof(BOOL));
-			configFile.read((char*)(settings->getHideIPAddressRef()), sizeof(BOOL));
-
+			configFile.read((char*)(settings->getIpAddrBehaviorRef()), sizeof(int));
 			configFile.read((char*)(settings->getHtmlExportHeaderBgColorRGBRef()), sizeof(COLORREF));
 			configFile.read((char*)(settings->getHtmlExportHeaderFgColorRGBRef()), sizeof(COLORREF));
 			configFile.read((char*)(settings->getHtmlExportInfoBgColorRGBRef()), sizeof(COLORREF));
@@ -227,12 +232,16 @@ public:
 		//SavedUserSettings::chkBoxStateGetter func = settings->checkBoxStateGetters[0];
 		//(settings->*c)();
 
-		for (int x = 0; x < 5; x++) {
+		for (int x = 0; x < 6; x++) {
 			BOOL res = (settings->*settings->getChkBoxGetters()[x])();
 			checkBoxCheckedState.insert_or_assign(
 				SETTINGS_WINDOW_CHKBOX_IDS[x], 
 				parseBool((settings->*settings->getChkBoxGetters()[x])()));
 		}
+	}
+	static void fillSettingsComboBoxState(SavedUserSettings *settings) {
+		comboBoxState.insert_or_assign(TAB_CONTENT_COMBO_IP_ADDR_VALS, 
+			settings->getIpAddrBehavior());
 	}
 	BOOL setDefaultSettings() {
 		//isShowCPUusage = isScreenshotCaptureClientAreaOnly = TRUE;
@@ -249,7 +258,9 @@ public:
 		glbUserSettings->setShowHDDTemp(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_HDD_TEMP)));
 		glbUserSettings->setScreenshotCaptureClientAreaOnly(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY)));
 		glbUserSettings->setRememberLastWindowPosition(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS)));
-		glbUserSettings->setHideIPAddress(parseCheckBoxState(IsDlgButtonChecked(enclosingTabWrapperHandle, TAB_CONTENT_CHKBOX_HIDE_IP_ADDR)));
+		glbUserSettings->setIpAddrBehavior(
+			(IP_ADDR_BEHAVIOR)SendMessage(GetDlgItem(enclosingTabWrapperHandle, TAB_CONTENT_COMBO_IP_ADDR_VALS), CB_GETCURSEL, (WPARAM)0, (LPARAM)0)
+		);
 		SavedUserSettingsHelper::fillSettingsCheckBoxState(glbUserSettings);
 		if (SavedUserSettingsHelper::saveSettingsToDisk(glbUserSettings)) {
 			GenericMessageOK()

@@ -39,9 +39,10 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 				importData(localMachine->getCurrentInstance());
 			} else {
 				fillSystemInformation(localMachine->getCurrentInstance());
+				filterInformationOffSettings(localMachine->getCurrentInstance());
 			}
 			fillGUI(hwnd, localMachine, 0);
-			glbHideIpAddrControlState = glbUserSettings->getHideIPAddress();
+			glbHideIpAddrControlState = glbUserSettings->getIpAddrBehavior();
 			toggleIpAddress(hwnd, localMachine->getCurrentInstance());
 			return 0;
 		}
@@ -412,7 +413,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			NULL,
 			NULL
 		);
-		if (x == NETWORK_LABEL) {
+		if (x == NETWORK_LABEL && glbUserSettings->getIpAddrBehavior() != IP_ADDR_BEHAVIOR::DISABLED) {
 			createIPToggleControl(parent, xStartOffSetLabel + 140, yStartOffSet);
 		}
 		//info
@@ -568,7 +569,7 @@ unsigned int __stdcall playLoadTextAnimation(void *t) {
 
 void createIPToggleControl(HWND parent, int xOff, int yOff) {
 	ControlBuilder::initBuilder()
-		->withClassName(L"Button")
+		->withClassName(WC_BUTTON)
 		->withStyles(WS_VISIBLE | WS_CHILD | WS_TABSTOP)
 		->withCoords(xOff, yOff)
 		->withDimensions(64, 15)
@@ -613,21 +614,23 @@ void createCpuUtilizationInfoHolder(HWND parent, int xOff, int yOff) {
 
 void toggleIpAddress(HWND mainWindow, SystemInfo *info) {
 	static wstring savedIP = info->getNetworkAdaptersTextRef().back();
-	SetWindowText(GetDlgItem(mainWindow, AUX_IP_TOGGLE), ipToggleText[glbHideIpAddrControlState].c_str());
-	if (info != NULL) {
-		if (!glbHideIpAddrControlState) {
+	if (info != NULL && glbHideIpAddrControlState != IP_ADDR_BEHAVIOR::DISABLED) {
+		if (glbHideIpAddrControlButtonStateShowState == -1) {
+			glbHideIpAddrControlButtonStateShowState = glbHideIpAddrControlState == IP_ADDR_BEHAVIOR::SHOW ? TRUE : FALSE;
+		}
+		SetWindowText(GetDlgItem(mainWindow, AUX_IP_TOGGLE), ipToggleText[glbHideIpAddrControlButtonStateShowState].c_str());
+		if (glbHideIpAddrControlButtonStateShowState) {
 			info->getNetworkAdaptersTextRef().back().assign(savedIP);
 		} else {
 			savedIP.assign(info->getNetworkAdaptersText().back());
 			//hide ip
 			info->getNetworkAdaptersTextRef().back().clear();
 			info->getNetworkAdaptersTextRef().back().assign(L"Connected to the Internet: (IP hidden)");
-
 		}
 		trimWhiteSpace(info->getNetworkAdaptersTextRef().back());
 		updateNetworkAdaptersView(mainWindow, info);
+		glbHideIpAddrControlButtonStateShowState = !glbHideIpAddrControlButtonStateShowState;
 	}
-	glbHideIpAddrControlState = !glbHideIpAddrControlState;
 }
 
 void updateNetworkAdaptersView(HWND mainWindowHwnd, SystemInfo *currentMachineInfo) {

@@ -38,6 +38,12 @@ int fillSystemInformation(SystemInfo* localMachine) {
 	return 0;
 }
 
+void filterInformationOffSettings(SystemInfo* localMachine) {
+	if (glbUserSettings->getIpAddrBehavior() == IP_ADDR_BEHAVIOR::DISABLED) {
+		localMachine->getNetworkAdaptersTextRef().pop_back();
+	}
+}
+
 void fillCPU(SystemInfo* localMachine,
 	HRESULT hres, IWbemServices* pSvc,
 	IWbemLocator* pLoc) {
@@ -91,6 +97,47 @@ void fillCPU(SystemInfo* localMachine,
 	pEnumerator->Release();
 }
 
+wstring getActualAvailableRAM(HRESULT hres,
+	IWbemServices* pSvc,
+	IWbemLocator* pLoc) {
+	vector<LPCWSTR> queryAttrs = wmiClassStringsMap.at(L"Win32_ComputerSystem");
+	IEnumWbemClassObject* pEnumerator = executeWQLQuery
+	(hres, pLoc, pSvc, buildQueryString(L"Win32_ComputerSystem", queryAttrs));
+	IWbemClassObject* pclsObj = NULL;
+
+	ULONG uReturn = 0;
+	double actualCapacity = 0;
+	while (pEnumerator) {
+		HRESULT hr = pEnumerator->Next(WBEM_INFINITE, 1,
+			&pclsObj, &uReturn);
+
+		if (0 == uReturn) {
+			break;
+		}
+
+		VARIANT vtProp;
+
+		hr = pclsObj->Get(L"TotalPhysicalMemory", 0, &vtProp, 0, 0);
+
+
+
+		wstring temp;
+		TCHAR tempChar[100];
+		temp = vtProp.bstrVal;
+		_tcscpy(tempChar, temp.c_str());
+		swscanf(tempChar, L"%lf", &actualCapacity);
+
+		actualCapacity /= (pow(1024, 3));
+		VariantClear(&vtProp);
+		pclsObj->Release();
+	}
+	pEnumerator->Release();
+	TCHAR capacityStrBuff[100];
+	_stprintf(capacityStrBuff, _T("%.2lf"), actualCapacity);
+	return wstring(capacityStrBuff);
+
+}
+
 void fillRAM(SystemInfo* localMachine,
 	HRESULT hres, IWbemServices* pSvc,
 	IWbemLocator* pLoc) {
@@ -125,9 +172,10 @@ void fillRAM(SystemInfo* localMachine,
 		double capacityDouble;
 		TCHAR capacityStrBuff[10];
 		TCHAR clockStrBuff[10];
+		wstring actualCapacityStr;
 
 		capacityStr = getRamBySlot(hres, pSvc, pLoc, queryAttrs);
-
+		actualCapacityStr = getActualAvailableRAM(hres, pSvc, pLoc);
 		hr = pclsObj->Get(queryAttrs.at((int)WMI_RAM::FORMFACTOR), 0, &vtProp, 0, 0);
 		formFactor = vtProp.uintVal;
 		formFactorStr = RAMFormFactors[formFactor];
@@ -140,9 +188,9 @@ void fillRAM(SystemInfo* localMachine,
 		clock = vtProp.uintVal;
 		_stprintf(clockStrBuff, _T("%d"), clock);
 		clockStr = wstring(clockStrBuff);
-		localMachine->setRAM(
-			capacityStr +
-			L" GB " + formFactorStr + L" " + 
+		
+		localMachine->setRAM(capacityStr +
+			L" GB " + (glbUserSettings->getShowUsableRam() ? L"(" + actualCapacityStr + L" GB usable) " : L"") + formFactorStr + L" " +
 			(memoryTypeStr.length() == 0 ? L"" : memoryTypeStr + L" ") +
 			clockStr + L"MHz");
 

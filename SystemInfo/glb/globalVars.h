@@ -72,12 +72,26 @@ static WORD UTIL_iCON_IDS[iconArrCpuUtilizationIconsSize]{
 	UTILIZATION_ICON_5
 };
 
-static WORD SETTINGS_WINDOW_CHKBOX_IDS[5]{
+static WORD SETTINGS_WINDOW_CHKBOX_IDS[6]{
 	TAB_CONTENT_CHKBOX_CPU_USAGE,
 	TAB_CONTENT_CHKBOX_HDD_TEMP,
 	TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY,
 	TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS,
-	TAB_CONTENT_CHKBOX_HIDE_IP_ADDR
+	TAB_CONTENT_CHKBOX_LIVE_UPTIME,
+	TAB_CONTENT_CHKBOX_USABLE_RAM
+};
+
+static WORD SETTINGS_TAB0_GROUP_SENSORS_IDS[3]{
+	TAB_CONTENT_CHKBOX_CPU_USAGE,
+	TAB_CONTENT_CHKBOX_USABLE_RAM,
+	TAB_CONTENT_CHKBOX_HDD_TEMP,
+	
+};
+
+static WORD SETTINGS_TAB0_GROUP_BEHAVIOR_IDS[3]{
+	TAB_CONTENT_CHKBOX_SCRCAP_CLIENT_ONLY,
+	TAB_CONTENT_CHKBOX_RMB_LAST_WIN_POS,
+	TAB_CONTENT_CHKBOX_LIVE_UPTIME
 };
 
 static wstring UI_messagesCapt[] = {
@@ -184,6 +198,38 @@ static wstring PCType[2]{
 	L" (Desktop) "
 };
 
+static TCHAR* ipAddrShowWarnMsg = L"By choosing option 'Always show' you acknowledge \
+	that your IP address will be visible in the main window, \
+	screenshot of the main window and exported documents unless explicitly hidden";
+
+static TCHAR *toolTipText[] {
+	L"Shows current CPU usage (difference with the Task Manager could be 7-10%)",
+	L"Shows temperature of HDD/SSD if available (requires admin privileges, otherwise won't display)"
+	L"If checked, only the scrollable area within the window will be captured excluding title bar, menu and buttons"
+	L"If checked, the application will start at the position where it was last closed"
+	L"Hidden: IP address will be hidden on program startup, it won't appear in the main program window, screenshots or exported files unless you press Show IP in the program window (RECOMMENDED) \
+	'\nShow: IP address will be shown in the main program window, exported documents and screenshots"\
+	"\nDisabled: IP address isn't shown anywhere"
+};
+
+enum class TEMP_UNIT {
+	CENTIGRADE_CELCIUS_SI = 0,
+	FAHRENHEIT_IMP,
+	KELVIN_SI
+};
+
+static unordered_map<TEMP_UNIT, std::vector<TCHAR*>> tempDesc = {
+	{TEMP_UNIT::CENTIGRADE_CELCIUS_SI, {L"Celcius ", L"°C"}},
+	{TEMP_UNIT::FAHRENHEIT_IMP, {L"Fahrenheit ", L"°F"}},
+	{TEMP_UNIT::KELVIN_SI, {L"Kelvin ", L"K"}},
+};
+
+static unordered_map<IP_ADDR_BEHAVIOR, std::vector<TCHAR*>> ipAddrBehaviorDesc = {
+	{IP_ADDR_BEHAVIOR::DISABLED, {L"Disabled "}},
+	{IP_ADDR_BEHAVIOR::HIDDEN, {L"Hidden"}},
+	{IP_ADDR_BEHAVIOR::SHOW, {L"Always show "}}
+};
+
 //time functions
 extern TCHAR *timeVerboseMonths[];
 extern TCHAR *timeVerboseDaysOfWeek[];
@@ -210,6 +256,7 @@ extern SavedUserSettings* glbUserSettings;
 
 extern enum APPLICATION_OPERATION_MODE applicationOpMode;
 
-extern BOOL glbHideIpAddrControlState;
+extern IP_ADDR_BEHAVIOR glbHideIpAddrControlState;
 
+extern INT32 glbHideIpAddrControlButtonStateShowState;
 #endif

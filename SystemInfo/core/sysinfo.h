@@ -64,7 +64,8 @@
 		{ L"Win32_DiskDrive", { L"Caption", L"Size" } },
 		{ L"Win32_CDROMDrive", { L"Caption" } },
 		{ L"Win32_SoundDevice", { L"Caption"} },
-		{ L"Win32_PerfFormattedData_PerfOS_Processor", { L"PercentProcessorTime"} }
+		{ L"Win32_PerfFormattedData_PerfOS_Processor", { L"PercentProcessorTime"} },
+		{ L"Win32_ComputerSystem", { L"TotalPhysicalMemory"} }
 
 	};
 	int fillSystemInformation(SystemInfo *localMachine);
@@ -92,4 +93,5 @@
 	bstr_t buildQueryString(const wchar_t* wmiClass, vector<LPCWSTR> attrs, const wchar_t *whereClause);
 
 	wstring getRamBySlot(HRESULT hres, IWbemServices*, IWbemLocator*, const vector<LPCWSTR>&);
+	void filterInformationOffSettings(SystemInfo* localMachine);
 #endif

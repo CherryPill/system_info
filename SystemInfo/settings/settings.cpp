@@ -1,4 +1,3 @@
-#include "../glb/globalVars.h"
 #include "../glb/colorVals.h"
 #include "../const/itemIDs.h"
 #include "settings.h"
@@ -29,22 +28,21 @@ void registerTabContentWrapperWindowClass() {
 	RegisterClassEx(&wc);
 }
 
-std::vector<SettingsControl*> createControlButtons(SettingsWindow* sw) {
+std::vector<Control*> createControlButtons(SettingsWindow* sw) {
 	map<TCHAR*, INT32> titleToIdMap = {
 		{L"Save", IDC_SETTINGS_CONTROL_BTN_SAVE},
 		{L"Cancel", IDC_SETTINGS_CONTROL_BTN_CANCEL},
 		{L"Reset", IDC_SETTINGS_CONTROL_BTN_RESET},
 	};
 	DWORD buttonStyles = WS_CHILD | WS_VISIBLE | BS_CENTER;
-	std::vector<SettingsControl*> btns;
+	std::vector<Control*> btns;
 	std::map<TCHAR*, INT32>::iterator mapIter;
 	INT32 xOffset = sw->getWindowWidth() - (70*3) - 10;
 	INT32 yOffset = sw->getEffectiveWindowHeight() + 20;
 	for (mapIter = titleToIdMap.begin();
 		mapIter != titleToIdMap.end(); mapIter++) {
-		SettingsControl* sc = new SettingsControl();
-
-		HWND cntrl = ControlBuilder::initBuilder()
+		
+		Control* sc = ControlBuilder::initBuilder()
 			->withClassName(L"Button")
 			->withWindowName(mapIter->first)
 			->withControlId(mapIter->second)
@@ -52,9 +50,7 @@ std::vector<SettingsControl*> createControlButtons(SettingsWindow* sw) {
 			->withCoords(xOffset, yOffset)
 			->withStyles(buttonStyles)
 			->withParent(settingsDialogHwnd)
-			->build();
-	
-		sc->setControlHandle(cntrl);
+			->build().get();
 		btns.push_back(sc);
 		xOffset += 50 + 20;
 	}
@@ -117,17 +113,90 @@ std::vector<SettingsBlock*> createControlsForTab(
 	INT32 id, SettingsWindow* sw) {
 	std::vector<SettingsBlock*> settingsBlocks;
 	SettingsBlock* sb = new SettingsBlock();
-	std::vector<SettingsControl*> controls;
-	constexpr INT32 checkBoxSize = 5;
-	TCHAR* checkBoxNames[checkBoxSize] = {
+	std::vector<Control*> controls;
+	constexpr INT32 checkBoxSize = 6;
+	TCHAR *settingsTab0SensorsBox[3] = {
 		L"Show CPU usage",
-		L"Show HDD temperature",
+		L"Show usable RAM",
+		L"Show HDD temperature"
+	};
+	TCHAR* settingsTab0BehaviorBox[3] = {
 		L"Screencap client area only",
 		L"Remember last window position",
-		L"Hide IP Address by default"
+		L"Live uptime"
 	};
+	int yOffset = 30;
+	int xOffset = 20;
 	if (id == TAB_CONTENT_WRAPPER_OFFSET) {
-		for (int t = 0, yOffset = 15; t < checkBoxSize; t++, yOffset += 25) {
+		for (int t = 0; t < 3; t++, yOffset += 25) {
+			std::unique_ptr<Control> sc = ControlBuilder::initBuilder()
+				->withClassName(WC_BUTTON)
+				->withWindowName(settingsTab0SensorsBox[t])
+				->withStyles(WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX)
+				->withCoords(xOffset, yOffset)
+				->withDimensions(110, 25)
+				->withParent(controlTabWrapperHandle)
+				->withControlId(SETTINGS_TAB0_GROUP_SENSORS_IDS[t])
+				->build();
+	
+			SendMessage(sc->getControlHandle(), BM_SETCHECK, checkBoxCheckedState.at(SETTINGS_TAB0_GROUP_SENSORS_IDS[t]), NULL);
+			controls.push_back(sc.get());
+
+			if (t == 2) {
+				std::unique_ptr<SIZE> dimsForStatic(getAdjustedDimensionsForStaticCntrl(sc->getControlHandle(), settingsTab0SensorsBox[t]));
+				resizeWindow(controlTabWrapperHandle, sc->getControlHandle(), dimsForStatic.get()->cx);
+
+				std::unique_ptr<Control> uacIconCntrl =
+					ControlBuilder::initBuilder()
+					->withClassName(WC_STATIC)
+					->withWindowName(settingsTab0SensorsBox[t])
+					->withStyles(WS_CHILD | WS_VISIBLE | SS_ICON | SS_CENTER)
+					->withCoords(dimsForStatic.get()->cx + 20, yOffset)
+					->withDimensions(16, 16)
+					->withParent(controlTabWrapperHandle)
+					->withControlId(TAB_CONTENT_UAC_ICON_STATIC)
+					->build();
+						
+				SendDlgItemMessage(controlTabWrapperHandle,
+					TAB_CONTENT_UAC_ICON_STATIC,
+					STM_SETICON,
+					(WPARAM)uacIcon,
+					NULL);
+				controls.push_back(uacIconCntrl.get());
+				yOffset += 16 + 10 + 5;
+
+				
+				std::unique_ptr<Control> tempUnitComboLabel = ControlBuilder::initBuilder()
+					->withClassName(WC_STATIC)
+					->withWindowName(L"Units:")
+					->withCoords(xOffset + 50, yOffset)
+					->withDimensions(50, 25)
+					->withParent(controlTabWrapperHandle)
+					->withStyles(WS_VISIBLE | WS_CHILD)
+					->withControlId(TAB_CONTENT_COMBO_HDD_TEMP_UNIT)
+					->build();
+				controls.push_back(tempUnitComboLabel.get());
+
+
+
+
+				
+				std::unique_ptr<Control> tempUnitCombo = ControlBuilder::initBuilder()
+					->withClassName(WC_COMBOBOX)
+					->withCoords(xOffset + 80, yOffset)
+					->withDimensions(80, 25)
+					->withParent(controlTabWrapperHandle)
+					->withStyles(CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE)
+					->withControlId(TAB_CONTENT_COMBO_HDD_TEMP_UNIT)
+					->build();
+
+				fillComboBoxTemp(tempUnitCombo.get());
+
+				controls.push_back(tempUnitCombo.get());
+				yOffset += 10;
+
+		}
+		/*for (int t = 0; t < checkBoxSize; t++, yOffset += 25) {
 			SettingsControl* sc = new SettingsControl();
 			HWND hwnd = CreateWindowEx(0,
 				_T("Button"),
@@ -168,30 +237,106 @@ std::vector<SettingsBlock*> createControlsForTab(
 					NULL);
 				uacIconCntrl->setControlHandle(uacIconCntrlHwnd);
 				controls.push_back(uacIconCntrl);
-			}
+			}*/
 		}
+	
+		std::unique_ptr<Control> gbControl =
+			ControlBuilder::initBuilder()
+			->withClassName(L"Button")
+			->withWindowName(L"Sensors / Resource monitor")
+			->withStyles(WS_VISIBLE | WS_CHILD | BS_GROUPBOX | BS_CENTER)
+			->withCoords(10, 10)
+			->withDimensions(180, yOffset)
+			->withParent(controlTabWrapperHandle)
+			->build();
+		controls.push_back(gbControl.get());
+
+		yOffset = 30;
+		xOffset = 210;
+		for (int t = 0; t < 3; t++, yOffset += 25) {
+			std::unique_ptr<Control> sc = ControlBuilder::initBuilder()
+				->withClassName(WC_BUTTON)
+				->withWindowName(settingsTab0BehaviorBox[t])
+				->withStyles(WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX)
+				->withCoords(xOffset, yOffset)
+				->withDimensions(180, 25)
+				->withParent(controlTabWrapperHandle)
+				->withControlId(SETTINGS_TAB0_GROUP_BEHAVIOR_IDS[t])
+				->build();
+
+
+
+			SendMessage(sc->getControlHandle(), BM_SETCHECK, checkBoxCheckedState.at(SETTINGS_TAB0_GROUP_BEHAVIOR_IDS[t]), NULL);
+			controls.push_back(sc.get());
+		}
+		yOffset += 5;
+		
+		std::unique_ptr<Control> ipAddrStaticCntrl = ControlBuilder::initBuilder()
+			->withClassName(WC_STATIC)
+			->withWindowName(L"IP Address information: ")
+			->withCoords(xOffset, yOffset)
+			->withDimensions(180, 25)
+			->withParent(controlTabWrapperHandle)
+			->withStyles(WS_VISIBLE | WS_CHILD)
+			->withControlId(TAB_CONTENT_STATIC_IP_ADDR)
+			->build();
+
+		controls.push_back(ipAddrStaticCntrl.get());
+		
+
+	
+		std::unique_ptr<Control> ipAddrBehaviorCombo = ControlBuilder::initBuilder()
+			->withClassName(WC_COMBOBOX)
+			->withCoords(xOffset + 110, yOffset)
+			->withDimensions(120, 25)
+			->withParent(controlTabWrapperHandle)
+			->withStyles(CBS_DROPDOWNLIST | CBS_HASSTRINGS | WS_CHILD | WS_OVERLAPPED | WS_VISIBLE)
+			->withControlId(TAB_CONTENT_COMBO_IP_ADDR_VALS)
+			->build();
+
+		fillComboBox(ipAddrBehaviorCombo.get());
+		SendMessage(ipAddrBehaviorCombo.get()->getControlHandle(), CB_SETCURSEL, comboBoxState.at(TAB_CONTENT_COMBO_IP_ADDR_VALS), NULL);
+
+
+		controls.push_back(ipAddrBehaviorCombo.get());
+
+
+		std::unique_ptr<Control> _gbControl = 
+
+			ControlBuilder::initBuilder()
+			->withClassName(WC_BUTTON)
+			->withWindowName(L"Program behavior")
+			->withStyles(WS_VISIBLE | WS_CHILD | BS_GROUPBOX | BS_CENTER)
+			->withCoords(200, 10)
+			->withDimensions(250, yOffset += 25)
+			->withParent(controlTabWrapperHandle)
+			->build();
+	
+		controls.push_back(_gbControl.get());
+
+
+		
+		
+		
 	}
 	else if (id == TAB_CONTENT_WRAPPER_OFFSET + 1) {
 
-		SettingsControl* htmlExportHeader = new SettingsControl();
-		HWND htmlExportSettingsStaticHeader = ControlBuilder::initBuilder()
-			->withClassName(L"Static")
-			->withWindowName(L"HTML export theme:")
-			->withStyles(WS_VISIBLE |
-				WS_CHILD)
-			->withCoords(10, 10)
-			->withDimensions(100, 15)
-			->withParent(controlTabWrapperHandle)
-			->build();
-		htmlExportHeader->setControlHandle(htmlExportSettingsStaticHeader);
-		controls.push_back(htmlExportHeader);
+	std::unique_ptr<Control> htmlExportHeader = ControlBuilder::initBuilder()
+		->withClassName(WC_STATIC)
+		->withWindowName(L"HTML export theme:")
+		->withStyles(WS_VISIBLE | WS_CHILD)
+		->withCoords(10, 10)
+		->withDimensions(100, 15)
+		->withParent(controlTabWrapperHandle)
+		->build();
+		
+		controls.push_back(htmlExportHeader.get());
 		INT32 groupBoxOffset = createControlGroupBox(controlTabWrapperHandle, controls, 30);
 		//to do: preview label
 		//to do:button below tabwrapper
-		SettingsControl * htmlHeaderBlock = new SettingsControl();
-		HWND htmlHeaderBlockStaticHwnd =
+		std::unique_ptr<Control> htmlHeaderBlock =
 			ControlBuilder::initBuilder()
-			->withClassName(L"Static")
+			->withClassName(WC_STATIC)
 			->withWindowName(L" Operating System")
 			->withStyles(WS_VISIBLE | WS_CHILD | SS_SUNKEN)
 			->withCoords(10, groupBoxOffset)
@@ -200,13 +345,11 @@ std::vector<SettingsBlock*> createControlsForTab(
 			->withControlId(TAB_ÑONTENT_HTML_EXPORT_HEADER)
 			->build();
 
-		htmlHeaderBlock->setControlHandle(htmlHeaderBlockStaticHwnd);
-		controls.push_back(htmlHeaderBlock);
+		controls.push_back(htmlHeaderBlock.get());
 
-		SettingsControl * htmlInfoBlock = new SettingsControl();
-		HWND htmlInfoBlockStaticHwnd =
+		std::unique_ptr<Control> htmlInfoBlock =
 			ControlBuilder::initBuilder()
-			->withClassName(L"Static")
+			->withClassName(WC_STATIC)
 			->withWindowName((TCHAR*)sw->getExportInfoPreviewOsString().c_str())
 			->withStyles(WS_VISIBLE | WS_CHILD | SS_SUNKEN)
 			->withCoords(10, groupBoxOffset + 20)
@@ -215,8 +358,8 @@ std::vector<SettingsBlock*> createControlsForTab(
 			->withControlId(TAB_ÑONTENT_HTML_EXPORT_INFO)
 			->build();
 
-		htmlHeaderBlock->setControlHandle(htmlInfoBlockStaticHwnd);
-		controls.push_back(htmlInfoBlock);
+	
+		controls.push_back(htmlInfoBlock.get());
 	}
 	sb->setControls(controls);
 	settingsBlocks.push_back(sb);
@@ -241,7 +384,7 @@ HWND createGenericContainer(INT32 id, INT32 yOffset, INT32 w, INT32 h, HWND pare
 }
 
 
-INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, INT32 yOffset) {
+INT32 createControlGroupBox(HWND hwnd, std::vector<Control*> controls, INT32 yOffset) {
 
 	map<TCHAR*, std::vector<INT32>> titleToIdMap = {
 	{L"Header", {TAB_ÑONTENT_HTML_EXPORT_HEADER_BG_COLOR, TAB_ÑONTENT_HTML_EXPORT_HEADER_FG_COLOR}},
@@ -262,15 +405,14 @@ INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, I
 
 		yOffset += 20;
 
-		SettingsControl* htmlExportSettingsHeaderThemeGroupBoxSC = new SettingsControl();
-		SettingsControl* htmlHeaderBlockBgColor = new SettingsControl();
-		HWND htmlHeaderBlockBgColorHwnd =
+		
+		std::unique_ptr<Control> htmlHeaderBlockBgColor =
 			ControlBuilder::initBuilder()
-			->withClassName(L"Static")
+			->withClassName(WC_STATIC)
 			->withWindowName(
 				convertColorReftoHexColorString(
-					_tcscmp(mapIterator->first, L"Header") == 0 ? 
-					glbUserSettings->getHtmlExportHeaderBgColorRGB() : 
+					_tcscmp(mapIterator->first, L"Header") == 0 ?
+					glbUserSettings->getHtmlExportHeaderBgColorRGB() :
 					glbUserSettings->getHtmlExportInfoBgColorRGB()))
 			->withStyles(colorChooserStaticControlStyles)
 			->withCoords(xOffset * 2 + colorChooserBoxRightMargin, yOffset)
@@ -279,16 +421,15 @@ INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, I
 			->withControlId(mapIterator->second.at(0))
 			->build();
 
-		htmlHeaderBlockBgColor->setControlHandle(htmlHeaderBlockBgColorHwnd);
-		controls.push_back(htmlHeaderBlockBgColor);
+		
+		controls.push_back(htmlHeaderBlockBgColor.get());
 
-		SettingsControl* htmlHeaderBlockFgColor = new SettingsControl();
-		HWND htmlHeaderBlockFgColorHwnd =
+		std::unique_ptr<Control> htmlHeaderBlockFgColor =
 			ControlBuilder::initBuilder()
 			->withClassName(L"Static")
 			->withWindowName(convertColorReftoHexColorString(
-				_tcscmp(mapIterator->first, L"Header") == 0 ? 
-				glbUserSettings->getHtmlExportHeaderFgColorRGB(): 
+				_tcscmp(mapIterator->first, L"Header") == 0 ?
+				glbUserSettings->getHtmlExportHeaderFgColorRGB() :
 				glbUserSettings->getHtmlExportInfoFgColorRGB()
 			))
 			->withStyles(colorChooserStaticControlStyles)
@@ -297,21 +438,20 @@ INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, I
 			->withParent(hwnd)
 			->withControlId(mapIterator->second.at(1))
 			->build();
-		htmlHeaderBlockBgColor->setControlHandle(htmlHeaderBlockFgColorHwnd);
-		controls.push_back(htmlHeaderBlockBgColor);
+	
+		controls.push_back(htmlHeaderBlockBgColor.get());
 
-		HWND htmlExportSettingsHeaderThemeGroupBox =
+		std::unique_ptr<Control> htmlExportSettingsHeaderThemeGroupBoxSC = 
 			ControlBuilder::initBuilder()
 			->withClassName(L"Button")
 			->withWindowName(mapIterator->first)
 			->withStyles(groupBoxStyles)
 			->withCoords(xOffset * 2, yOffsetGroupBox)
 			->withDimensions((colorChooserBoxWidth + colorChooserBoxMargin) * 2,
-			(colorChooserBoxHeight + colorChooserBoxMargin * 2))
+				(colorChooserBoxHeight + colorChooserBoxMargin * 2))
 			->withParent(hwnd)
 			->build();
-		htmlExportSettingsHeaderThemeGroupBoxSC->setControlHandle(htmlExportSettingsHeaderThemeGroupBox);
-		controls.push_back(htmlExportSettingsHeaderThemeGroupBoxSC);
+		controls.push_back(htmlExportSettingsHeaderThemeGroupBoxSC.get());
 		xOffset += (colorChooserBoxWidth + 15 * 2);
 		yOffset -= 20;
 	}
@@ -339,7 +479,7 @@ LRESULT CALLBACK settingsDialogProcedure(HWND dialogWindow, UINT message,
 	}
 	case WM_CREATE: {
 		std::vector<SettingsTab*> tabs = createAndFillTabs(sw);
-		std::vector<SettingsControl*> controlBtns = createControlButtons(sw);
+		std::vector<Control*> controlBtns = createControlButtons(sw);
 		sw->setControlButtons(controlBtns);
 		sw->setTabs(tabs);
 		tabClickState[TAB_CONTENT_WRAPPER_OFFSET] = SW_SHOW;
@@ -349,6 +489,7 @@ LRESULT CALLBACK settingsDialogProcedure(HWND dialogWindow, UINT message,
 	}
 	case WM_COMMAND: {
 		WORD receivedCommand = LOWORD(wParam);
+		WORD receivedHiWordCmd = HIWORD(wParam);
 		switch (receivedCommand) {
 			case IDC_SETTINGS_CONTROL_BTN_SAVE: {
 				SavedUserSettingsHelper::readUISettingsState(sw->getTabs().at(0)->getTabContentWrapperHandle());
@@ -362,7 +503,20 @@ LRESULT CALLBACK settingsDialogProcedure(HWND dialogWindow, UINT message,
 			case IDC_SETTINGS_CONTROL_BTN_RESET: {
 				break;
 			}
-
+		}
+		switch (receivedHiWordCmd) {
+			case CBN_SELCHANGE: {
+				//trap combobox selection change 
+				IP_ADDR_BEHAVIOR currentlySelectedIndex = (IP_ADDR_BEHAVIOR)SendMessage(
+					(HWND)lParam, (UINT)CB_GETCURSEL, (WPARAM)0, (LPARAM)0);
+				if (currentlySelectedIndex == IP_ADDR_BEHAVIOR::SHOW) {
+					GenericMessageOK()
+						.withMessage(ipAddrShowWarnMsg)
+						->withIcon(ControlManager::UI_MESS_RES_ICON::WARN)
+						->display();
+				}
+				break;
+			}
 		}
 		break;
 	}
@@ -497,6 +651,7 @@ bool CALLBACK __SetFont(HWND child, LPARAM font)
 }
 std::unordered_map<WPARAM, INT32> tabClickState;
 std::unordered_map<WPARAM, WPARAM> checkBoxCheckedState;
+std::unordered_map<WPARAM, WPARAM> comboBoxState;
 
 COLORREF initializeColorDlgBox(HWND hwnd) {
 
@@ -521,4 +676,31 @@ COLORREF initializeColorDlgBox(HWND hwnd) {
 	}
 	chosenColor = cc.rgbResult;
 	return chosenColor;
+}
+
+void fillComboBox(Control *control) {
+	control->getControlHandle();
+	unordered_map<IP_ADDR_BEHAVIOR, std::vector<TCHAR*>>::iterator mapIterator;
+	for (mapIterator = ipAddrBehaviorDesc.begin();
+		mapIterator != ipAddrBehaviorDesc.end();
+		mapIterator++) {
+		SendMessage(control->getControlHandle(), 
+			(UINT)CB_ADDSTRING, 
+			NULL, 
+			(LPARAM)mapIterator->second.at(0));
+	}
+	SendMessage(control->getControlHandle(), CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
+}
+void fillComboBoxTemp(Control* control) {
+	control->getControlHandle();
+	unordered_map<TEMP_UNIT, std::vector<TCHAR*>>::iterator mapIterator;
+	for (mapIterator = tempDesc.begin();
+		mapIterator != tempDesc.end();
+		mapIterator++) {
+		SendMessage(control->getControlHandle(),
+			(UINT)CB_ADDSTRING,
+			NULL,
+			(LPARAM)mapIterator->second.at(0));
+	}
+	SendMessage(control->getControlHandle(), CB_SETCURSEL, (WPARAM)0, (LPARAM)0);
 }

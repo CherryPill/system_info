@@ -6,7 +6,15 @@
 #include "../glb/colorVals.h"
 extern std::unordered_map<WPARAM, INT32> tabClickState;
 extern std::unordered_map<WPARAM, WPARAM> checkBoxCheckedState;
-class SettingsControl {
+enum IP_ADDR_BEHAVIOR{
+	DISABLED = 0,
+	HIDDEN = 1,
+	SHOW = 2
+};
+extern std::unordered_map<WPARAM, WPARAM> comboBoxState;
+
+
+class Control {
 private:
 	HWND controlHandle;
 public:
@@ -17,16 +25,17 @@ public:
 		return controlHandle;
 	}
 };
+
 class SettingsBlock {
 private:
-	std::vector<SettingsControl*> blockControls;
+	std::vector<Control*> blockControls;
 	HWND blockHandle;
 public:
 
-	std::vector<SettingsControl*>& getControls() {
+	std::vector<Control*>& getControls() {
 		return blockControls;
 	}
-	void setControls(std::vector<SettingsControl*> blockControls) {
+	void setControls(std::vector<Control*> blockControls) {
 		this->blockControls = blockControls;
 	}
 };
@@ -65,7 +74,7 @@ private:
 	std::wstring exportInfoPreviewOsString;
 
 	std::vector<SettingsTab*> tabs;
-	std::vector<SettingsControl*> controlButtons;
+	std::vector<Control*> controlButtons;
 
 public:
 	void setHandlerProc(WNDPROC proc) {
@@ -114,11 +123,11 @@ public:
 		return this->exportInfoPreviewOsString;
 	}
 
-	std::vector<SettingsControl*> getControlButtons() {
+	std::vector<Control*> getControlButtons() {
 		return this->controlButtons;
 	}
 	
-	void setControlButtons(std::vector<SettingsControl*> controlButtons) {
+	void setControlButtons(std::vector<Control*> controlButtons) {
 		this->controlButtons = controlButtons;
 	}
 
@@ -140,12 +149,13 @@ private:
 
 	typedef BOOL(SavedUserSettings::* chkBoxStateGetter) ();
 
-	chkBoxStateGetter checkBoxStateGetters[5] =
+	chkBoxStateGetter checkBoxStateGetters[6] =
 	{ &SavedUserSettings::getShowCpuUsage,
 		&SavedUserSettings::getShowHDDTemp,
 		&SavedUserSettings::getScreenshotCaptureClientAreaOnly,
 		&SavedUserSettings::getRememberLastWindowPosition,
-		&SavedUserSettings::getHideIPAddress
+		&SavedUserSettings::getLiveUptime,
+		&SavedUserSettings::getShowUsableRam
 	};
 	
 	//tab 0
@@ -153,7 +163,10 @@ private:
 	BOOL isScreenshotCaptureClientAreaOnly = TRUE;
 	BOOL isRememberLastWindowPosition = FALSE;
 	BOOL isShowHDDTemp = FALSE;
-	BOOL isHideIPAddress = TRUE;
+	BOOL isLiveUptime = TRUE;
+	BOOL isShowUsableRam = TRUE;	
+
+
 
 	//tab 1
 	COLORREF htmlExportHeaderBgColorRGB = getColorFromPreset(COLOR::PURPLE);
@@ -161,19 +174,16 @@ private:
 	COLORREF htmlExportInfoBgColorRGB = getColorFromPreset(COLOR::WHITE);
 	COLORREF htmlExportInfoFgColorRGB = getColorFromPreset(COLOR::BLACK);
 
+	
+
+	//TEMP_UNIT HDDTempUnits;
+	IP_ADDR_BEHAVIOR hideIPAddressBehavior = IP_ADDR_BEHAVIOR::HIDDEN;
 
 public:
+	
+
 	chkBoxStateGetter *getChkBoxGetters() {
 		return this->checkBoxStateGetters;
-	}
-	BOOL getHideIPAddress() {
-		return this->isHideIPAddress;
-	}
-	BOOL *getHideIPAddressRef() {
-		return &isHideIPAddress;
-	}
-	void setHideIPAddress(BOOL isHideIPAddress) {
-		this->isHideIPAddress = isHideIPAddress;
 	}
 	BOOL getShowCpuUsage() {
 		return this->isShowCPUusage;
@@ -202,6 +212,25 @@ public:
 	void setScreenshotCaptureClientAreaOnly(BOOL isScreenshotCaptureClientAreaOnly) {
 		this->isScreenshotCaptureClientAreaOnly = isScreenshotCaptureClientAreaOnly;
 	}
+	BOOL getLiveUptime() {
+		return this->isLiveUptime;
+	}
+	BOOL* getLiveUptimeRef() {
+		return &isLiveUptime;
+	}
+	void setLiveUptime(BOOL isLiveUptime) {
+		this->isLiveUptime = isLiveUptime;
+	}
+	BOOL getShowUsableRam() {
+		return this->isShowUsableRam;
+	}
+	BOOL* getShowUsableRamRef() {
+		return &isShowUsableRam;
+	}
+	void setUsableRam(BOOL isShowUsableRam) {
+		this->isShowUsableRam = isShowUsableRam;
+	}
+
 	BOOL getRememberLastWindowPosition() {
 		return this->isRememberLastWindowPosition;
 	}
@@ -247,11 +276,20 @@ public:
 	void setHtmlExportInfoFgColorRGB(COLORREF htmlExportInfoFgColorRGB) {
 		this->htmlExportInfoFgColorRGB = htmlExportInfoFgColorRGB;
 	}
+	IP_ADDR_BEHAVIOR getIpAddrBehavior() {
+		return this->hideIPAddressBehavior;
+	}
+	IP_ADDR_BEHAVIOR *getIpAddrBehaviorRef() {
+		return &hideIPAddressBehavior;
+	}
+	void setIpAddrBehavior(IP_ADDR_BEHAVIOR iab) {
+		this->hideIPAddressBehavior = iab;
+	}
 };
 
 
 std::vector<SettingsTab*> createAndFillTabs(SettingsWindow*);
-std::vector<SettingsControl*> createControlButtons(SettingsWindow*);
+std::vector<Control*> createControlButtons(SettingsWindow*);
 
 void registerSettingsDialogClass();
 void registerTabContentWrapperWindowClass();
@@ -265,6 +303,7 @@ std::vector<SettingsBlock*> createControlsForTab(HWND controlTabWrapperHandle, I
 void handleTabSelectionChange(INT32);
 COLORREF initializeColorDlgBox(HWND hwnd);
 HWND createGenericContainer(INT32 id, INT32 w, INT32 h, INT32 yOffset, HWND parent);
-INT32 createControlGroupBox(HWND hwnd, std::vector<SettingsControl*> controls, INT32 yOffset);
-
+INT32 createControlGroupBox(HWND hwnd, std::vector<Control*> controls, INT32 yOffset);
+void fillComboBox(Control*);
+void fillComboBoxTemp(Control*);
 //filled based on the number of tabs

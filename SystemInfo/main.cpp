@@ -11,8 +11,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//if argcount > 1 then a snapshot is being loaded
 	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
-
-
 #ifdef _DEBUG
 	for (int x = 0; x < argc; x++)
 		MessageBox(NULL, argv[x], _T("arg"), MB_OK);
@@ -28,6 +26,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		SavedUserSettingsHelper::saveSettingsToDisk(savedUserSettings.get());
 	}
 	SavedUserSettingsHelper::fillSettingsCheckBoxState(savedUserSettings.get());
+	SavedUserSettingsHelper::fillSettingsComboBoxState(savedUserSettings.get());
+
 	glbUserSettings = savedUserSettings.get();
 	//savedUserSettings.get()->setShowHDDTemp(true);
 	if (NULL != argv[1] &&_tcscmp(argv[1], L"import") == 0) {

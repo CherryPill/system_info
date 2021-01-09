@@ -615,9 +615,11 @@ TCHAR* convertColorReftoHexColorString(COLORREF colorRef) {
 UINT parseBool(BOOL val) {
 	return val ? BST_CHECKED : BST_UNCHECKED;
 }
+
 BOOL parseCheckBoxState(UINT val) {
 	return val == BST_CHECKED ? TRUE : FALSE;
 }
+
 SIZE *getAdjustedDimensionsForStaticCntrl(HWND hwnd, TCHAR * string) {
 	SIZE *size = new SIZE();
 	HDC hdc = GetDC(hwnd);
