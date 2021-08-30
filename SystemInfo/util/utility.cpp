@@ -581,3 +581,14 @@ int GetEncoderClsid(const TCHAR *format, CLSID *pClsid) {
 	free(pImageCodecInfo);
 	return -1;  // Failure
 }
+
+bool isHighResolutionScreen() {
+	int dimArr[2] = {0};
+	getScreenDimensions(dimArr);
+	return dimArr[0] == highResolutionCriteriaWidth && dimArr[1] == highResolutionCriteriaHeight;
+}
+
+void getScreenDimensions(int arr[]) {
+	arr[0] = GetSystemMetrics(SM_CXSCREEN);
+	arr[1] = GetSystemMetrics(SM_CYSCREEN);
+}

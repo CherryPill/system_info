@@ -22,8 +22,9 @@
 #include "core/WMIWBEMINFO.h"
 #include "core/sysinfo.h"
 #include "util/controlManager.h"
-
+#include "config/config.h"
 int g_scrollY = 0;
+
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	PAINTSTRUCT ps;
@@ -239,6 +240,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 			}
 			break;
 		}
+
 		case WM_MOUSEWHEEL: {
 			if (((short)HIWORD(wParam)) / 120 > 0)
 				PostMessage(hwnd, WM_VSCROLL, SB_LINEUP, (LPARAM)0);
@@ -254,6 +256,7 @@ LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
+
 
 void fillGUI(HWND hwnd, SystemInfo *localMachine, int indexOffset) {
 	createHardwareInfoHolders(hwnd, localMachine->getCurrentInstance(), indexOffset);
@@ -307,6 +310,11 @@ void loadImages(void) {
 }
 
 void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
+	UIConfig uiConf = dpiConf.at(dpiUiConfig);
+	uiConf.getInfoItemWidth();
+	int calculatedItemWidth = uiConf.getInfoItemWidth();
+	int calculatedCpuUtilXOffSet = uiConf.getCpuUtilizationInfoHolderXOffSet();
+	int calculatedAdjustedBoxItemBottomMargin = uiConf.getAdJustedBoxItemHeightBottomMargin();
 	if (PROGRAM_INSTANCE == 1) {
 		CreateWindowEx
 		(
@@ -344,7 +352,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			SS_ICON | SS_CENTER,
 			xStartOffSetLabel - 28,
 			yStartOffSet,
-			ITEM_WIDTH,
+			calculatedItemWidth,
 			ITEM_HEIGHT,
 			parent,
 			(HMENU)z,
@@ -367,7 +375,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			DS_SETFONT | SS_LEFT,
 			xStartOffSetLabel,
 			yStartOffSet,
-			ITEM_WIDTH,
+			calculatedItemWidth,
 			ITEM_HEIGHT,
 			parent,
 			(HMENU)x,
@@ -375,37 +383,49 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			NULL
 		);
 		if (x == NETWORK_LABEL) {
-			createIPToggleControl(parent, xStartOffSetLabel + 140, yStartOffSet);
+			createIPToggleControl(parent, xStartOffSetLabel + calculatedItemWidth, yStartOffSet);
 		}
 		//info
 		CreateWindowEx(
 			0,
 			L"Static",
 			(L"Detecting..." + itemStrings[x]).c_str(),
-			WS_VISIBLE | WS_CHILD | SS_LEFT | DS_SETFONT,
+			WS_VISIBLE | WS_CHILD | SS_LEFT | DS_SETFONT | SS_SUNKEN,
 			xStartOffSetInformation,
-			yStartOffSet + 16,
+			yStartOffSet + ITEM_INFO_Y_OFFSET,
 			ITEM_INFO_WIDTH,
-			getInfoBoxItemCount(y, info) * ITEM_INFO_INITIAL_HEIGTH,
+			getInfoBoxItemCount(y, info) * ITEM_INFO_INITIAL_HEIGTH + calculatedAdjustedBoxItemBottomMargin,
 			parent,
 			(HMENU)y,
 			NULL,
 			NULL
 		);
 		if (y == CPU_INFO) {
-			glbCpuInfoHolderXoffset = xStartOffSetInformation;
-			glbCpuInfoHolderYoffset = yStartOffSet + 16;
+			glbCpuUtilizationInfoHolderXoffset = xStartOffSetInformation + calculatedCpuUtilXOffSet;
+			glbCpuUtilizationInfoHolderYoffset = yStartOffSet + ITEM_INFO_Y_OFFSET;
 		}
 		if (y >= GPU_INFO  && y < AUDIO_INFO) {
+			TCHAR infos[256] = { 0 };
+			
+
 			UINT32 listSize = getInfoBoxItemCount(y, info);
+			
+
+		// to do fix a ghost item on non-hi dpi screens
+		/*	_stprintf(infos, L"item is %d, listSize is %d", y, listSize);
+			GenericMessageOK()
+				.withMessage(infos)
+				->withIcon(ControlManager::UI_MESS_RES_ICON::FAILURE)
+				->display();*/
 			//return rec structure
 			if (listSize >= 2) {
 				yStartOffSet = adjustItemHeight(parent, y, listSize);
+				yStartOffSet += ITEM_BOTTOM_MARGIN;
 				continue;
 			}
 		}
 	
-		yStartOffSet += (ITEM_HEIGHT + 2);
+		yStartOffSet += (ITEM_HEIGHT + ITEM_BOTTOM_MARGIN);
 	}
 	scrollFullPageHeight = yStartOffSet;
 
@@ -425,8 +445,8 @@ void populateInfoHolders(SystemInfo *currentMachineInfo, HWND mainWindowHwnd) {
 	HWND cpuInfoHolderHandle = GetDlgItem(mainWindowHwnd, CPU_INFO);
 	int charLen = GetWindowTextLength(cpuInfoHolderHandle);
 	if (!PROGRAM_INSTANCE) {
-		glbCpuInfoHolderXoffset = glbCpuInfoHolderXoffset + charLen * 6;
-		createCpuUtilizationInfoHolder(mainWindowHwnd, glbCpuInfoHolderXoffset, glbCpuInfoHolderYoffset);
+		glbCpuUtilizationInfoHolderXoffset = glbCpuUtilizationInfoHolderXoffset + charLen * 6;
+		createCpuUtilizationInfoHolder(mainWindowHwnd, glbCpuUtilizationInfoHolderXoffset, glbCpuUtilizationInfoHolderYoffset);
 
 	}
 	

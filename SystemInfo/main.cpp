@@ -4,6 +4,7 @@
 #include "glb/globalVars.h"
 #include "util/utility.h"
 #include "mainWindowProcedure.h"
+#include "config/config.h"
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				   LPSTR lpCmdLine, int nCmdShow) {
 	int argc;
@@ -14,6 +15,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	getFileNameFromPath(fullExecPath, execName);
 	_tcscat(execName, L" ");
 	configAppData();
+	if (isHighResolutionScreen()) {
+		//dpiUiConfig = DPI_CONFIG::HI_RES_DISPLAY;
+	}
+	
 	if (argc > 1) {
 		PROGRAM_INSTANCE = 1;
 		_tcscpy(PROGRAM_DATA_IMPORT_LOCATION, argv[1]);

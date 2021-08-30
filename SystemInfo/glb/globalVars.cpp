@@ -52,7 +52,13 @@ TCHAR sysInfoConfigDirectoryPath[256] = {};
 int currentCpuUsageGlobal = -1;
 
 
-int glbCpuInfoHolderXoffset = 0;
-int glbCpuInfoHolderYoffset = 0;
+int glbCpuUtilizationInfoHolderXoffset = 0;
+int glbCpuUtilizationInfoHolderYoffset = 0;
+
+
+int highResolutionCriteriaWidth = 1920;
+
+int highResolutionCriteriaHeight = 1080;
+
 
 

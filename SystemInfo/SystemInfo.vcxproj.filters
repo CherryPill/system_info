@@ -52,6 +52,9 @@
     <Filter Include="logger">
       <UniqueIdentifier>{d1cbdcf0-8a30-40f3-8555-149fa60d0ab0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="config">
+      <UniqueIdentifier>{38da6ccd-2c9c-4ec7-9dd1-c43b8d154432}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -110,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="util\controlManager.cpp">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="config\config.cpp">
+      <Filter>config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +187,12 @@
     </ClInclude>
     <ClInclude Include="util\controlManager.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="dpiConst.h">
+      <Filter>const</Filter>
+    </ClInclude>
+    <ClInclude Include="config\config.h">
+      <Filter>config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

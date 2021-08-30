@@ -1,0 +1,4 @@
+#ifndef DPICONST_H
+#define DPICONST_H
+#define ITEM_GENERIC_SMALL_OFFSET 20
+#endif

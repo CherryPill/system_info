@@ -146,4 +146,6 @@ void condenseSpaces(std::wstring&);
 std::wstring getSystemErrorCodeMessageForErrorCode(DWORD);
 std::wstring formMessageForUIExportByExportAction(ControlManager::UI_MESS_RES_ICON res, DWORD act);
 int GetEncoderClsid(const TCHAR *format, CLSID *pClsid);
+bool isHighResolutionScreen();
+void getScreenDimensions(int []);
 #endif

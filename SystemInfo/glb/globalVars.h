@@ -188,7 +188,11 @@ extern WNDPROC lpfnScrEditProc;
 extern TCHAR sysInfoConfigDirectoryPath[256];
 extern int currentCpuUsageGlobal;
 
-extern int glbCpuInfoHolderXoffset;
-extern int glbCpuInfoHolderYoffset;
+extern int glbCpuUtilizationInfoHolderXoffset;
+extern int glbCpuUtilizationInfoHolderYoffset;
+
+extern int highResolutionCriteriaWidth;
+
+extern int highResolutionCriteriaHeight;
 
 #endif

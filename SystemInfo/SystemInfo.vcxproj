@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="config\config.cpp" />
     <ClCompile Include="core\sysinfo.cpp" />
     <ClCompile Include="core\SystemInfo.cpp" />
     <ClCompile Include="dialog\aboutDialog.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="WMIWBEMINFO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config\config.h" />
     <ClInclude Include="const\appconst.h" />
     <ClInclude Include="const\iconLabelIDs.h" />
     <ClInclude Include="const\itemIDs.h" />
@@ -181,6 +183,7 @@
     <ClInclude Include="core\SystemInfo.h" />
     <ClInclude Include="dialog\aboutDialog.h" />
     <ClInclude Include="dialog\scrUploadDialog.h" />
+    <ClInclude Include="dpiConst.h" />
     <ClInclude Include="export\saveSpecs.h" />
     <ClInclude Include="export\screenCapture.h" />
     <ClInclude Include="glb\globalVars.h" />
