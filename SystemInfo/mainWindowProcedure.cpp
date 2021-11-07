@@ -25,13 +25,34 @@
 #include "config/config.h"
 int g_scrollY = 0;
 
+
+void initializeFonts(HWND hwnd) {
+	HDC dc = GetDC(hwnd);
+	int desiredHeightPx = 9;
+	int fontUnitHeight = -MulDiv(desiredHeightPx, GetDeviceCaps(dc, LOGPIXELSY), 72);
+	appNameFontLarge = CreateFont(fontUnitHeight, 0,
+		0,
+		0,
+		FW_NORMAL,
+		0,
+		0,
+		0,
+		DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS,
+		CLIP_DEFAULT_PRECIS,
+		DEFAULT_QUALITY,
+		FF_DONTCARE,
+		fontFamilies[0]);
+}
+
 LRESULT CALLBACK mainWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	SystemInfo *localMachine = localMachine->getCurrentInstance();
 	PAINTSTRUCT ps;
 	HDC hdc;
 	SCROLLINFO si;
 	LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
-	switch (msg) {
+	initializeFonts(hwnd);
+	switch (msg) {initializeFonts(hwnd);
 		case WM_CREATE: {
 			loadImages();
 			if (PROGRAM_INSTANCE == 1) {
@@ -280,7 +301,7 @@ void fillGUI(HWND hwnd, SystemInfo *localMachine, int indexOffset) {
 }
 
 BOOL CALLBACK SetFont(HWND child, LPARAM font) {
-	SendMessage(child, WM_SETFONT, (LPARAM)GetStockObject(DEFAULT_GUI_FONT), TRUE);
+	SendMessage(child, WM_SETFONT, (LPARAM)appNameFontLarge, TRUE);
 	SendMessage(GetDlgItem(GetParent(child), AUX_IP_TOGGLE),
 				WM_SETFONT,
 				(WPARAM)ipToggleBtnFont, MAKELPARAM(true, 0));
@@ -420,7 +441,7 @@ void createHardwareInfoHolders(HWND parent, SystemInfo *info, int offsetIndex) {
 			//return rec structure
 			if (listSize >= 2) {
 				yStartOffSet = adjustItemHeight(parent, y, listSize);
-				yStartOffSet += ITEM_BOTTOM_MARGIN;
+				//yStartOffSet += ITEM_BOTTOM_MARGIN;
 				continue;
 			}
 		}

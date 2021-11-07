@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" 
+         ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+         TreatAsLocalProperty="Platform">
+          <PropertyGroup>
+     <Platform>Win32</Platform>
+  </PropertyGroup>
+    <Target Name="EmitCustomMessage" AfterTargets="Build">
+        <Message Importance="High" Text="The solution has completed the Build target" />
+    </Target>
+</Project>

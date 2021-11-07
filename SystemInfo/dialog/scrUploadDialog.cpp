@@ -4,9 +4,14 @@
 #include "../util/controlManager.h"
 
 UPLOAD_SRC_LINK_DATA uploadSrcLinkData = {};
+
+
+
+
 BOOL CALLBACK scrDlgProc(HWND dlgHandle, UINT message, WPARAM wParam, LPARAM lParam) {
 	switch (message) {
 		case WM_INITDIALOG: {
+
 			SendMessage(GetDlgItem(dlgHandle, IDC_PROGRAM_NAME), WM_SETFONT, (WPARAM)appNameFontLarge, MAKELPARAM(true, 0));
 			SetWindowText(GetDlgItem(dlgHandle, IDC_EDIT_SCRCOPY), (LPCWSTR)uploadSrcLinkData.link);
 			lpfnScrEditProc = (WNDPROC)SetWindowLong(GetDlgItem(dlgHandle, IDC_EDIT_SCRCOPY),

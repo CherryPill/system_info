@@ -274,6 +274,10 @@ void fillGPU(SystemInfo * localMachine,
 		finalAdapterString = name + L" " + vrammegabytesStr;
 
 		localMachine->addGPUDevice(finalAdapterString);
+		localMachine->addGPUDevice(finalAdapterString);
+		localMachine->addGPUDevice(finalAdapterString);
+		localMachine->addGPUDevice(finalAdapterString);
+		localMachine->addGPUDevice(finalAdapterString);
 
 		VariantClear(&vtProp);
 

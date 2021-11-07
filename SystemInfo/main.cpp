@@ -15,6 +15,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	getFileNameFromPath(fullExecPath, execName);
 	_tcscat(execName, L" ");
 	configAppData();
+
 	if (isHighResolutionScreen()) {
 		//dpiUiConfig = DPI_CONFIG::HI_RES_DISPLAY;
 	}

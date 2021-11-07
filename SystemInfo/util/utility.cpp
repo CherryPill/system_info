@@ -176,9 +176,10 @@ UINT32 adjustItemHeight(HWND windowHandle, UINT32 ITEM_ID, UINT32 innerItemsCoun
 	GetWindowRect(itemHandle, &itemHandleDimensions);
 	MapWindowPoints(HWND_DESKTOP, windowHandle, (LPPOINT)&itemHandleDimensions, 2);
 	UINT32 adjustedItemHeight;
+	UINT32 singleElementHeightPx = 9 + 7;
 	UINT32 adjustedYAxisOffset;
-	adjustedItemHeight = innerItemsCount * 15;
-	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + 5;
+	adjustedItemHeight = innerItemsCount * singleElementHeightPx;
+	adjustedYAxisOffset = itemHandleDimensions.top + adjustedItemHeight + singleElementHeightPx;
 	return adjustedYAxisOffset;
 }
 

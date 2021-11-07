@@ -17,9 +17,10 @@ WNDPROC lpfnScrEditProc;
 HBRUSH grayBrush = CreateSolidBrush(RGB(81, 81, 81));
 TCHAR *fontFamilies[] = {
 	_T("Arial"),
-	_T("Courier New")
+	_T("Courier"),
+	_T("Helvetica")
 };
-HFONT appNameFontLarge = CreateFont(-28, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
+HFONT appNameFontLarge; // CreateFont(-28, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
 HFONT ipToggleBtnFont = CreateFont(-10, 0, 0, 0, FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, FF_DONTCARE, fontFamilies[0]);
 
 TCHAR *timeVerboseMonths[] = {

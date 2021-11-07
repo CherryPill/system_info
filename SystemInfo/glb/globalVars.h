@@ -195,4 +195,6 @@ extern int highResolutionCriteriaWidth;
 
 extern int highResolutionCriteriaHeight;
 
+extern TCHAR* fontFamilies[];
+
 #endif
